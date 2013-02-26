@@ -7,6 +7,6 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
-    url(r'^polls/', include('proveit.polls.urls')),
+    url(r'^polls/', include('proveit.polls.urls', namespace="polls")),
     url(r'^admin/', include(admin.site.urls)),
 )
