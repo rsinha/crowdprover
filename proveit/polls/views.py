@@ -1,4 +1,6 @@
 from django.http import HttpResponse
+from django.template import Context, loader
+
 from proveit.polls.models import Poll
 
 def index(request):
