@@ -14,7 +14,12 @@ def index(request):
     return render(request, 'polls/index.html', context)
 
 def detail(request, poll_id):
-    return HttpResponse("You're looking at poll %s." % poll_id)
+    try:
+        poll = Poll.objects.get(pk=poll_id)
+    except Poll.DoesNotExist:
+        raise Http404
+    return render(request, 'polls/detail.html', {'poll': poll})
+
 
 def results(request, poll_id):
     return HttpResponse("You're looking at the results of poll %s." % poll_id)
