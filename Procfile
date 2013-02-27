@@ -1,1 +1,1 @@
-web: gunicorn proveit.wsgi
+web: gunicorn collectstatic proveit.wsgi
