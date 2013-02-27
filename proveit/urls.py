@@ -2,6 +2,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
 from proveit import views
+from proveit import settings
 
 admin.autodiscover()
 
