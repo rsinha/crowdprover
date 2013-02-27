@@ -1,4 +1,5 @@
 # Django settings for proveit project.
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -61,7 +62,8 @@ MEDIA_URL = ''
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-STATIC_ROOT = os.path.join(PROJECT_DIR,'staticfiles/')
+PROJECT_DIR = os.path.join(PROJECT_ROOT,'.')
+STATIC_ROOT = os.path.join(PROJECT_ROOT,'programs/')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -72,7 +74,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PROJECT_ROOT,'static/'),
+    os.path.join(STATIC_ROOT,'static/'),
 )
 
 # List of finder classes that know how to find static files in
