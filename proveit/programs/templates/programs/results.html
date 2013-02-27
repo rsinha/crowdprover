@@ -86,6 +86,14 @@
   </div>
 </div> <!--end div container-->
 
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $( "pre.code1" ).draggable();
+      $("pre.code1").snippet("cpp",{style:"navy",menu:false});
+      $('.jquery').each(function() {
+        eval($(this).html());
+      });
+   </script>
 
   </body>
 </html>
