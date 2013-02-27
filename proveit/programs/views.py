@@ -42,6 +42,7 @@ def annotate(request, program_id):
     else:
         #selected_choice.votes += 1
         #selected_choice.save()
+	p.invariant_set.create(author=author, content=content, line=line, date=date)
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
