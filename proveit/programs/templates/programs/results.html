@@ -1,4 +1,11 @@
 {% load url from future %}
-<h1>{{ poll.question }}</h1>
-<a href="{% url 'programs:detail' program.id %}">Annotate again?</a>
+<h1>{{ program.description }}</h1>
+
+<ul>
+{% for invariant in program.invariant_set.all %}
+    <li>{{ invariant.content }} at line {{ invariant.line }} submitted by {{ invariant.author }}</li>
+{% endfor %}
+</ul>
+
+<a href="{% url 'programs:detail' program.id %}">Submit another invariant?</a>
 
