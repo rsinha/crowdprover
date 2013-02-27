@@ -12,3 +12,5 @@ urlpatterns = patterns('',
     # ex: /programs/5/annotate/
     url(r'^(?P<program_id>\d+)/annotate/$', views.annotate, name='annotate'),
 )
+
+urlpatterns += staticfiles_urlpatterns()
