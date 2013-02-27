@@ -31,7 +31,7 @@ def annotate(request, program_id):
         line = request.POST['line']
         author = request.POST['author']
         date = request.POST['date']
-    except (KeyError, Choice.DoesNotExist):
+    except (KeyError, Invariant.DoesNotExist):
         # Redisplay the program voting form.
         return render(request, 'programs/detail.html', {
             'program': p,
