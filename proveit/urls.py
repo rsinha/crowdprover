@@ -11,3 +11,6 @@ urlpatterns = patterns('',
     url(r'^programs/', include('proveit.programs.urls', namespace="programs")),
     url(r'^admin/', include(admin.site.urls)),
 )
+
+if not settings.DEBUG:
+   urlpatterns += staticfiles_urlpatterns()
