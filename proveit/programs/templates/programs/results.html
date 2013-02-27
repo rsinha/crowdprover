@@ -1,11 +1,91 @@
 {% load url from future %}
-<h1>{{ program.description }}</h1>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Crowdsolving</title>
+    <script src="http://crowdprover.herokuapp.com/static/js/jquery-1.9.1.js"></script>
+    <script src="http://crowdprover.herokuapp.com/static/js/jquery-ui.js"></script>
+    <link rel="stylesheet" href="http://crowdprover.herokuapp.com/static/css/jquery-ui.css" />
+    <script type="text/javascript" src="http://crowdprover.herokuapp.com/static/js/jquery.snippet.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/jquery.snippet.css" />
+    <script src="http://crowdprover.herokuapp.com/static/js/iphone-style-checkboxes.js" type="text/javascript" charset="utf-8"></script>
+    <script type='text/javascript' src='http://crowdprover.herokuapp.com/static/js/jquery.simplemodal.js'></script>
+    <script type='text/javascript' src='http://crowdprover.herokuapp.com/static/js/basic.js'></script>
+    <link type='text/css' href='http://crowdprover.herokuapp.com/static/css/demo.css' rel='stylesheet' media='screen' />
+    <link type='text/css' href='http://crowdprover.herokuapp.com/static/css/basic.css' rel='stylesheet' media='screen' />
+    <script type='text/javascript' src='http://crowdprover.herokuapp.com/static/js/jquery.dataTables.js'></script>
+    <link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/demo_table.css" />
+    <link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/jquery.dataTables.css" />
+  </head>
+  <body>
 
-<ul>
-{% for invariant in program.invariant_set.all %}
-    <li>{{ invariant.content }} at line {{ invariant.line }} submitted by {{ invariant.author }}</li>
-{% endfor %}
-</ul>
+  <div id='container'>
+  <div id='logo'>
+    <h1>prove<span>It</span></h1>
+    <span class='title'>Crowdsolving Software Verification</span>
+  </div> <!--end div logo-->
+  <div id='content'>
+    <div id='basic-modal'>
+      <p>Here are suggested facts we have received from all our users. We mark each fact with a validity flag, which is one of Valid, Invalid, or Don't Know. Valid facts are provable given the set of known facts. Invalid facts are provably incorrect (there exists an execution that falsifies that fact). Don't Know facts refer to all facts that we cannot discharge the proof for, and nor can we refute them.
+      </p>
+        
+      <style>
+          #container {
+              border: none;
+              height: auto;
 
-<a href="{% url 'programs:detail' program.id %}">Submit another invariant?</a>
+              text-align: justify;
+              -ms-text-justify: distribute-all-lines;
+              text-justify: distribute-all-lines;
 
+              /* just for demo */
+              min-width: 980px;
+          }
+
+          .box1, .box2 {
+              width: auto;
+              height: auto;
+              vertical-align: top;
+              display: inline-block;
+              *display: inline;
+              zoom: 1
+          }
+          .stretch {
+              width: 100%;
+              display: inline-block;
+              font-size: 0;
+              line-height: 0
+          }
+          .highlighted { background-color: yellow }
+      </style>
+      <div id="codeplusfacts">
+      <div id="codeblock" class="box1">
+        <pre class="code1">{{code}}</pre>
+      </div> <!--end div codeblock-->
+
+      <div id="facts" class="box2">
+	<ul>
+	{% for invariant in program.invariant_set.all %}
+	    <li>{{ invariant.content }} at line {{ invariant.line }} submitted by {{ invariant.author }}</li>
+	{% endfor %}
+	</ul>
+	<a href="{% url 'programs:detail' program.id %}">Suggest another invariant?</a>
+      </div> <!--end div facts-->
+      <span class="stretch"></span>
+      </div> <!-- end div codeplusvis-->
+  
+ 
+    <!-- modal content -->
+
+    </div> <!--end div basic-modal-->
+  </div> <!--end div content-->
+  <div id='footer'>
+    &copy; 2013 Some copyright?</a><br/>
+    <a href='https://github.com/ericmmartin/simplemodal'>Big Thanks to SimpleModal, Snippets, DataTables, JQuery</a><br/>
+  </div>
+</div> <!--end div container-->
+
+
+  </body>
+</html>
