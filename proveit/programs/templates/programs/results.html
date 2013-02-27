@@ -1,2 +1,4 @@
 {% load url from future %}
-<a href="{% url 'programs:detail' programs.id %}">Annotate again?</a>
+<h1>{{ poll.question }}</h1>
+<a href="{% url 'programs:detail' program.id %}">Annotate again?</a>
+
