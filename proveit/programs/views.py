@@ -27,7 +27,8 @@ def results(request, program_id):
     return render(request, 'programs/results.html', {'program': program})
 
 def annotate(request, program_id):
-    p = get_object_or_404(Program, pk=program_id)
+    program = get_object_or_404(Program, pk=program_id)
+    code = open(p.source, 'r').read() 
     try:
         author = request.POST['author']
         content = request.POST['content']
@@ -36,15 +37,15 @@ def annotate(request, program_id):
     except (KeyError, Invariant.DoesNotExist):
         # Redisplay the program voting form.
         return render(request, 'programs/detail.html', {
-            'program': p,
+            'program': program,
             'error_message': "Please enter all fields before submitting.",
         })
     else:
         #selected_choice.votes += 1
         #selected_choice.save()
-	p.invariant_set.create(author=author, content=content, line=line, date=date)
+	program.invariant_set.create(author=author, content=content, line=line, date=date)
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         #return HttpResponseRedirect(reverse('programs:results', args=(p.id,)))
-        return render(request, 'programs/results.html', {'program': program, 'code': code})
+        return render(request, 'programs/results.html', {'program': p, 'code': code})
