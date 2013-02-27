@@ -18,7 +18,7 @@ def detail(request, program_id):
         code = open(program.source, 'r').read() 
     except Program.DoesNotExist:
         raise Http404
-    return render(request, 'programs/detail.html', {'program': program})
+    return render(request, 'programs/detail.html', {'program': program, 'code': code})
 
 
 def results(request, program_id):
