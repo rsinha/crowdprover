@@ -260,7 +260,7 @@
 
   </script>
 
-  <form action="{% url 'polls:annotate' program.id %}" method="post">
+  <form action="{% url 'programs:annotate' program.id %}" method="post">
   {% csrf_token %}
   <div>Your Invariant</br><textarea name="content" rows="3" cols="60"></textarea></div>
   <div>Line number after which your invariant holds </br><input type="text" name="lineno" value="0"></div>
