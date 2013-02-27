@@ -1,6 +1,4 @@
 {% load url from future %}
-<h1>{{ program.description }}</h1>
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -83,7 +81,7 @@
 
       <div id="visualizer" class="box2">
         <div align="right">Select variables</div>
-        <div align="right"><input type='image' src="http://crowdprover.herokuapp.com/images/watch1.png" name='basic' value="" class='basic' onclick="clickWatch()"/></div>
+        <div align="right"><input type='image' src="http://crowdprover.herokuapp.com/static/images/watch1.png" name='basic' value="" class='basic' onclick="clickWatch()"/></div>
         <p>
         <label for="step">Step #:</label>
         <input type="text" id="step" style="border: 0; color: #f6931f; font-weight: bold;" />
@@ -151,7 +149,7 @@
       </table>
       <br><br>
       <input name="submit" id="submitme" type="image" 
-        src="http://crowdprover.herokuapp.com/images/tick.png" 
+        src="http://crowdprover.herokuapp.com/static/images/tick.png" 
         alt="Submit" 
         onclick="submitWatch();"
         tabindex="8"
@@ -162,7 +160,7 @@
 
     <!-- preload the images -->
     <div style='display:none'>
-      <img src='http://crowdprover.herokuapp.com/images/x.png' alt='' />
+      <img src='http://crowdprover.herokuapp.com/static/images/x.png' alt='' />
     </div> <!--end div basic-modal-->
   </div> <!--end div content-->
   <div id='footer'>
