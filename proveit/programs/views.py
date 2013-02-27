@@ -46,4 +46,5 @@ def annotate(request, program_id):
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
-        return HttpResponseRedirect(reverse('programs:results', args=(p.id,)))
+        #return HttpResponseRedirect(reverse('programs:results', args=(p.id,)))
+        return render(request, 'programs/results.html', {'program': program, 'code': code})
