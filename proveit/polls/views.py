@@ -1,8 +1,9 @@
-from django.http import HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse
+from django.core.urlresolvers import reverse
 from django.template import Context, loader
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 
-from proveit.polls.models import Poll
+from proveit.polls.models import Choice, Poll
 
 def index(request):
     latest_poll_list = Poll.objects.order_by('-pub_date')[:5]
