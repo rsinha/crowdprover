@@ -28,7 +28,7 @@ def results(request, program_id):
 
 def annotate(request, program_id):
     program = get_object_or_404(Program, pk=program_id)
-    code = open(p.source, 'r').read() 
+    code = open(program.source, 'r').read() 
     try:
         author = request.POST['author']
         content = request.POST['content']
