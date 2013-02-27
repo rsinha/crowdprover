@@ -1,0 +1,9 @@
+{% if program_list %}
+    <ul>
+    {% for program in program_list %}
+        <li><a href="/programs/{{ program.id }}/">{{ program.description }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No programs posted yet.</p>
+{% endif %}
