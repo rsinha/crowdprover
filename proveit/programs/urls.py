@@ -9,6 +9,4 @@ urlpatterns = patterns('',
     url(r'^(?P<program_id>\d+)/$', views.detail, name='detail'),
     # ex: /programs/5/results/
     url(r'^(?P<program_id>\d+)/results/$', views.results, name='results'),
-    # ex: /programs/5/annotate/
-    url(r'^(?P<program_id>\d+)/annotate/$', views.annotate, name='annotate'),
 )

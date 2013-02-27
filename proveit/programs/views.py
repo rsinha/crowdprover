@@ -24,10 +24,6 @@ def detail(request, program_id):
 
 def results(request, program_id):
     program = get_object_or_404(Program, pk=program_id)
-    return render(request, 'programs/results.html', {'program': program})
-
-def annotate(request, program_id):
-    program = get_object_or_404(Program, pk=program_id)
     code = open(program.source, 'r').read() 
     try:
         author = request.POST['author']
