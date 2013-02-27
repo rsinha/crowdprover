@@ -28,10 +28,10 @@ def results(request, program_id):
 def annotate(request, program_id):
     p = get_object_or_404(Program, pk=program_id)
     try:
+        author = request.POST['author']
         content = request.POST['content']
         line = request.POST['line']
-        author = request.POST['author']
-        date = request.POST['date']
+        date = timezone.now()
     except (KeyError, Invariant.DoesNotExist):
         # Redisplay the program voting form.
         return render(request, 'programs/detail.html', {
