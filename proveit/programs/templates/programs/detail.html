@@ -109,9 +109,8 @@
       <span class="stretch"></span>
       </div> <!-- end div codeplusvis-->
   
-      {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-
       <div align="center"> 
+        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 	<form action="{% url 'programs:results' program.id %}" method="post">
 	{% csrf_token %}
 	<div>Your Name</br><textarea name="author" rows="1" cols="60"></textarea></div>

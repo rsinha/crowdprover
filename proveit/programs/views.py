@@ -47,7 +47,7 @@ def results(request, program_id):
             return render(request, 'programs/detail.html', {
                 'program': program,
 	        'code': code,
-                'error_message': "Something went wrong. Contact the webninja.",
+                'error_message': "Please fill all fields.",
             })
 	else:
 	    program.invariant_set.create(author=author, content=content, line=int(line), date=date)
