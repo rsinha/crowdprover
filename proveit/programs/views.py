@@ -17,11 +17,7 @@ def detail(request, program_id):
     try:
         program = Program.objects.get(pk=program_id)
         code = open(program.source, 'r').read()
-	trace = [
-	{'alias': 'x', 'values': ['1', '2', '3', '4', '5', '6', '7', '8', '9'], 'name': 'x'}, 
-	{'alias': 'n_data', 'values': ['1', '2', '3', '4', '5', '6', '7', '8', '9'], 'name': 'n->data'},
-	{'alias': 'n_next', 'values': ["0xabcd", "0xabcd", "0xbacd", "0xbeee", "0xabcd", "0xbecf", "0xbcef", "0xabcd", "0xdead", "0xabcd", "0xabcd", "0xabcd"], 'name': 'n->next'}
-	]
+	trace = [{'alias': 'x', 'values': ['1', '2', '3', '4', '5', '6', '7', '8', '9'], 'name': 'x'}, {'alias': 'n_data', 'values': ['1', '2', '3', '4', '5', '6', '7', '8', '9'], 'name': 'n->data'},{'alias': 'n_next', 'values': ["0xabcd", "0xabcd", "0xbacd", "0xbeee", "0xabcd", "0xbecf", "0xbcef", "0xabcd", "0xdead", "0xabcd", "0xabcd", "0xabcd"], 'name': 'n->next'}]
     except Program.DoesNotExist:
         raise Http404
     return render(request, 'programs/detail.html', {'program': program, 'code': code, 'trace':trace})
