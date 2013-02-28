@@ -1,4 +1,7 @@
 from django.http import HttpResponse
+from django.template import Context, loader
 
 def index(request):
-    return HttpResponse("<html><body>You are at the main page. Check out our <a href="/programs">programs</a></body></html>")
+    template = loader.get_template('index.html')
+    context = Context({})
+    return HttpResponse(template.render(context))
