@@ -30,18 +30,25 @@ def results(request, program_id):
         content = request.POST['content']
         line = request.POST['line']
         date = timezone.now()
-    except (KeyError, Invariant.DoesNotExist):
+    except (KeyError):
         # Redisplay the program voting form.
         return render(request, 'programs/detail.html', {
             'program': program,
-            'error_message': "Please enter all fields before submitting.",
+	    'code': code,
+            'error_message': "Something went wrong. Contact the webninja.",
         })
     else:
-        #selected_choice.votes += 1
-        #selected_choice.save()
-	program.invariant_set.create(author=author, content=content, line=line, date=date)
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         #return HttpResponseRedirect(reverse('programs:results', args=(program.id,)))
-        return render(request, 'programs/results.html', {'program': program, 'code': code})
+       	if author == "" or content == "" or line == "": 
+  	    # Redisplay the program voting form.
+            return render(request, 'programs/detail.html', {
+                'program': program,
+	        'code': code,
+                'error_message': "Something went wrong. Contact the webninja.",
+            })
+	else:
+	    program.invariant_set.create(author=author, content=content, line=int(line), date=date)
+            return render(request, 'programs/results.html', {'program': program, 'code': code})
