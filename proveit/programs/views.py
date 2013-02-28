@@ -21,8 +21,12 @@ def detail(request, program_id):
         raise Http404
     return render(request, 'programs/detail.html', {'program': program, 'code': code})
 
-
 def results(request, program_id):
+    program = get_object_or_404(Program, pk=program_id)
+    code = open(program.source, 'r').read() 
+    return render(request, 'programs/results.html', {'program': program, 'code': code})
+
+def submit(request, program_id):
     program = get_object_or_404(Program, pk=program_id)
     code = open(program.source, 'r').read() 
     try:
