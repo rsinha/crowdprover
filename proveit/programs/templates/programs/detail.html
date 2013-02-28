@@ -27,7 +27,7 @@
   </div> <!--end div logo-->
   <div id='content'>
     <div id='basic-modal'>
-      <p>Please review foo(int a), and provide us with invariants that hold at different program points.
+      <p>Please review this program, and provide us with invariants that hold at different program points.
         You can use the trace visualizer to help understand this program's behaviour.
       </p>
         
@@ -126,24 +126,14 @@
       <h3>Trace Visualizer Settings</h3>
       Select which variables you would like to display in the trace visualizer. <br><br>
       <table align="center">
-        <tr class="var_x">
-          <th><label for="x">x</label></th>
+	{% for vartrace in trace %}
+        <tr class="var_{{ vartrace["alias"] }}">
+          <th><label for="{{ vartrace[0] }}">{{ vartrace["alias"] }}</label></th>
           <td>
-            <input type="checkbox" id="x"/>
+            <input type="checkbox" id="{{ vartrace["alias"] }}"/>
           </td>
         </tr>
-        <tr class="var_n_data">
-          <th><label for="n_data">n->data</label></th>
-          <td>
-            <input type="checkbox" id="n_data" />
-          </td>
-        </tr>
-        <tr class="var_n_next">
-          <th><label for="n_next">n->next</label></th>
-          <td>
-            <input type="checkbox" id="n_next" />
-          </td>
-        </tr>
+	{% endfor %}
       </table>
       <br><br>
       <input name="submit" id="submitme" type="image" 
