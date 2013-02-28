@@ -111,7 +111,7 @@
   
       <div align="center"> 
         {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-	<form action="{% url 'programs:suggest' program.id %}" method="post">
+	<form action="{% url 'programs:submit' program.id %}" method="post">
 	{% csrf_token %}
 	<div>Your Name</br><textarea name="author" rows="1" cols="60"></textarea></div>
 	<div>Your Invariant</br><textarea name="content" rows="3" cols="60"></textarea></div>
