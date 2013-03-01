@@ -85,7 +85,7 @@
         <thead>
           <tr>
             <th>Variable</th>
-	    {% for i in range(trace.length) %} 
+	    {% for i in trace.length|get_range %} 
             <th>{{i}}</th>
 	    {% endfor %}
           </tr>
