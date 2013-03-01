@@ -85,18 +85,9 @@
         <thead>
           <tr>
             <th>Variable</th>
-            <th>0</th>
-            <th>1</th>
-            <th>2</th>
-            <th>3</th>
-            <th>4</th>
-            <th>5</th>
-            <th>6</th>
-            <th>7</th>
-            <th>8</th>
-            <th>9</th>
-            <th>10</th>
-            <th>11</th>
+	    {% for i in range(trace.length) %} 
+            <th>{{i}}</th>
+	    {% endfor %}
           </tr>
         </thead>
         <tbody>
@@ -126,7 +117,7 @@
       <h3>Trace Visualizer Settings</h3>
       Select which variables you would like to display in the trace visualizer. <br><br>
       <table align="center">
-	{% for vartrace in trace %}
+	{% for vartrace in trace.values %}
         <tr class="var_{{ vartrace.alias }}">
           <th><label for="{{ vartrace.alias }}">{{ vartrace.alias }}</label></th>
           <td>
@@ -205,18 +196,18 @@
     $(document).keydown(function(e){
       if (e.keyCode == 27) { 
         $("#tree").fadeOut();
-        var var_x_checkbox = ($('.var_x :checkbox'));
-        var var_n_data_checkbox = ($('.var_n_data :checkbox'));
-        var var_n_next_checkbox = ($('.var_n_next :checkbox'));
+	{% for vartrace in trace.values %}
+	var var_{{vartrace.alias}}_checkbox = ($('.var_{{vartrace.alias}} :checkbox'));
+	{% endfor %}
       }
     });
 
     function clickWatch() {
       $("#basic-modal-content").modal();
-      var var_x_checkbox = ($('.var_x :checkbox'));
-      var var_n_data_checkbox = ($('.var_n_data :checkbox'));
-      var var_n_next_checkbox = ($('.var_n_next :checkbox'));
-      var checkBoxes = [var_x_checkbox, var_n_data_checkbox, var_n_next_checkbox];
+      {% for vartrace in trace.values %}
+      var var_{{vartrace.alias}}_checkbox = ($('.var_{{vartrace.alias}} :checkbox'));
+      {% endfor %}
+      var checkBoxes = [{% for vartrace in trace.values %}var_{{vartrace.alias}}_checkbox,{% endfor %}];
 
       for(var i = 0; i < checkBoxes.length; i++) {
         if (checkBoxCache[i]) {
@@ -226,10 +217,10 @@
     }
 
     function submitWatch() {
-        var var_x_checkbox = ($('.var_x :checkbox'));
-        var var_n_data_checkbox = ($('.var_n_data :checkbox'));
-        var var_n_next_checkbox = ($('.var_n_next :checkbox'));
-        var checkBoxes = [var_x_checkbox, var_n_data_checkbox, var_n_next_checkbox];
+	{% for vartrace in trace.values %}
+	var var_{{vartrace.alias}}_checkbox = ($('.var_{{vartrace.alias}} :checkbox'));
+	{% endfor %}
+        var checkBoxes = [{% for vartrace in trace.values %}var_{{vartrace.alias}}_checkbox,{% endfor %}];
 
         var aTrs = oTable.fnGetNodes();
         for ( var i=0 ; i < aTrs.length ; i++ )
