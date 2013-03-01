@@ -86,7 +86,7 @@
           <tr>
             <th>Variable</th>
 	    {% for i in trace.lines %} 
-            <th>{{forloop.counter - 1}}</th>
+            <th>{{forloop.counter}}</th>
 	    {% endfor %}
           </tr>
         </thead>
@@ -171,23 +171,23 @@
     } );
 
     $( "#slider" ).slider({
-      value:0,
-      min: 0,
-      max: 11,
+      value:1,
+      min: 1,
+      max: {{trace.length}},
       step: 1,
       slide: function( event, ui ) {
-        var stepToLine = [8,9,10,11,12,13,8,9,10,11,12,13];
+        var stepToLine = [{% for line in trace.lines %} {{line}}, {% endfor %}];
         var pos = (stepToLine[ui.value]).toString();
         $( "#step" ).val( ui.value );
         $("pre.code1").snippet("cpp",{style:"navy",box:pos,boxColor:"red",boxFill:"black",menu:false});
-        var col = ui.value + 2;
+        var col = ui.value + 1;
         var nTrs = oTable.fnGetNodes();
         $('td.highlighted', oTable.fnGetNodes()).removeClass('highlighted');
         $('td:nth-child('+(col)+')', nTrs).addClass( 'highlighted' );
       }
     });
     $( "#step" ).val( $( "#slider" ).slider( "value" ) );
-    var col = 0 + 2;
+    var col = 1 + 1;
     var nTrs = oTable.fnGetNodes();
     $('td.highlighted', oTable.fnGetNodes()).removeClass('highlighted');
     $('td:nth-child('+(col)+')', nTrs).addClass( 'highlighted' );
