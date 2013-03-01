@@ -233,11 +233,6 @@
 	["{{vartrace.name}}", {% for val in vartrace.values %} "{{val}}",{% endfor %}],
 	{% endfor %}
 	];
-        var trace = [
-          ["x", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
-          ["n->data", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"],
-          ["n->next", "0xabcd", "0xabcd", "0xbacd", "0xbeee", "0xabcd", "0xbecf", "0xbcef", "0xabcd", "0xdead", "0xabcd", "0xabcd", "0xabcd"]
-        ];
         for (var i = trace.length - 1; i >= 0; i--) {
           if (checkBoxes[i].is(':checked')) {
             checkBoxCache[i] = true;
