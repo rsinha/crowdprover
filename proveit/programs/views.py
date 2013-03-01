@@ -49,4 +49,4 @@ def submit(request, program_id):
         })
     else:
         program.invariant_set.create(author=author, content=content, line=int(line), date=date)
-            return render(request, 'programs/results.html', {'program': program, 'code': code})
+        return render(request, 'programs/results.html', {'program': program, 'code': code})
