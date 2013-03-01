@@ -154,7 +154,7 @@
 
     $(document).ready(function(){
     $( "pre.code1" ).draggable();
-    $("pre.code1").snippet("cpp",{style:"navy",box:"8",boxColor:"red",boxFill:"black",menu:false});
+    $("pre.code1").snippet("cpp",{style:"navy",box:"{{trace.firstLine}}",boxColor:"red",boxFill:"black",menu:false});
     $('.jquery').each(function() {
         eval($(this).html());
     });
