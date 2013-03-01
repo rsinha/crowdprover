@@ -228,6 +228,11 @@
           oTable.fnDeleteRow(aTrs[i]);
         }
 
+	var trace = [
+	{% for vartrace in trace.values %}
+	["{{vartrace.name}}", {% for val in vartrace.values %} "{{val}}",{% endfor %}],
+	{% endfor %}
+	];
         var trace = [
           ["x", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
           ["n->data", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"],
