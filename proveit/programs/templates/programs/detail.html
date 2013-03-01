@@ -119,7 +119,7 @@
       <table align="center">
 	{% for vartrace in trace.values %}
         <tr class="var_{{ vartrace.alias }}">
-          <th><label for="{{ vartrace.alias }}">{{ vartrace.alias }}</label></th>
+          <th><label for="{{ vartrace.alias }}">{{ vartrace.name }}</label></th>
           <td>
             <input type="checkbox" id="{{ vartrace.alias }}"/>
           </td>
