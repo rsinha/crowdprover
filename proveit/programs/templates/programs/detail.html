@@ -85,7 +85,8 @@
         <thead>
           <tr>
             <th>Variable</th>
-	    {% for i in 12|get_range %} 
+	    {% num_range 5 as some_range %}
+	    {% for i in some_range %} 
             <th>{{i}}</th>
 	    {% endfor %}
           </tr>
