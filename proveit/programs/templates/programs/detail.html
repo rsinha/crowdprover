@@ -177,7 +177,7 @@
       step: 1,
       slide: function( event, ui ) {
         var stepToLine = [{% for line in trace.lines %} {{line}}, {% endfor %}];
-        var pos = (stepToLine[ui.value]).toString();
+        var pos = (stepToLine[ui.value-1]).toString();
         $( "#step" ).val( ui.value );
         $("pre.code1").snippet("cpp",{style:"navy",box:pos,boxColor:"red",boxFill:"black",menu:false});
         var col = ui.value + 1;
