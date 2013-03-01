@@ -127,10 +127,10 @@
       Select which variables you would like to display in the trace visualizer. <br><br>
       <table align="center">
 	{% for vartrace in trace %}
-        <tr class="var_{{ vartrace["alias"] }}">
-          <th><label for="{{ vartrace["alias"] }}">{{ vartrace["alias"] }}</label></th>
+        <tr class="var_{{ vartrace.alias }}">
+          <th><label for="{{ vartrace.alias }}">{{ vartrace.alias }}</label></th>
           <td>
-            <input type="checkbox" id="{{ vartrace["alias"] }}"/>
+            <input type="checkbox" id="{{ vartrace.alias }}"/>
           </td>
         </tr>
 	{% endfor %}
