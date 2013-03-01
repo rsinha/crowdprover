@@ -85,9 +85,8 @@
         <thead>
           <tr>
             <th>Variable</th>
-	    {% num_range 5 as some_range %}
-	    {% for i in some_range %} 
-            <th>{{i}}</th>
+	    {% for i in trace.lines %} 
+            <th>{{forloop.counter}}</th>
 	    {% endfor %}
           </tr>
         </thead>
