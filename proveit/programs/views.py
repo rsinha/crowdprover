@@ -17,7 +17,8 @@ def detail(request, program_id):
     try:
         program = Program.objects.get(pk=program_id)
         code = open(program.source, 'r').read()
-	trace = {'values': [{'alias': 'x', 'values': ['1', '2', '3', '4', '5', '6', '7', '8', '9','10','11','12'], 'name': 'x'}, {'alias': 'n_data', 'values': ['1', '2', '3', '4', '5', '6', '7', '8', '9','8','8','9'], 'name': 'n->data'},{'alias': 'n_next', 'values': ["0xabcd", "0xabcd", "0xbacd", "0xbeee", "0xabcd", "0xbecf", "0xbcef", "0xabcd", "0xdead", "0xabcd", "0xabcd", "0xabcd"], 'name': 'n->next'}], 'length':12, 'lines':['8','9','10','11','12','13','8','9','10','11','12','13'], 'firstLine':8}
+	binaryname = program.binary
+	trace = computeTrace(binaryname, [11]) #HARDCODEALERT
     except Program.DoesNotExist:
         raise Http404
     return render(request, 'programs/detail.html', {'program': program, 'code': code, 'trace':trace})
@@ -27,10 +28,12 @@ def results(request, program_id):
     code = open(program.source, 'r').read() 
     return render(request, 'programs/results.html', {'program': program, 'code': code})
 
+#think about using cookies here to save the last trace
 def submit(request, program_id):
     program = get_object_or_404(Program, pk=program_id)
-    code = open(program.source, 'r').read() 
-    trace = {'values': [{'alias': 'x', 'values': ['1', '2', '3', '4', '5', '6', '7', '8', '9','10','11','12'], 'name': 'x'}, {'alias': 'n_data', 'values': ['1', '2', '3', '4', '5', '6', '7', '8', '9','8','8','9'], 'name': 'n->data'},{'alias': 'n_next', 'values': ["0xabcd", "0xabcd", "0xbacd", "0xbeee", "0xabcd", "0xbecf", "0xbcef", "0xabcd", "0xdead", "0xabcd", "0xabcd", "0xabcd"], 'name': 'n->next'}], 'length':12, 'lines':['8','9','10','11','12','13','8','9','10','11','12','13'], 'firstLine':8}
+    code = open(program.source, 'r').read()
+    binaryname = program.binary
+    trace = computeTrace(binaryname, [11]) #HARDCODEALERT
     author = request.POST['author']
     content = request.POST['content']
     line = request.POST['line']
@@ -50,3 +53,50 @@ def submit(request, program_id):
     else:
         program.invariant_set.create(author=author, content=content, line=int(line), date=date)
         return render(request, 'programs/results.html', {'program': program, 'code': code})
+
+def computeTrace(binary,inputs):
+	absolute_binary = "proveit/bin/" + binary
+	procOptions = [absolute_binary]
+	for inp in inputs:
+		procOptions += str(inp)
+        proc = subprocess.Popen(procOptions,stdout=subprocess.PIPE)
+        trace = {}
+        loopCounter = 0 
+        while True:
+                line = proc.stdout.readline()
+                if line != '': 
+                        elements = line.split(',')
+                        if loopCounter == 0:
+                                trace['length'] = 0 
+                                trace['values'] = []
+                                for element in elements:
+                                        element_t = element.split(':')[0]
+                                        element_v = element.split(':')[1]
+                                        if element_t == "line":
+                                                trace['firstLine'] = int(element_v)
+                                                trace['lines'] = [element_v]
+                                        else:
+                                                trace['values'] += [{'name':element_t, 'values':[element_v.rstrip()], 'alias': nameToAlias(element_t)}]
+                        else:
+                                for element in elements:
+                                        element_t = element.split(':')[0]
+                                        element_v = element.split(':')[1]
+                                        if element_t == "line":
+                                                trace['lines'] += [element_v]
+                                        else:
+                                                for var in trace['values']:
+                                                        if var['name'] == element_t:
+                                                                var['values'] += [element_v.rstrip()]
+                                                                break
+      
+      
+                        print line.rstrip()
+                        trace['length'] += 1
+                        loopCounter = loopCounter + 1 
+                else:
+                        break
+        return trace
+
+def nameToAlias(name):
+	return '_'.join(name.split('->'))
+
