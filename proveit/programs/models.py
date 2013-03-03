@@ -5,7 +5,6 @@ from django.utils import timezone
 
 class Program(models.Model):
     source = models.CharField(max_length=200) #filename
-    binary = models.CharField(max_length=200) #executable name
     description = models.CharField(max_length=200) #description1
     pub_date = models.DateTimeField('date published') #date released
 
