@@ -66,6 +66,15 @@
       </div> <!--end div codeblock-->
 
       <div id="visualizer" class="box2">
+        <div align="right">
+        <table border="1">
+	{% for input in trace.inputs %}
+        <tr><td>input: {{input.name}}</div></td><td width="50%"><div contenteditable>{{input.default}}</div></td></tr>
+	{% endfor %}
+        </table>
+        </div>
+	<br>
+
         <div align="right">Select variables</div>
         <div align="right"><input type='image' src="http://crowdprover.herokuapp.com/static/images/watch1.png" name='basic' value="" class='basic' onclick="clickWatch()"/></div>
         <p>

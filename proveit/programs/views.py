@@ -20,14 +20,14 @@ def detail(request, program_id):
     try:
         program = Program.objects.get(pk=program_id)
         code = open(absoluteSource(program.source), 'r').read()
-	trace = computeTrace(absoluteBinary(program.binary), [11]) #HARDCODEALERT
+	trace = computeTrace(absoluteMeta(program.source), absoluteBinary(program.binary), [11]) #HARDCODEALERT
     except Program.DoesNotExist:
         raise Http404
     return render(request, 'programs/detail.html', {'program': program, 'code': code, 'trace':trace})
 
 def results(request, program_id):
     program = get_object_or_404(Program, pk=program_id)
-    code = open(absoluteSource(program.source), 'r').read() 
+    code = open(absoluteMeta(program.source), absoluteSource(program.source), 'r').read() 
     return render(request, 'programs/results.html', {'program': program, 'code': code})
 
 #think about using cookies here to save the last trace
@@ -55,12 +55,29 @@ def submit(request, program_id):
         program.invariant_set.create(author=author, content=content, line=int(line), date=date)
         return render(request, 'programs/results.html', {'program': program, 'code': code})
 
-def computeTrace(binary,inputs):
+def computeTrace(meta, binary,inputs):
+        trace = {}
+       
+	trace['inputs'] = []
+	meta = open(meta, 'r').readlines()
+	for line in meta:
+		elements = line.rstrip().split(',')
+		varname = ""
+		vardefault = ""
+		for element in elements:
+			element_t = element.split(':')[0]
+			element_v = element.split(':')[1]
+			if element_t == 'name':
+				varname = element_v
+			elif element_t == 'default':
+				vardefault = element_v
+		trace['inputs'] += [{'name':varname, 'default':vardefault}]
+		
+
 	procOptions = [binary]
 	for inp in inputs:
 		procOptions += [str(inp)]
         proc = subprocess.Popen(procOptions,stdout=subprocess.PIPE)
-        trace = {}
         loopCounter = 0 
         while True:
                 line = proc.stdout.readline()
@@ -106,3 +123,5 @@ def absoluteBinary(binary):
 def absoluteSource(source):
 	return "proveit/programs/static/code/" + source
 
+def absoluteMeta(source):
+	return "proveit/programs/static/code/" + source + ".meta"
