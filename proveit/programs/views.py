@@ -81,7 +81,10 @@ def computeTrace(meta, binary,inputs):
 				varname = element_v
 			elif element_t == 'default':
 				vardefault = element_v
-		trace['inputs'] += [{'name':varname, 'default':vardefault}]
+		if len(inputs) == 0:
+			trace['inputs'] += [{'name':varname, 'default':vardefault}]
+		else:
+			trace['inputs'] += [{'name':varname, 'default':inputs[0]}]
 		
 
 	procOptions = [binary]
