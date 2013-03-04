@@ -102,5 +102,5 @@ def absoluteBinary(binary):
 	return "proveit/bin/" + binary
 
 def absoluteSource(source):
-	return "code/" + source
+	return "static/code/" + source
 
