@@ -67,19 +67,21 @@
 
 
       <div id="visualizer" class="box2">
-        <div align="right">Set inputs</div>
+	<div align="right">
+        <div>Set inputs</div>
 	<form action="{% url 'programs:submit' program.id %}" method="post">
 	{% csrf_token %}
         <table border="1">
 	{% for input in trace.inputs %}
         <tr>
 		<td>input: {{input.name}}</td>
-		<td><input type="text" name="input{{forloop.counter}}" cols="10">{{input.default}}</td>
+		<td><input type="text" name="input{{forloop.counter}}" cols="10" value="{{input.default}}"</td>
 	</tr>
 	{% endfor %}
         </table>
 	<div><input type="submit" value="Compute Trace"></div>
 	</form>
+	</div>
 	<br><br>
 
         <div align="right">Select variables</div>
