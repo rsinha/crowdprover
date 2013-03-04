@@ -108,14 +108,16 @@
       </div> <!--end div visualizer-->
       <span class="stretch"></span>
       </div> <!-- end div codeplusvis-->
-  
-      <div align="center"> 
+
+      <br>  
+
+      <div align="left"> 
         {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 	<form action="{% url 'programs:submit' program.id %}" method="post">
 	{% csrf_token %}
-	<div>Your Name</br><textarea name="author" rows="1" cols="60"></textarea></div>
-	<div>Your Invariant</br><textarea name="content" rows="3" cols="60"></textarea></div>
-	<div>Line number after which your invariant holds </br><input type="number" name="line"></div>
+	<div>Your Name<textarea name="author" rows="1" cols="50"></textarea></div>
+	<div>Your Invariant<textarea name="content" rows="3" cols="50"></textarea></div>
+	<div>Line number after which your invariant holds <input type="number" name="line"></div>
 	<div><input type="submit" value="Suggest Invariant"></div>
 	</form>
       </div>
