@@ -66,15 +66,6 @@
       </div> <!--end div codeblock-->
 
 
-	<form action="{% url 'programs:submit' program.id %}" method="post">
-	{% csrf_token %}
-	<div>Your Name</br><textarea name="author" rows="1" cols="50"></textarea></div>
-	<div>Your Invariant</br><textarea name="content" rows="3" cols="50"></textarea></div>
-	<div>Line number after which your invariant holds</br><input type="number" name="line"></div>
-	<div><input type="submit" value="Suggest Invariant"></div>
-	</form>
-
-
       <div id="visualizer" class="box2">
         <div align="right">Set inputs</div>
 	<form action="{% url 'programs:submit' program.id %}" method="post">
@@ -83,7 +74,7 @@
 	{% for input in trace.inputs %}
         <tr>
 		<td>input: {{input.name}}</td>
-		<td width="50%"><div contenteditable><input type="text" name="input{{forloop.counter}}">{{input.default}}</div></td>
+		<td><input type="text" name="input{{forloop.counter}}" cols="10">{{input.default}}</td>
 	</tr>
 	{% endfor %}
         </table>
