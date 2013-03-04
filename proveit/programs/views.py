@@ -33,11 +33,11 @@ def results(request, program_id):
 def compute(request, program_id):
     program = get_object_or_404(Program, pk=program_id)
     code = open(absoluteSource(program.source), 'r').read()
-    input0 = request.POST['input0']
-    if input0 == "": 
+    input1 = request.POST['input1']
+    if input1 == "": 
     	trace = computeTrace(absoluteMeta(program.source), absoluteBinary(program.binary), [11]) #HARDCODEALERT
     else:
-    	trace = computeTrace(absoluteMeta(program.source), absoluteBinary(program.binary), [int(input0)]) #HARDCODEALERT
+    	trace = computeTrace(absoluteMeta(program.source), absoluteBinary(program.binary), [int(input1)]) #HARDCODEALERT
     return render(request, 'programs/detail.html', {'program': program, 'code': code, 'trace':trace})
 
 #think about using cookies here to save the last trace
