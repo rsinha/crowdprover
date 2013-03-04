@@ -65,15 +65,31 @@
         <pre class="code1">{{code}}</pre>
       </div> <!--end div codeblock-->
 
+
+	<form action="{% url 'programs:submit' program.id %}" method="post">
+	{% csrf_token %}
+	<div>Your Name</br><textarea name="author" rows="1" cols="50"></textarea></div>
+	<div>Your Invariant</br><textarea name="content" rows="3" cols="50"></textarea></div>
+	<div>Line number after which your invariant holds</br><input type="number" name="line"></div>
+	<div><input type="submit" value="Suggest Invariant"></div>
+	</form>
+
+
       <div id="visualizer" class="box2">
-        <div align="right">
+        <div align="right">Set inputs</div>
+	<form action="{% url 'programs:submit' program.id %}" method="post">
+	{% csrf_token %}
         <table border="1">
 	{% for input in trace.inputs %}
-        <tr><td>input: {{input.name}}</div></td><td width="50%"><div contenteditable>{{input.default}}</div></td></tr>
+        <tr>
+		<td>input: {{input.name}}</td>
+		<td width="50%"><div contenteditable><input type="text" name="input{{forloop.counter}}">{{input.default}}</div></td>
+	</tr>
 	{% endfor %}
         </table>
-        </div>
-	<br>
+	<div><input type="submit" value="Compute Trace"></div>
+	</form>
+	<br><br>
 
         <div align="right">Select variables</div>
         <div align="right"><input type='image' src="http://crowdprover.herokuapp.com/static/images/watch1.png" name='basic' value="" class='basic' onclick="clickWatch()"/></div>
