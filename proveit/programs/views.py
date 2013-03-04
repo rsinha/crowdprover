@@ -34,7 +34,7 @@ def results(request, program_id):
 def submit(request, program_id):
     program = get_object_or_404(Program, pk=program_id)
     code = open(absoluteSource(program.source), 'r').read()
-    trace = computeTrace(absoluteBinary(program.binary), [11]) #HARDCODEALERT
+    trace = computeTrace(absoluteMeta(program.source), absoluteBinary(program.binary), [11]) #HARDCODEALERT
     author = request.POST['author']
     content = request.POST['content']
     line = request.POST['line']
