@@ -56,8 +56,7 @@ def submit(request, program_id):
         return render(request, 'programs/results.html', {'program': program, 'code': code})
 
 def computeTrace(binary,inputs):
-	absolute_binary = "proveit/bin/" + binary
-	procOptions = [absolute_binary]
+	procOptions = [binary]
 	for inp in inputs:
 		procOptions += [str(inp)]
         proc = subprocess.Popen(procOptions,stdout=subprocess.PIPE)
