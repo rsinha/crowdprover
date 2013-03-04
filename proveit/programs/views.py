@@ -59,7 +59,7 @@ def computeTrace(binary,inputs):
 	absolute_binary = "proveit/bin/" + binary
 	procOptions = [absolute_binary]
 	for inp in inputs:
-		procOptions += str(inp)
+		procOptions += [str(inp)]
         proc = subprocess.Popen(procOptions,stdout=subprocess.PIPE)
         trace = {}
         loopCounter = 0 
