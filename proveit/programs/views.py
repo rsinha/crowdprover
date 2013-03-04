@@ -38,6 +38,7 @@ def compute(request, program_id):
     	trace = computeTrace(absoluteMeta(program.source), absoluteBinary(program.binary), [11]) #HARDCODEALERT
     else:
     	trace = computeTrace(absoluteMeta(program.source), absoluteBinary(program.binary), [int(input0)]) #HARDCODEALERT
+    return render(request, 'programs/detail.html', {'program': program, 'code': code, 'trace':trace})
 
 #think about using cookies here to save the last trace
 def submit(request, program_id):
