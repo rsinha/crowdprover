@@ -16,24 +16,22 @@ def index(request):
 def detail(request, program_id):
     try:
         program = Program.objects.get(pk=program_id)
-        code = open(program.source, 'r').read()
-	binaryname = program.binary
-	trace = computeTrace(binaryname, [11]) #HARDCODEALERT
+        code = open(absoluteSource(program.source), 'r').read()
+	trace = computeTrace(absoluteBinary(program.binary), [11]) #HARDCODEALERT
     except Program.DoesNotExist:
         raise Http404
     return render(request, 'programs/detail.html', {'program': program, 'code': code, 'trace':trace})
 
 def results(request, program_id):
     program = get_object_or_404(Program, pk=program_id)
-    code = open(program.source, 'r').read() 
+    code = open(absoluteSource(program.source), 'r').read() 
     return render(request, 'programs/results.html', {'program': program, 'code': code})
 
 #think about using cookies here to save the last trace
 def submit(request, program_id):
     program = get_object_or_404(Program, pk=program_id)
-    code = open(program.source, 'r').read()
-    binaryname = program.binary
-    trace = computeTrace(binaryname, [11]) #HARDCODEALERT
+    code = open(absoluteSource(program.source), 'r').read()
+    trace = computeTrace(absoluteBinary(program.binary), [11]) #HARDCODEALERT
     author = request.POST['author']
     content = request.POST['content']
     line = request.POST['line']
@@ -99,4 +97,10 @@ def computeTrace(binary,inputs):
 
 def nameToAlias(name):
 	return '_'.join(name.split('->'))
+
+def absoluteBinary(binary):
+	return "proveit/bin/" + binary
+
+def absoluteSource(source):
+	return "code/" + source
 
