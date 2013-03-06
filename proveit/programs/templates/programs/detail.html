@@ -1,3 +1,4 @@
+{% load dajaxice_templatetags %}
 {% load url from future %}
 <!DOCTYPE html>
 <html lang="en">
@@ -17,6 +18,49 @@
     <script type='text/javascript' src='http://crowdprover.herokuapp.com/static/js/jquery.dataTables.js'></script>
     <link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/demo_table.css" />
     <link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/jquery.dataTables.css" />
+    <link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/editablegrid-2.0.1.css" />
+    <script type='text/javascript' src='http://crowdprover.herokuapp.com/static/js/editablegrid-2.0.1.js'></script>
+    {% dajaxice_js_import %}
+
+	<style>
+	table.testgrid { 
+		border-collapse: collapse; 
+		border: 1px solid #CCB;
+		width: 100%;
+	}
+
+	table.testgrid tr {
+		border-bottom: 1px solid #DDD;
+	}
+
+	table.testgrid>tbody tr:hover {
+		background-color: #888888;
+		color: white;
+	}
+
+	table.testgrid>tbody tr:hover a {
+		color: white;
+	}
+
+	table.testgrid th {
+		background: #E5E5E5;
+		border: 1px solid #D5D5D5;
+		color: #555;
+		font-size: 11px;
+		text-align: left;
+		padding-left: 5px;
+		padding-right: 0px;
+		padding-top: 5px;
+		padding-bottom: 5px;
+		white-space: nowrap; 
+	}
+
+	table.testgrid td {
+		padding: 5px;
+		border: 1px solid #E0E0E0;
+	}
+	</style>
+	
   </head>
   <body>
 
@@ -84,6 +128,9 @@
 	</div>
 	<br><br>
 
+	<input type="text" id="text"/>
+	<input type="button" onclick="Dajaxice.proveit.programs.sayhello1(my_js_callback, {'text':$('#text').val()})" value="Send!"/>
+
         <div align="right">Select variables</div>
         <div align="right"><input type='image' src="http://crowdprover.herokuapp.com/static/images/watch1.png" name='basic' value="" class='basic' onclick="clickWatch()"/></div>
         <p>
@@ -111,6 +158,10 @@
         <tbody>
         </tbody>
       </table>
+
+      <div id="tablecontent"></div>
+      <div id="paginator"></div>
+
       </div> <!--end div visualtable-->
 
 
@@ -131,7 +182,6 @@
 	</form>
       </div>
 
- 
     <!-- modal content -->
     <div id="basic-modal-content" style="vertical-align:middle; text-align:left">
       <h3>Trace Visualizer Settings</h3>
@@ -170,16 +220,15 @@
 </div> <!--end div container-->
 
   <script type="text/javascript">
-    var checkBoxCache = [false,false,false];
+    var checkBoxCache = [{% for vartrace in trace.values %}false,{% endfor %}];
+    var trace;
 
     $(document).ready(function(){
-    $( "pre.code1" ).draggable();
     $("pre.code1").snippet("cpp",{style:"navy",box:"{{trace.firstLine}}",boxColor:"red",boxFill:"black",menu:false});
     $('.jquery').each(function() {
         eval($(this).html());
     });
     $('.button').button();
-
     });
 
     var oTable = $('#tracetable').dataTable( {
@@ -221,6 +270,45 @@
 	{% endfor %}
       }
     });
+
+    function my_js_callback(data){
+	trace = data;
+
+	// this approach is interesting if you need to dynamically create data in Javascript 
+	var metadata = [];
+	metadata.push({ name: "step", label: "Step #", datatype: "integer", editable: false});
+	{% for vartrace in trace.values %}
+	j = {{forloop.counter}} - 1;
+	if (checkBoxCache[j]) {
+		metadata.push({ name: "{{vartrace.alias}}", label: "{{vartrace.name}}", datatype: "string", editable: false});
+	}
+	{% endfor %}
+
+	var data = [];
+	for (var i = 0; i < trace.length; i++) {
+		var thisvalues = {};
+		thisvalues.step = i + 1;
+		{% for vartrace in trace.values %}
+		j = {{forloop.counter}} - 1;
+          	if (checkBoxCache[j]) {
+          		thisvalues.{{vartrace.alias}} = trace.values[j].values[i];
+		}
+		{% endfor %}
+		data.push({id: i, values: thisvalues});  
+	}
+ 
+	//editableGrid = new EditableGrid("DemoGridJsData", {pageSize: 10});
+	editableGrid = new EditableGrid("DemoGridJsData");
+	editableGrid.load({"metadata": metadata, "data": data});
+	editableGrid.renderGrid("tablecontent", "testgrid");
+	//editableGrid.getView().getRow(3).highlight();
+
+        $("pre.code1").snippet("cpp",{style:"navy",box:"4",boxColor:"red",boxFill:"black",menu:false});
+	$('#slider').slider("option", "max", 15);
+	$('#slider').slider("value", 1);
+	$( "#step" ).val( $( "#slider" ).slider( "value" ) );
+    }
+
 
     function clickWatch() {
       $("#basic-modal-content").modal();
