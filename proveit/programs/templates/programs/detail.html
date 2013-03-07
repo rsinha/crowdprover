@@ -20,6 +20,8 @@
 <link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/jquery.dataTables.css" />
 <link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/editablegrid-2.0.1.css" />
 <script type='text/javascript' src='http://crowdprover.herokuapp.com/static/js/editablegrid-2.0.1.js'></script>
+<script src="http://crowdprover.herokuapp.com/static/js/editabledemo.js" ></script>
+<link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/editabledemo.css" media="screen"/>
 {% dajaxice_js_import %}
 
 <style>
@@ -153,6 +155,7 @@ display: inline-block;
 
 <div id="visualizer" class="box2">
 <div align="right">
+<div align="right">Set input values</div>
 <table id="inputtable" class="inputgrid">
 <tr>
 <th>Variable</th><th>Value</th>
@@ -171,7 +174,7 @@ display: inline-block;
 	</div>
 	<br>
 
-        <div align="right">Select variables</div>
+        <div align="right">Select variables to observe</div>
         <div align="right"><input type='image' src="http://crowdprover.herokuapp.com/static/images/watch1.png" name='basic' value="" class='basic' onclick="clickWatch()"/></div>
         <p>
         <label for="step">Step #:</label>
@@ -258,7 +261,9 @@ display: inline-block;
     editableInGrid.attachToHTMLTable("inputtable");
     editableInGrid.renderGrid();
 
+    //this fill in the trace data structure
     Dajaxice.proveit.programs.sayhello1(my_js_callback, {'program_id':{{program.id}}, 'inputs':[{%for input in trace.inputs %} $('#input{{forloop.counter}}').html() {% endfor %}]})
+
 
     $("pre.code1").snippet("cpp",{style:"navy",box:({{trace.firstLine}}).toString(),boxColor:"red",boxFill:"black",menu:false});
     $('.jquery').each(function() {
