@@ -2,134 +2,174 @@
 {% load url from future %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Crowdsolving</title>
-    <script src="http://crowdprover.herokuapp.com/static/js/jquery-1.9.1.js"></script>
-    <script src="http://crowdprover.herokuapp.com/static/js/jquery-ui.js"></script>
-    <link rel="stylesheet" href="http://crowdprover.herokuapp.com/static/css/jquery-ui.css" />
-    <script type="text/javascript" src="http://crowdprover.herokuapp.com/static/js/jquery.snippet.js"></script>
-    <link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/jquery.snippet.css" />
-    <script src="http://crowdprover.herokuapp.com/static/js/iphone-style-checkboxes.js" type="text/javascript" charset="utf-8"></script>
-    <script type='text/javascript' src='http://crowdprover.herokuapp.com/static/js/jquery.simplemodal.js'></script>
-    <script type='text/javascript' src='http://crowdprover.herokuapp.com/static/js/basic.js'></script>
-    <link type='text/css' href='http://crowdprover.herokuapp.com/static/css/demo.css' rel='stylesheet' media='screen' />
-    <link type='text/css' href='http://crowdprover.herokuapp.com/static/css/basic.css' rel='stylesheet' media='screen' />
-    <script type='text/javascript' src='http://crowdprover.herokuapp.com/static/js/jquery.dataTables.js'></script>
-    <link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/demo_table.css" />
-    <link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/jquery.dataTables.css" />
-    <link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/editablegrid-2.0.1.css" />
-    <script type='text/javascript' src='http://crowdprover.herokuapp.com/static/js/editablegrid-2.0.1.js'></script>
-    {% dajaxice_js_import %}
+<head>
+<meta charset="utf-8">
+<title>Crowdsolving</title>
+<script src="http://crowdprover.herokuapp.com/static/js/jquery-1.9.1.js"></script>
+<script src="http://crowdprover.herokuapp.com/static/js/jquery-ui.js"></script>
+<link rel="stylesheet" href="http://crowdprover.herokuapp.com/static/css/jquery-ui.css" />
+<script type="text/javascript" src="http://crowdprover.herokuapp.com/static/js/jquery.snippet.js"></script>
+<link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/jquery.snippet.css" />
+<script src="http://crowdprover.herokuapp.com/static/js/iphone-style-checkboxes.js" type="text/javascript" charset="utf-8"></script>
+<script type='text/javascript' src='http://crowdprover.herokuapp.com/static/js/jquery.simplemodal.js'></script>
+<script type='text/javascript' src='http://crowdprover.herokuapp.com/static/js/basic.js'></script>
+<link type='text/css' href='http://crowdprover.herokuapp.com/static/css/demo.css' rel='stylesheet' media='screen' />
+<link type='text/css' href='http://crowdprover.herokuapp.com/static/css/basic.css' rel='stylesheet' media='screen' />
+<script type='text/javascript' src='http://crowdprover.herokuapp.com/static/js/jquery.dataTables.js'></script>
+<link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/demo_table.css" />
+<link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/editablegrid-2.0.1.css" />
+<script type='text/javascript' src='http://crowdprover.herokuapp.com/static/js/editablegrid-2.0.1.js'></script>
+{% dajaxice_js_import %}
 
-	<style>
-	table.testgrid { 
-		border-collapse: collapse; 
-		border: 1px solid #CCB;
-		width: 100%;
-	}
+<style>
+table.testgrid { 
+	border-collapse: collapse; 
+border: 1px solid #CCB;
+width: 100%;
+}
 
-	table.testgrid tr {
-		border-bottom: 1px solid #DDD;
-	}
+table.testgrid tr {
+	border-bottom: 1px solid #DDD;
+}
 
-	table.testgrid>tbody tr:hover {
-		background-color: #888888;
-		color: white;
-	}
+table.testgrid>tbody tr:hover {
+	background-color: #888888;
+color: white;
+}
 
-	table.testgrid>tbody tr:hover a {
-		color: white;
-	}
+table.testgrid>tbody tr:hover a {
+color: white;
+}
 
-	table.testgrid th {
-		background: #E5E5E5;
-		border: 1px solid #D5D5D5;
-		color: #555;
-		font-size: 11px;
-		text-align: left;
-		padding-left: 5px;
-		padding-right: 0px;
-		padding-top: 5px;
-		padding-bottom: 5px;
-		white-space: nowrap; 
-	}
+table.testgrid th {
+background: #E5E5E5;
+border: 1px solid #D5D5D5;
+color: #555;
+       font-size: 11px;
+       text-align: left;
+       padding-left: 5px;
+       padding-right: 0px;
+       padding-top: 5px;
+       padding-bottom: 5px;
+       white-space: nowrap; 
+}
 
-	table.testgrid td {
-		padding: 5px;
-		border: 1px solid #E0E0E0;
-	}
-	</style>
-	
-  </head>
-  <body>
+table.testgrid td {
+padding: 5px;
+border: 1px solid #E0E0E0;
+}
 
-  <div id='container'>
-  <div id='logo'>
-    <h1>prove<span>It</span></h1>
-    <span class='title'>Crowdsolving Software Verification</span>
-  </div> <!--end div logo-->
-  <div id='content'>
-    <div id='basic-modal'>
-      <p>Please review this program, and provide us with invariants that hold at different program points.
-        You can use the trace visualizer to help understand this program's behaviour.
-      </p>
-        
-      <style>
-          #container {
-              border: none;
-              height: auto;
+table.inputgrid { 
+	border-collapse: collapse; 
+border: 1px solid #CCB;
+width: 100%;
+}
 
-              text-align: justify;
-              -ms-text-justify: distribute-all-lines;
-              text-justify: distribute-all-lines;
+table.inputgrid tr {
+	border-bottom: 1px solid #DDD;
+}
 
-              /* just for demo */
-              min-width: 980px;
-          }
+table.inputgrid>tbody tr:hover {
+	background-color: #888888;
+color: white;
+}
 
-          .box1, .box2 {
-              width: auto;
-              height: auto;
-              vertical-align: top;
-              display: inline-block;
-              *display: inline;
-              zoom: 1
-          }
-          .stretch {
-              width: 100%;
-              display: inline-block;
-              font-size: 0;
-              line-height: 0
-          }
-          .highlighted { background-color: yellow }
-      </style>
-      <div id="codeplusvis">
-      <div id="codeblock" class="box1">
-        <pre class="code1">{{code}}</pre>
-      </div> <!--end div codeblock-->
+table.inputgrid>tbody tr:hover a {
+color: white;
+}
+
+table.inputgrid th {
+background: #E5E5E5;
+border: 1px solid #D5D5D5;
+color: #555;
+       font-size: 11px;
+       text-align: left;
+       padding-left: 5px;
+       padding-right: 0px;
+       padding-top: 5px;
+       padding-bottom: 5px;
+       white-space: nowrap; 
+}
+
+table.inputgrid td {
+padding: 5px;
+border: 1px solid #E0E0E0;
+}
 
 
-      <div id="visualizer" class="box2">
-	<div align="right">
-        <div>Set inputs</div>
-	<form action="{% url 'programs:compute' program.id %}" method="post">
-	{% csrf_token %}
-        <table border="1">
-	{% for input in trace.inputs %}
-        <tr>
-		<td>input: {{input.name}}</td>
-		<td><input type="text" name="input{{forloop.counter}}" cols="10" value="{{input.default}}"</td>
-	</tr>
-	{% endfor %}
-        </table>
-	<div><input type="submit" value="Compute Trace"></div>
-	</form>
+input.invalid { background: red; color: #FDFDFD; }
+
+</style>
+
+</head>
+<body>
+
+<div id='container'>
+<div id='logo'>
+<h1>prove<span>It</span></h1>
+<span class='title'>Crowdsolving Software Verification</span>
+</div> <!--end div logo-->
+<div id='content'>
+<div id='basic-modal'>
+<p>Please review this program, and provide us with invariants that hold at different program points.
+You can use the trace visualizer to help understand this program's behaviour.
+</p>
+
+<style>
+#container {
+	border: none;
+height: auto;
+
+	text-align: justify;
+	-ms-text-justify: distribute-all-lines;
+	text-justify: distribute-all-lines;
+
+	/* just for demo */
+	min-width: 980px;
+}
+
+.box1, .box2 {
+width: auto;
+height: auto;
+	vertical-align: top;
+display: inline-block;
+	 *display: inline;
+zoom: 1
+}
+.stretch {
+width: 100%;
+display: inline-block;
+	 font-size: 0;
+	 line-height: 0
+}
+.highlighted { background-color: yellow }
+</style>
+<div id="codeplusvis">
+<div id="codeblock" class="box1">
+<pre class="code1">{{code}}</pre>
+</div> <!--end div codeblock-->
+
+
+<div id="visualizer" class="box2">
+<div align="right">
+<table id="inputtable" class="inputgrid">
+<tr>
+<th>Variable</th><th>Value</th>
+</tr>
+{% for input in trace.inputs %}
+<tr id="inputrow{{forloop.counter}}">
+<td>{{input.name}}</td><td id="input{{forloop.counter}}">{{input.default}}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+
+<div align="right">
+	<input type="button" onclick="Dajaxice.proveit.programs.sayhello1(my_js_callback, {'program_id':{{program.id}}, 'inputs':[{%for input in trace.inputs %} $('#input{{forloop.counter}}').html() {% endfor %}]})" value="Compute Trace"/>
 	</div>
-	<br><br>
-
-	<input type="text" id="text"/>
-	<input type="button" onclick="Dajaxice.proveit.programs.sayhello1(my_js_callback, {'text':$('#text').val()})" value="Send!"/>
+	<br>
 
         <div align="right">Select variables</div>
         <div align="right"><input type='image' src="http://crowdprover.herokuapp.com/static/images/watch1.png" name='basic' value="" class='basic' onclick="clickWatch()"/></div>
@@ -145,23 +185,9 @@
           }
           </style>
 
-        <div id="visualtable">
-        <table cellpadding="0" cellspacing="0" border="0" class="display" id="tracetable" width="50%">
-        <thead>
-          <tr>
-            <th>Variable</th>
-	    {% for i in trace.lines %} 
-            <th>{{forloop.counter}}</th>
-	    {% endfor %}
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-
+      <div id="visualtable">
       <div id="tablecontent"></div>
       <div id="paginator"></div>
-
       </div> <!--end div visualtable-->
 
 
@@ -224,20 +250,22 @@
     var trace;
 
     $(document).ready(function(){
-    $("pre.code1").snippet("cpp",{style:"navy",box:"{{trace.firstLine}}",boxColor:"red",boxFill:"black",menu:false});
+    editableInGrid = new EditableGrid("DemoGridAttach");
+    editableInGrid.load({ metadata: [
+	{name: "variable", datatype: "string", editable:false},
+	{name: "value", datatype: "string", editable:true},
+    ]});
+    editableInGrid.attachToHTMLTable("inputtable");
+    editableInGrid.renderGrid();
+
+    Dajaxice.proveit.programs.sayhello1(my_js_callback, {'program_id':{{program.id}}, 'inputs':[{%for input in trace.inputs %} $('#input{{forloop.counter}}').html() {% endfor %}]})
+
+    $("pre.code1").snippet("cpp",{style:"navy",box:({{trace.firstLine}}).toString(),boxColor:"red",boxFill:"black",menu:false});
     $('.jquery').each(function() {
         eval($(this).html());
     });
     $('.button').button();
     });
-
-    var oTable = $('#tracetable').dataTable( {
-        "sScrollX": "100%",
-        "sScrollY": "200px",
-        "bScrollInfinite": true,
-        "bScrollCollapse": true,
-        "bSort": false
-    } );
 
     $( "#slider" ).slider({
       value:1,
@@ -250,16 +278,9 @@
         $( "#step" ).val( ui.value );
         $("pre.code1").snippet("cpp",{style:"navy",box:pos,boxColor:"red",boxFill:"black",menu:false});
         var col = ui.value + 1;
-        var nTrs = oTable.fnGetNodes();
-        $('td.highlighted', oTable.fnGetNodes()).removeClass('highlighted');
-        $('td:nth-child('+(col)+')', nTrs).addClass( 'highlighted' );
       }
     });
     $( "#step" ).val( $( "#slider" ).slider( "value" ) );
-    var col = 1 + 1;
-    var nTrs = oTable.fnGetNodes();
-    $('td.highlighted', oTable.fnGetNodes()).removeClass('highlighted');
-    $('td:nth-child('+(col)+')', nTrs).addClass( 'highlighted' );
 
 
     $(document).keydown(function(e){
@@ -297,14 +318,27 @@
 		data.push({id: i, values: thisvalues});  
 	}
  
+	$( "#slider" ).slider({
+	value:1,
+	min: 1,
+	max: trace.length,
+	step: 1,
+	slide: function( event, ui ) {
+		var stepToLine = trace.lines;
+		var pos = (stepToLine[ui.value-1]).toString();
+		$( "#step" ).val( ui.value );
+		$("pre.code1").snippet("cpp",{style:"navy",box:pos,boxColor:"red",boxFill:"black",menu:false});
+		var col = ui.value + 1;
+	}
+	});
 	//editableGrid = new EditableGrid("DemoGridJsData", {pageSize: 10});
 	editableGrid = new EditableGrid("DemoGridJsData");
 	editableGrid.load({"metadata": metadata, "data": data});
 	editableGrid.renderGrid("tablecontent", "testgrid");
 	//editableGrid.getView().getRow(3).highlight();
 
-        $("pre.code1").snippet("cpp",{style:"navy",box:"4",boxColor:"red",boxFill:"black",menu:false});
-	$('#slider').slider("option", "max", 15);
+        $("pre.code1").snippet("cpp",{style:"navy",box:trace.firstLine.toString(),boxColor:"red",boxFill:"black",menu:false});
+	$('#slider').slider("option", "max", trace.length);
 	$('#slider').slider("value", 1);
 	$( "#step" ).val( $( "#slider" ).slider( "value" ) );
     }
@@ -330,31 +364,42 @@
 	{% endfor %}
         var checkBoxes = [{% for vartrace in trace.values %}var_{{vartrace.alias}}_checkbox,{% endfor %}];
 
-        var aTrs = oTable.fnGetNodes();
-        for ( var i=0 ; i < aTrs.length ; i++ )
-        {
-          oTable.fnDeleteRow(aTrs[i]);
-        }
-
-	var trace = [
-	{% for vartrace in trace.values %}
-	["{{vartrace.name}}", {% for val in vartrace.values %} "{{val}}",{% endfor %}],
-	{% endfor %}
-	];
-        for (var i = trace.length - 1; i >= 0; i--) {
+        for (var i = {{trace.numvars}} - 1; i >= 0; i--) {
           if (checkBoxes[i].is(':checked')) {
             checkBoxCache[i] = true;
-            oTable.fnAddData(trace[i]);
           }
           else {
             checkBoxCache[i] = false;
           }
         }
 
-        var col = $( "#slider" ).slider( "value" ) + 1;
-        var nTrs = oTable.fnGetNodes();
-        $('td.highlighted', oTable.fnGetNodes()).removeClass('highlighted');
-        $('td:nth-child('+(col)+')', nTrs).addClass( 'highlighted' );
+
+	// this approach is interesting if you need to dynamically create data in Javascript 
+	var metadata = [];
+	metadata.push({ name: "step", label: "Step #", datatype: "integer", editable: false});
+	{% for vartrace in trace.values %}
+	j = {{forloop.counter}} - 1;
+	if (checkBoxCache[j]) {
+		metadata.push({ name: "{{vartrace.alias}}", label: "{{vartrace.name}}", datatype: "string", editable: false});
+	}
+	{% endfor %}
+
+	var data = [];
+	for (var i = 0; i < trace.length; i++) {
+		var thisvalues = {};
+		thisvalues.step = i + 1;
+		{% for vartrace in trace.values %}
+		j = {{forloop.counter}} - 1;
+          	if (checkBoxCache[j]) {
+          		thisvalues.{{vartrace.alias}} = trace.values[j].values[i];
+		}
+		{% endfor %}
+		data.push({id: i, values: thisvalues});  
+	}
+	editableGrid = new EditableGrid("DemoGridJsData");
+	editableGrid.load({"metadata": metadata, "data": data});
+	editableGrid.renderGrid("tablecontent", "testgrid");
+
 
         var esc = $.Event("keydown", { keyCode: 27 });
         $("#basic-modal-content").trigger(esc);

@@ -9,8 +9,6 @@ urlpatterns = patterns('',
     url(r'^(?P<program_id>\d+)/$', views.detail, name='detail'),
     # ex: /programs/5/submit/
     url(r'^(?P<program_id>\d+)/submit/$', views.submit, name='submit'),
-    # ex: /programs/5/compute/
-    url(r'^(?P<program_id>\d+)/compute/$', views.compute, name='compute'),
     # ex: /programs/5/results/
     url(r'^(?P<program_id>\d+)/results/$', views.results, name='results'),
 )
