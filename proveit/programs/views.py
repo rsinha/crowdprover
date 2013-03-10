@@ -21,7 +21,7 @@ def detail(request, program_id):
     try:
         program = Program.objects.get(pk=program_id)
 	print "program id: ", program_id
-        code = open(proveit.programs.proveutils.absoluteSource(program.source), 'r').read()
+	code = open(proveit.programs.proveutils.absoluteSource(program.source), 'r').read()
 	meta = open(proveit.programs.proveutils.absoluteMeta(program.source), 'r').readlines()
 	inputs = []
 	for line in meta:
