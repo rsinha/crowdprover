@@ -34,12 +34,12 @@ table.testgrid tr {
 }
 
 table.testgrid>tbody tr:hover {
-	background-color: #888888;
+	background-color: #c0c0c0;
 color: white;
 }
 
 table.testgrid>tbody tr:hover a {
-color: white;
+color: black;
 }
 
 table.testgrid th {
@@ -265,7 +265,7 @@ display: inline-block;
     var trace;
 
     $(document).ready(function(){
-    var zeEditableGrid;
+    zeEditableGrid = 0;
     editableInGrid = new EditableGrid("DemoGridAttach");
     editableInGrid.load({ metadata: [
 	{name: "variable", datatype: "string", editable:false},
@@ -274,8 +274,6 @@ display: inline-block;
     editableInGrid.attachToHTMLTable("inputtable");
     editableInGrid.renderGrid();
 
-    //this fill in the trace data structure
-    Dajaxice.proveit.programs.sayhello1(my_js_callback, {'program_id':{{program.id}}, 'inputs':[{%for input in trace.inputs %} $('#input{{forloop.counter}}').html() {% endfor %}]})
 
 
     $("pre.code1").snippet("cpp",{style:"navy",box:({{trace.firstLine}}).toString(),boxColor:"red",boxFill:"black",menu:false});
@@ -312,7 +310,7 @@ display: inline-block;
 
     function my_js_callback(data){
 	trace = data;
-	var oldStep = 0;
+	oldStep = 1;
 
     	// this approach is interesting if you need to dynamically create data in Javascript 
     	var metadata = [];
@@ -347,36 +345,40 @@ display: inline-block;
     		var pos = (stepToLine[ui.value-1]).toString();
     		$( "#step" ).val( ui.value );
     		$("pre.code1").snippet("cpp",{style:"navy",box:pos,boxColor:"red",boxFill:"black",menu:false});
-		stepsperpage = zeEditableGrid.pageSize;
-		minStep = zeEditableGrid.getCurrentPageIndex() * zeEditableGrid.pageSize + 1;
-		maxStep = (zeEditableGrid.getCurrentPageIndex() + 1) * zeEditableGrid.pageSize;
-		newStep = ui.value;
-		
+		var stepsperpage = zeEditableGrid.pageSize;
+		var newStep = ui.value;
+		console.log(zeEditableGrid);
 		if (zeEditableGrid.getCurrentPageIndex() != Math.floor((oldStep - 1) / stepsperpage)) {
+			console.log("within 0:", zeEditableGrid.getCurrentPageIndex(), Math.floor((oldStep - 1) / stepsperpage));
 			zeEditableGrid.setPageIndex(Math.floor((oldStep - 1) / stepsperpage));
 		}
-		
+		var minStep = zeEditableGrid.getCurrentPageIndex() * zeEditableGrid.pageSize + 1;
+		var maxStep = (zeEditableGrid.getCurrentPageIndex() + 1) * zeEditableGrid.pageSize;
+		console.log("within outside:", minStep, maxStep, oldStep, newStep);
 		if (minStep <= newStep && newStep <= maxStep) {
 			//from current page to current page
 			console.log("within 1:", minStep, maxStep, newStep, zeEditableGrid.getCurrentPageIndex());
-			$("#tablecontent").find('tr').eq(newStep % stepsperpage).css("background-color", "#FFFF00");
-			$("#tablecontent").find('tr').eq(oldStep % stepsperpage).css("background-color", "#FFFFFF");
+			var currentPage = zeEditableGrid.getCurrentPageIndex();
+			$("#tablecontent").find('tr').eq(newStep - currentPage * stepsperpage).css("background-color", "#FFFF00");
+			$("#tablecontent").find('tr').eq(oldStep - currentPage * stepsperpage).css("background-color", "#FFFFFF");
 		}
 		else if (oldStep == minStep && newStep < minStep) {
 			console.log("within 2:", minStep, maxStep, newStep, zeEditableGrid.getCurrentPageIndex());
 			zeEditableGrid.prevPage();
-			$("#tablecontent").find('tr').eq(newStep % stepsperpage).css("background-color", "#FFFF00");
+			var currentPage = zeEditableGrid.getCurrentPageIndex();
+			$("#tablecontent").find('tr').eq(newStep - currentPage * stepsperpage).css("background-color", "#FFFF00");
 		}
 		else if (oldStep == maxStep && newStep > maxStep) {
 			console.log("within 3:", minStep, maxStep, newStep, zeEditableGrid.getCurrentPageIndex());
-			zeEditableGrid.newPage();
-			$("#tablecontent").find('tr').eq(newStep % stepsperpage).css("background-color", "#FFFF00");
+			zeEditableGrid.nextPage();
+			var currentPage = zeEditableGrid.getCurrentPageIndex();
+			$("#tablecontent").find('tr').eq(newStep - currentPage * stepsperpage).css("background-color", "#FFFF00");
 		}
 		oldStep = newStep;
 		}
     	});
 
-      editableGrid = new EditableGrid("DemoGridFull", {pageSize: 10, maxBars: 10});
+      editableGrid = new EditableGrid("DemoGridFull1", {pageSize: 10, maxBars: 10});
 
       EditableGrid.prototype.initializeGrid = function() 
       {
@@ -394,7 +396,7 @@ display: inline-block;
           };
           
           // render the grid (parameters will be ignored if we have attached to an existing HTML table)
-          renderGrid("tablecontent", "testgrid", "tableid");
+          //renderGrid("tablecontent", "testgrid", "tableid");
           
           // bind page size selector
           $("#pagesize").val(pageSize).change(function() { editableGrid.setPageSize($("#pagesize").val()); });
@@ -461,8 +463,9 @@ display: inline-block;
         paginator.append(link);
       };
 
-        editableGrid.initializeGrid();
+	
     	editableGrid.load({"metadata": metadata, "data": data});
+        editableGrid.initializeGrid();
     	editableGrid.renderGrid("tablecontent", "testgrid");
 	zeEditableGrid = editableGrid;
 
@@ -525,9 +528,9 @@ display: inline-block;
     		}
     		{% endfor %}
     		data.push({id: i, values: thisvalues});  
-    	}
+    	 }
     	
-      editableGrid = new EditableGrid("DemoGridFull", {pageSize: 10, maxBars: 10});
+      editableGrid = new EditableGrid("DemoGridFull2", {pageSize: 10, maxBars: 10});
 
       EditableGrid.prototype.initializeGrid = function() 
       {
@@ -546,7 +549,7 @@ display: inline-block;
           };
           
           // render the grid (parameters will be ignored if we have attached to an existing HTML table)
-          renderGrid("tablecontent", "testgrid", "tableid");
+          //renderGrid("tablecontent", "testgrid", "tableid");
           
           // bind page size selector
           $("#pagesize").val(pageSize).change(function() { editableGrid.setPageSize($("#pagesize").val()); });
@@ -613,10 +616,15 @@ display: inline-block;
         paginator.append(link);
       };
 
-        editableGrid.initializeGrid();
     	editableGrid.load({"metadata": metadata, "data": data});
+        editableGrid.initializeGrid();
     	editableGrid.renderGrid("tablecontent", "testgrid");
 	zeEditableGrid = editableGrid;
+
+        //editableGrid.initializeGrid();
+    	//editableGrid.load({"metadata": metadata, "data": data});
+    	//editableGrid.renderGrid("tablecontent", "testgrid");
+	//zeEditableGrid = editableGrid;
 
 
       var esc = $.Event("keydown", { keyCode: 27 });
@@ -629,6 +637,8 @@ display: inline-block;
     }
 
 
+    //this fill in the trace data structure
+    Dajaxice.proveit.programs.sayhello1(my_js_callback, {'program_id':{{program.id}}, 'inputs':[{%for input in trace.inputs %} $('#input{{forloop.counter}}').html() {% endfor %}]})
 
   </script>
 
