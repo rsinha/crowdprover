@@ -16,3 +16,9 @@ def sayhello1(request, program_id, inputs):
 	trace = proveit.programs.proveutils.computeTrace(proveit.programs.proveutils.absoluteMeta(program.source),proveit.programs.proveutils.absoluteBinary(program.binary), inputs) 
 	print "success"
 	return simplejson.dumps(trace)
+
+@dajaxice_register(method='POST')
+def invariantToServer(request, program_id, author, invariant, line):
+	print "Hi",author,". You submitted",invariant
+	msg = "Hello"+author+" "+invariant
+	return simplejson.dumps({'message':msg})

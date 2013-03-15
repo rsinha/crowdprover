@@ -214,13 +214,13 @@ display: inline-block;
 
       <div align="left"> 
         {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-	<form action="{% url 'programs:submit' program.id %}" method="post">
-	{% csrf_token %}
-	<div>Your Name</br><textarea name="author" rows="1" cols="50"></textarea></div>
-	<div>Your Invariant</br><textarea name="content" rows="3" cols="50"></textarea></div>
-	<div>Line number after which your invariant holds</br><input type="number" name="line"></div>
-	<div><input type="submit" value="Suggest Invariant"></div>
-	</form>
+	       <form action="javascript:void(0);" method="post" id="Invariant_Form">
+	       {% csrf_token %}
+	       <div>Your Name</br><textarea name="author" rows="1" cols="50"></textarea></div>
+	       <div>Your Invariant</br><textarea name="content" rows="3" cols="50"></textarea></div>
+	       <div>Line number after which your invariant holds</br><input type="number" name="line"></div>
+	       <div><input type="submit" onclick="send_invariant();" value="Suggest Invariant"></div>
+	       </form>
       </div>
 
     <!-- modal content -->
@@ -263,6 +263,21 @@ display: inline-block;
   <script type="text/javascript">
     var checkBoxCache = [{% for vartrace in trace.values %}false,{% endfor %}];
     var trace;
+
+    // Feedback about submitted invariant
+    function feedback_callback(data){
+      alert(data.message);
+    }
+
+    // Submit invariant to the server
+    function send_invariant(){
+      author = $("#Invariant_Form :input[name=author]").val();
+      invariant = $("#Invariant_Form :input[name=content]").val();
+      line = $("#Invariant_Form :input[name=line]").val();
+      alert("Submitting "+author+" "+" "+invariant)
+      Dajaxice.proveit.programs.invariantToServer(feedback_callback,{'program_id':{{program.id}},'author':author,'invariant':invariant,'line':line});
+      //Dajaxice.proveit.programs.saybye(feedback_callback, {'program_id':4,'author':"Nishant",'invariant':"x=0",'line':6});
+    }
 
     $(document).ready(function(){
     zeEditableGrid = 0;
