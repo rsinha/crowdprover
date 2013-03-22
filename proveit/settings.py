@@ -134,6 +134,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'proveit.programs',
+    'proveit.z3',
     'dajaxice',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
