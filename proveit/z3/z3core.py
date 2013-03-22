@@ -11,7 +11,7 @@ def lib():
     _dir = os.path.dirname(os.path.abspath(__file__))
     for ext in ['dll', 'so', 'dylib']:
       try:
-        init('libz3.%s' % ext)
+        init('proveit/bin/libz3.%s' % ext)
         break
       except:
         pass
