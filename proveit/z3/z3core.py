@@ -13,7 +13,7 @@ def lib():
       print "boom0"
       try:
         print "boom1"
-        init('proveit/bin/libz3.%s' % ext)
+        init('/app/proveit/bin/libz3.%s' % ext)
         break
       except:
         pass
