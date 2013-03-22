@@ -13,7 +13,7 @@ def lib():
       print "boom0"
       try:
         print "boom1"
-        init('/app/proveit/bin/libz3.%s' % ext)
+        init('libz3.%s' % ext)
         break
       except:
         pass
@@ -30,7 +30,9 @@ def lib():
 
 def init(PATH):
   global _lib
+  print PATH
   _lib = ctypes.CDLL(PATH)
+  print PATH
   _lib.Z3_mk_config.restype = Config
   _lib.Z3_mk_config.argtypes = []
   _lib.Z3_del_config.argtypes = [Config]
