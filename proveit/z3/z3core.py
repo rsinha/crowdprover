@@ -10,29 +10,23 @@ def lib():
   if _lib == None:
     _dir = os.path.dirname(os.path.abspath(__file__))
     for ext in ['dll', 'so', 'dylib']:
-      print "boom0"
       try:
-        print "boom1"
-        init('libz3.%s' % ext)
+        init('/app/proveit/bin/libz3.%s' % ext)
         break
       except:
         pass
       try:
-        print "boom2"
         init(os.path.join(_dir, 'libz3.%s' % ext))
         break
       except:
         pass
     if _lib == None:
-        print "boom3"
         raise Z3Exception("init(Z3_LIBRARY_PATH) must be invoked before using Z3-python")
   return _lib
 
 def init(PATH):
   global _lib
-  print PATH
   _lib = ctypes.CDLL(PATH)
-  print PATH
   _lib.Z3_mk_config.restype = Config
   _lib.Z3_mk_config.argtypes = []
   _lib.Z3_del_config.argtypes = [Config]

@@ -168,7 +168,7 @@ display: inline-block;
 
 
   <div align="right">
-	<input type="button" onclick="Dajaxice.proveit.programs.sayhello1(my_js_callback, {'program_id':{{program.id}}, 'inputs':[{%for input in trace.inputs %} $('#input{{forloop.counter}}').html() {% endfor %}]})" value="Compute Trace"/>
+	<input type="button" onclick="Dajaxice.proveit.programs.computeTrace(compute_trace_callback, {'program_id':{{program.id}}, 'inputs':[{%for input in trace.inputs %} $('#input{{forloop.counter}}').html() {% endfor %}]})" value="Compute Trace"/>
 	</div>
 	<br>
   <br>
@@ -223,6 +223,17 @@ display: inline-block;
 	       </form>
       </div>
 
+      <div align="right"> 
+        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	       <form action="javascript:void(0);" method="post" id="LoopInvariant_Form">
+	       {% csrf_token %}
+	       <div>Your Name</br><textarea name="author" rows="1" cols="50"></textarea></div>
+	       <div>Your Loop Invariant</br><textarea name="content" rows="3" cols="50"></textarea></div>
+	       <div>Line number where the loop starts</br><input type="number" name="line"></div>
+	       <div><input type="submit" onclick="send_loop_invariant();" value="Suggest Invariant"></div>
+	       </form>
+      </div>
+
     <!-- modal content -->
     <div id="basic-modal-content" style="vertical-align:middle; text-align:left">
       <h3>Trace Visualizer Settings</h3>
@@ -274,10 +285,21 @@ display: inline-block;
       author = $("#Invariant_Form :input[name=author]").val();
       invariant = $("#Invariant_Form :input[name=content]").val();
       line = $("#Invariant_Form :input[name=line]").val();
-      alert("Submitting "+author+" "+" "+invariant)
-      Dajaxice.proveit.programs.invariantToServer(feedback_callback,{'program_id':{{program.id}},'author':author,'invariant':invariant,'line':line});
-      //Dajaxice.proveit.programs.saybye(feedback_callback, {'program_id':4,'author':"Nishant",'invariant':"x=0",'line':6});
+      alert(author+" is submitting "+invariant+" as invariant")
+      Dajaxice.proveit.programs.suggestInvariant(feedback_callback,{'program_id':{{program.id}},'author':author,'invariant':invariant,'line':line});
     }
+
+    // Submit loop invariant to the server
+    function send_loop_invariant(){
+      author = $("#LoopInvariant_Form :input[name=author]").val();
+      invariant = $("#LoopInvariant_Form :input[name=content]").val();
+      line = $("#LoopInvariant_Form :input[name=line]").val();
+      alert(author+" is submitting "+invariant+" as loop invariant")
+      Dajaxice.proveit.programs.suggestLoopInvariant(feedback_callback,{'program_id':{{program.id}},'author':author,'invariant':invariant,'line':line});
+    }
+
+
+
 
     $(document).ready(function(){
     zeEditableGrid = 0;
@@ -323,7 +345,7 @@ display: inline-block;
       }
     });
 
-    function my_js_callback(data){
+    function compute_trace_callback(data){
 	trace = data;
 	oldStep = 1;
 
@@ -653,7 +675,7 @@ display: inline-block;
 
 
     //this fill in the trace data structure
-    Dajaxice.proveit.programs.sayhello1(my_js_callback, {'program_id':{{program.id}}, 'inputs':[{%for input in trace.inputs %} $('#input{{forloop.counter}}').html() {% endfor %}]})
+    Dajaxice.proveit.programs.computeTrace(compute_trace_callback, {'program_id':{{program.id}}, 'inputs':[{%for input in trace.inputs %} $('#input{{forloop.counter}}').html() {% endfor %}]})
 
   </script>
 
