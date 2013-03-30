@@ -1,10 +1,11 @@
-from proveit.programs.models import Program, Invariant
+from proveit.programs.models import Program, Invariant, LoopInvariant
 from proveit.z3.z3 import *
 from proveit.programs.benchmark import *
 
 def substituteFormula(program_id, inv, line):
+	program = Program.objects.get(pk=program_id)
 	factory = Z3ProgramFactory()
-	z3program = factory.newProgram(program_id)
+	z3program = factory.newProgram(program.description)
 	states = programStates(z3program)
 	renamedStates = map((lambda s: s + '_proveit_' + str(line)), states)
 	stateVars = map((lambda x : Int(x)), states)
@@ -18,16 +19,37 @@ def substituteFormula(program_id, inv, line):
 	print "invariant after substituition: ", new_inv
 	return new_inv
 
-def checkInvariant(program_id, inv, line):
-	print "within checkInvariant"
+def checkInvariant(program_id, knownInvariants, knownLoopInvariants, inv, line):
+	program = Program.objects.get(pk=program_id)
 	factory = Z3ProgramFactory()
-	z3program = factory.newProgram(program_id)
+	z3program = factory.newProgram(program.description)
 	formula = z3program.programFormula()
 	ssainv = substituteFormula(program_id, inv,line)
-	s = Solver()
-	s.add(formula)
-	s.add(Not(ssainv))
+
 	print "Checking user invariant: ", str(ssainv)
+
+	s = Solver()
+	#program formula
+	s.add(formula)
+	#known invariants
+	for knownInv in knownInvariants:
+		s.add(substituteFormula(program_id, parseUserInvariant(knownInv.content), knownInv.line))
+		print "Using known invariant: ", substituteFormula(program_id, parseUserInvariant(knownInv.content), knownInv.line)
+	#known loop invariants
+	info = z3program.programInfo()
+	for knownLoopInv in knownLoopInvariants:
+		lastLineOfLoop = info['loops'][knownLoopInv.loopId][1]
+		s.add(substituteFormula(program_id, parseUserInvariant(knownLoopInv.content), lastLineOfLoop))
+		print "Using known loop invariant: ", substituteFormula(program_id, parseUserInvariant(knownLoopInv.content), lastLineOfLoop)
+	#negation of loop conditions
+	for loopid in info['loops'].keys():
+		lastLineOfLoop = info['loops'][loopid][1]
+		loopCond = z3program.loopCondition(loopid)
+		s.add(Not(substituteFormula(program_id, loopCond, lastLineOfLoop)))
+
+	#negation of property
+	s.add(Not(ssainv))
+
 	if s.check() == unsat:
 		print "Proved invariant"
 		return (True, 0)
@@ -36,9 +58,10 @@ def checkInvariant(program_id, inv, line):
 		print s.model()
 		return (False, s.model())
 
-def checkLoopInvariant(program_id, loop_id, inv, line):
+def checkLoopInvariant(program_id, knownInvariants, knownLoopInvariants, inv, loop_id):
+	program = Program.objects.get(pk=program_id)
 	factory = Z3ProgramFactory()
-	z3program = factory.newProgram(program_id)
+	z3program = factory.newProgram(program.description)
 	states = programStates(z3program)
 	preStates = map((lambda s: s + '_proveit_pre'), states)
 	postStates = map((lambda s: s + '_proveit_post'), states)
@@ -46,12 +69,32 @@ def checkLoopInvariant(program_id, loop_id, inv, line):
 	preStateVars = map((lambda s : Int(s)), preStates)
 	postStateVars = map((lambda s : Int(s)), postStates)
 
+	print "Checking user loop invariant on entry: ", str(inv)
+
 	loopEntryLine = loopEntry(z3program, loop_id)
 	entryformula = substituteFormula(program_id, inv, loopEntryLine)
 	programformula = z3program.programFormula()
 	s = Solver()
+	#program formula
 	s.add(programformula)
+	#known invariants
+	for knownInv in knownInvariants:
+		s.add(substituteFormula(program_id, parseUserInvariant(knownInv.content), knownInv.line))
+		print "Using known invariant: ", substituteFormula(program_id, parseUserInvariant(knownInv.content), knownInv.line)
+	#known loop invariants
+	info = z3program.programInfo()
+	for knownLoopInv in knownLoopInvariants:
+		lastLineOfLoop = info['loops'][knownLoopInv.loopId][1]
+		s.add(substituteFormula(program_id, parseUserInvariant(knownLoopInv.content), lastLineOfLoop))
+		print "Using known loop invariant: ", substituteFormula(program_id, parseUserInvariant(knownLoopInv.content), lastLineOfLoop)
+	#negation of loop conditions
+	for loopid in info['loops'].keys():
+		lastLineOfLoop = info['loops'][loopid][1]
+		loopCond = z3program.loopCondition(loopid)
+		s.add(Not(substituteFormula(program_id, loopCond, lastLineOfLoop)))
+
 	s.add(Not(entryformula))
+
 	if s.check() == sat:
 		print "Loop invariant does not hold on entry"
 		print s.model()
@@ -60,14 +103,14 @@ def checkLoopInvariant(program_id, loop_id, inv, line):
 		print "Loop invariant holds on entry. Checking inductively..."
 
 
-	loopformula = z3program.loopFormula(loop_id)
+	loopformula = z3program.loopFormula(loop_id) #contains loopCond and transition relation
 	precond = inv
 	postcond = inv
 	for i in range(0,len(states)):
 		precond = substitute(precond, (stateVars[i], preStateVars[i]))
 		postcond = substitute(postcond, (stateVars[i], postStateVars[i]))
 
-	print "Checking user loop invariant: ", str(Implies(precond,postcond))
+	print "Checking user loop invariant inductively: ", str(Implies(precond,postcond))
 	s = Solver()
 	s.add(loopformula)
 	s.add(Not(Implies(precond, postcond)))
@@ -109,6 +152,10 @@ def parseUserInvariant(s):
 		return (x <= n)
 	elif s == "x >= 0":
 		return (x >= 0)
+	elif s == "x > 0":
+		return (x > 0)
+	elif s == "y > 0":
+		return (y > 0)
 	elif s == "y <= n":
 		return (y <= n)
 	elif s == "y >= 0":

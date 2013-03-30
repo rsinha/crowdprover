@@ -1,0 +1,5 @@
+Migration
+---------
+1. rm -r proveit/programs/migrations/
+2. python manage.py schemamigration proveit.programs --initial
+3.  python manage.py migrate proveit.programs 

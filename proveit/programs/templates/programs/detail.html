@@ -229,7 +229,7 @@ display: inline-block;
 	       {% csrf_token %}
 	       <div>Your Name</br><textarea name="author" rows="1" cols="50"></textarea></div>
 	       <div>Your Loop Invariant</br><textarea name="content" rows="3" cols="50"></textarea></div>
-	       <div>Line number where the loop starts</br><input type="number" name="line"></div>
+	       <div>Loop Id</br><input type="number" name="loopid"></div>
 	       <div><input type="submit" onclick="send_loop_invariant();" value="Suggest Invariant"></div>
 	       </form>
       </div>
@@ -293,9 +293,9 @@ display: inline-block;
     function send_loop_invariant(){
       author = $("#LoopInvariant_Form :input[name=author]").val();
       invariant = $("#LoopInvariant_Form :input[name=content]").val();
-      line = $("#LoopInvariant_Form :input[name=line]").val();
-      alert(author+" is submitting "+invariant+" as loop invariant")
-      Dajaxice.proveit.programs.suggestLoopInvariant(feedback_callback,{'program_id':{{program.id}},'author':author,'invariant':invariant,'line':line});
+      loop_id = $("#LoopInvariant_Form :input[name=loopid]").val();
+      alert(author+" is submitting "+invariant+" as loop invariant for loop id" + loop_id)
+      Dajaxice.proveit.programs.suggestLoopInvariant(feedback_callback,{'program_id':{{program.id}},'author':author,'invariant':invariant,'loop_id':loop_id});
     }
 
 

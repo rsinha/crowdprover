@@ -7,7 +7,7 @@ import subprocess
 import sys
 import getopt
 
-from proveit.programs.models import Program, Invariant
+from proveit.programs.models import Program, Invariant, LoopInvariant
 import proveit.programs.proveutils
 
 def index(request):
@@ -43,10 +43,10 @@ def detail(request, program_id):
 
 def results(request, program_id):
 	program = get_object_or_404(Program, pk=program_id)
-	code = open(proveit.programs.proveutils.absoluteMeta(program.source), proveit.programs.proveutils.absoluteSource(program.source), 'r').read() 
+	code = open(proveit.programs.proveutils.absoluteSource(program.source), 'r').read() 
 	return render(request, 'programs/results.html', {'program': program, 'code': code})
 
-#think about using cookies here to save the last trace
+'''
 def submit(request, program_id):
 	program = get_object_or_404(Program, pk=program_id)
 	code = open(proveit.programs.proveutils.absoluteSource(program.source), 'r').read()
@@ -79,4 +79,4 @@ def submit(request, program_id):
     	else:
         	program.invariant_set.create(author=author, content=content, line=int(line), date=date)
         	return render(request, 'programs/results.html', {'program': program, 'code': code})
-
+'''

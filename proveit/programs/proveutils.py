@@ -2,7 +2,7 @@ import subprocess
 import sys
 import getopt
 
-from proveit.programs.models import Program, Invariant
+from proveit.programs.models import Program, Invariant, LoopInvariant
 
 def computeTrace(meta, binary,inputs):
         trace = {}

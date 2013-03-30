@@ -1,23 +1,27 @@
 from proveit.z3.z3 import *
 
 class Z3Program(object):
-	def __init__(self, id):
-		self.id = id
+	def __init__(self, description):
+		self.description = description
 	def programInfo(self):
 		return {}
 	def programFormula(self):
 		return BoolVal(True)
 	def loopFormula(self, loopId):
 		return BoolVal(True)
+	def loopCondition(self, loopId):
+		return BoolVal(True)
+	def programAssertion(self):
+		return BoolVal(True)
 
 class Z3ProgramFactory(object):
-    def newProgram(self, id):
-        if   id == 1:  return count_up_down_safe(id)
-	else: raise CrowdproverException("Errorcode 2: unknown program id")
+    def newProgram(self, description):
+        if   description == 'count_up_down':  return count_up_down_safe(description)
+	else: raise CrowdproverException("Errorcode 2: unknown program description")
 
 class count_up_down_safe(Z3Program):
-	def __init__(self,id):
-		self.id = id
+	def __init__(self,description):
+		self.description = description
 
 	def programInfo(self):
 		info = {}
@@ -65,10 +69,25 @@ class count_up_down_safe(Z3Program):
 			y_pre = Int('y_proveit_pre')
 			x_post = Int('x_proveit_post')
 			y_post = Int('y_proveit_post')
+			formula = And(formula, x_pre > IntVal(0))
 			formula = And(formula, x_post == x_pre - 1)
 			formula = And(formula, y_post == y_pre + 1)
 			print "constructed loop formula: ", formula
 			return formula
 		else:
 			raise CrowdproverException("Errorcode 3: unknown loop id")
+
+	def loopCondition(self, loopId):
+		if loopId == 1:
+			x = Int('x')
+			y = Int('y')
+			return (x > IntVal(0))
+		else:
+			raise CrowdproverException("Errorcode 3: unknown loop id")
+
+	def programAssertion(self):
+		x = Int('x')
+		y = Int('y')
+		n = Int('n')
+		return (y == n)
 

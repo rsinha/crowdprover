@@ -1,11 +1,11 @@
-from django.utils import simplejson
+from django.utils import simplejson, timezone
 from dajaxice.decorators import dajaxice_register
 
 import subprocess
 import sys
 import getopt
 
-from proveit.programs.models import Program, Invariant
+from proveit.programs.models import Program, Invariant, LoopInvariant
 import proveit.programs.proveutils
 import proveit.programs.verifier
 
@@ -20,24 +20,35 @@ def computeTrace(request, program_id, inputs):
 
 @dajaxice_register(method='POST')
 def suggestInvariant(request, program_id, author, invariant, line):
-	print "Hi",author,". You submitted",invariant
+	print author," submitted ",invariant," as an invariant for line ", line
+	program = Program.objects.get(pk=program_id)
+	date = timezone.now()
 	z3Expr = proveit.programs.verifier.parseUserInvariant(invariant)
-	(success, model) = proveit.programs.verifier.checkInvariant(program_id, z3Expr, line)
+	knownInvariants = filter((lambda inv: inv.status == 1), program.invariant_set.all())
+	knownLoopInvariants = filter((lambda inv: inv.status == 1), program.loopinvariant_set.all())
+	(success, model) = proveit.programs.verifier.checkInvariant(program_id, knownInvariants, knownLoopInvariants, z3Expr, int(line))
 	if success:
-		msg = "Correct Invariant: " + invariant
+		msg = "Able to prove invariant: " + invariant
+		program.invariant_set.create(author=author, content=invariant, line=int(line), date=date,status=1)
 	else:
 		msg = "Unable to prove invariant: " + invariant + "\ncex: " + str(model)
+		program.invariant_set.create(author=author, content=invariant, line=int(line), date=date,status=0)
 	return simplejson.dumps({'message':msg})
 
 @dajaxice_register(method='POST')
-def suggestLoopInvariant(request, program_id, author, invariant, line):
-	print "Hi",author,". You submitted",invariant
-	loop_id = 1 #HARDCODEALERT
+def suggestLoopInvariant(request, program_id, author, invariant, loop_id):
+	print author," submitted ",invariant," as a loop invariant for loop id ", loop_id
+	program = Program.objects.get(pk=program_id)
+	date = timezone.now()
 	z3Expr = proveit.programs.verifier.parseUserInvariant(invariant)
-	(success, model) = proveit.programs.verifier.checkLoopInvariant(program_id, loop_id, z3Expr, line)
+	knownInvariants = filter((lambda inv: inv.status == 1), program.invariant_set.all())
+	knownLoopInvariants = filter((lambda inv: inv.status == 1), program.loopinvariant_set.all())
+	(success, model) = proveit.programs.verifier.checkLoopInvariant(program_id, knownInvariants, knownLoopInvariants, z3Expr, int(loop_id))
 	if success:
-		msg = "Correct Invariant: " + invariant
+		msg = "Able to prove loop invariant: " + invariant
+		program.loopinvariant_set.create(author=author, content=invariant, loopId=int(loop_id), date=date,status=1)
 	else:
-		msg = "Unable to prove invariant: " + invariant + "\ncex: " + str(model)
+		msg = "Unable to prove loop invariant: " + invariant + "\ncex: " + str(model)
+		program.loopinvariant_set.create(author=author, content=invariant, loopId=int(loop_id), date=date,status=0)
 	return simplejson.dumps({'message':msg})
 
