@@ -1,6 +1,7 @@
 from proveit.programs.models import Program, Invariant, LoopInvariant
 from proveit.z3.z3 import *
 from proveit.programs.benchmark import *
+from invariantParser import parseInvariant
 
 def substituteFormula(program_id, inv, line):
 	program = Program.objects.get(pk=program_id)
@@ -157,50 +158,10 @@ def loopEntry(z3program, loop_id):
 	return loops[loop_id][0] - 1
 
 def parseUserInvariant(s):
-	x = Int('x')
-	y = Int('y')
-	n = Int('n')
-	if s == "x + y == n":
-		return (x + y == n)
-	elif s == "x == n":
-		return (x == n)
-	elif s == "x == 0":
-		return (x == 0)
-	elif s == "y == n":
-		return (y == n)
-	elif s == "y == 0":
-		return (y == 0)
-	elif s == "x <= n":
-		return (x <= n)
-	elif s == "x >= 0":
-		return (x >= 0)
-	elif s == "x > 0":
-		return (x > 0)
-	elif s == "y > 0":
-		return (y > 0)
-	elif s == "y <= n":
-		return (y <= n)
-	elif s == "y >= 0":
-		return (y >= 0)
-	elif s == "x > y":
-		return (x > y)
-	elif s == "x >= y":
-		return (x >= y)
-	elif s == "x < y":
-		return (x < y)
-	elif s == "x <= y":
-		return (x <= y)
-	elif s == "y > x":
-		return (y > x)
-	elif s == "y < x":
-		return (y < x)
-	elif s == "y >= x":
-		return (y >= x)
-	elif s == "y <= x":
-		return (y <= x)
-	elif s == "True":
-		return BoolVal(True)
-	elif s == "False":
-		return BoolVal(False)
+	(succ,obj) = parseInvariant(s)
+	print "Z3 object obtained from parsing:",obj
+
+	if succ == 0:
+		return obj
 	else:
-		raise CrowdproverException("Errorcode 1: Could not parse user invariant")
+		raise CrowdproverException("Errorcode 1: Could not parse user invariant - "+obj)
