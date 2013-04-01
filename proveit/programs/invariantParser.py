@@ -2,10 +2,14 @@ import sys
 import ply.lex as lex
 import ply.yacc as yacc
 from proveit.z3.z3 import *
+from proveit.programs.benchmark import *
+
 
 # List of token names
 tokens = (
 	'NUMBER',
+	'TRUE',
+	'FALSE',
 	'ID',
 	'OP_LEQ',
 	'OP_LE',
@@ -19,6 +23,14 @@ tokens = (
 literals = ['+','-','*','/','^','(',')','[',']','~','&','|']
 
 # Regular expression rules for tokens
+
+def t_TRUE(t):
+	r'True'
+	return t
+
+def t_FALSE(t):
+	r'False'
+	return t
 
 def t_ID(t):
 	r'[a-zA-Z][a-zA-Z0-9_]*'
@@ -119,6 +131,15 @@ start = 'bexpr'
 def p_makeZ3_NUMBER(p):
 	'num : NUMBER'
 	p[0] = IntVal(int(p[1]))
+
+# Rules for True and False atoms
+def p_makeZ3_TRUE(p):
+	'torf : TRUE'
+	p[0] = BoolVal(True)
+
+def p_makeZ3_FALSE(p):
+	'torf : FALSE'
+	p[0] = BoolVal(False)
 
 # Rule for simple identifiers
 def p_makeZ3_ID(p):
@@ -240,7 +261,8 @@ def p_makeZ3_BATOM(p):
 	'''batom : funapp
 			| arrindex
 			| identifier
-			| compatom'''
+			| compatom
+			| torf'''
 	p[0] = p[1]
 
 # Rule for boolean expression
