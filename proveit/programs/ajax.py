@@ -25,9 +25,9 @@ def suggestInvariant(request, program_id, author, invariant, line):
 	date = timezone.now()
 	knownInvariants = filter((lambda inv: inv.status == 1), program.invariant_set.all())
 	knownLoopInvariants = filter((lambda inv: inv.status == 1), program.loopinvariant_set.all())
-	if proveit.programs.verifier.invariantExistsInDB(invariant, knownInvariants):
-		msg = "Someone already submitted " + invariant +" as an invariant"
-		return simplejson.dumps({'message':msg})
+	#if proveit.programs.verifier.invariantExistsInDB(invariant, knownInvariants):
+	#	msg = "Someone already submitted " + invariant +" as an invariant"
+	#	return simplejson.dumps({'message':msg})
 
 	(success, model) = proveit.programs.verifier.checkInvariant(program_id, knownInvariants, knownLoopInvariants, invariant, int(line))
 	if success:
