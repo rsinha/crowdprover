@@ -1,31 +1,62 @@
 from proveit.programs.models import Program, Invariant, LoopInvariant
 from proveit.z3.z3 import *
 from proveit.programs.benchmark import *
-from invariantParser import parseInvariant
+from proveit.programs.invariantParser import parseInvariant
 
 def substituteFormula(program_id, inv, line):
 	program = Program.objects.get(pk=program_id)
+	print "boom1"
 	factory = Z3ProgramFactory()
 	z3program = factory.newProgram(program.description)
 	states = programStates(z3program)
+	print "boom2"
 	renamedStates = map((lambda s: s + '_proveit_' + str(line)), states)
 	stateVars = map((lambda x : Int(x)), states)
 	renamedStateVars = map((lambda x : Int(x)), renamedStates)
+	print "boom3"
 
+	print inv
 	new_inv = inv
 	for i in range(0,len(stateVars)):
+		print "boom4"
 		new_inv = substitute(new_inv, (stateVars[i], renamedStateVars[i]))
+		print new_inv
 
 	print "invariant before substituition: ", inv
 	print "invariant after substituition: ", new_inv
 	return new_inv
 
+def invariantExistsInDB(invariant, knownInvariants):
+	invariantZ3 = parseUserInvariant(invariant)
+	for knownInv in knownInvariants:
+		knownInvZ3  = parseUserInvariant(knownInv)
+		s = Solver()
+		equivCheck = And(Implies(invariantZ3, knownInvZ3), Implies(knownInvZ3, invariantZ3))
+		s.add(Not(equivCheck))
+		if s.check() == unsat:
+			return True
+	return False
+		
+def loopinvariantExistsInDB(loopinvariant, knownLoopInvariants):
+	loopinvariantZ3 = parseUserInvariant(loopinvariant)
+	for knownInv in knownLoopInvariants:
+		knownInvZ3  = parseUserInvariant(knownInv)
+		s = Solver()
+		equivCheck = And(Implies(invariantZ3, knownInvZ3), Implies(knownInvZ3, invariantZ3))
+		s.add(Not(equivCheck))
+		if s.check() == unsat:
+			return True
+	return False
+
 def checkInvariant(program_id, knownInvariants, knownLoopInvariants, inv, line):
 	program = Program.objects.get(pk=program_id)
 	factory = Z3ProgramFactory()
 	z3program = factory.newProgram(program.description)
+
 	formula = z3program.programFormula()
-	ssainv = substituteFormula(program_id, inv,line)
+
+	invZ3 = parseUserInvariant(inv)
+	ssainv = substituteFormula(program_id, invZ3,line)
 
 	print "Checking user invariant: ", str(ssainv)
 
@@ -73,7 +104,7 @@ def checkLoopInvariant(program_id, knownInvariants, knownLoopInvariants, inv, lo
 	print "Checking user loop invariant on entry: ", str(inv)
 
 	loopEntryLine = loopEntry(z3program, loop_id)
-	entryformula = substituteFormula(program_id, inv, loopEntryLine)
+	entryformula = substituteFormula(program_id, parseUserInvariant(inv), loopEntryLine)
 	programformula = z3program.programFormula()
 	s = Solver()
 	#program formula
@@ -105,8 +136,8 @@ def checkLoopInvariant(program_id, knownInvariants, knownLoopInvariants, inv, lo
 
 
 	loopformula = z3program.loopFormula(loop_id) #contains loopCond and transition relation
-	precond = inv
-	postcond = inv
+	precond = parseUserInvariant(inv)
+	postcond = parseUserInvariant(inv)
 	for i in range(0,len(states)):
 		precond = substitute(precond, (stateVars[i], preStateVars[i]))
 		postcond = substitute(postcond, (stateVars[i], postStateVars[i]))
