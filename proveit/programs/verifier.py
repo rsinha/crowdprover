@@ -19,6 +19,28 @@ def substituteFormula(program_id, inv, line):
 	print "invariant after substituition: ", new_inv
 	return new_inv
 
+def invariantExistsInDB(invariant, knownInvariants):
+	invariantZ3 = parseUserInvariant(invariant)
+	for knownInv in knownInvariants:
+		knownInvZ3  = parseUserInvariant(knownInv)
+		s = Solver()
+		equivCheck = And(Implies(invariantZ3, knownInvZ3), Implies(knownInvZ3, invariantZ3))
+		s.add(Not(equivCheck))
+		if s.check() == unsat:
+			return True
+	return False
+		
+def loopinvariantExistsInDB(loopinvariant, knownLoopInvariants):
+	loopinvariantZ3 = parseUserInvariant(loopinvariant)
+	for knownInv in knownLoopInvariants:
+		knownInvZ3  = parseUserInvariant(knownInv)
+		s = Solver()
+		equivCheck = And(Implies(invariantZ3, knownInvZ3), Implies(knownInvZ3, invariantZ3))
+		s.add(Not(equivCheck))
+		if s.check() == unsat:
+			return True
+	return False
+
 def checkInvariant(program_id, knownInvariants, knownLoopInvariants, inv, line):
 	program = Program.objects.get(pk=program_id)
 	factory = Z3ProgramFactory()

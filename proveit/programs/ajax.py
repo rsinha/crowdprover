@@ -23,10 +23,13 @@ def suggestInvariant(request, program_id, author, invariant, line):
 	print author," submitted ",invariant," as an invariant for line ", line
 	program = Program.objects.get(pk=program_id)
 	date = timezone.now()
-	z3Expr = proveit.programs.verifier.parseUserInvariant(invariant)
 	knownInvariants = filter((lambda inv: inv.status == 1), program.invariant_set.all())
 	knownLoopInvariants = filter((lambda inv: inv.status == 1), program.loopinvariant_set.all())
-	(success, model) = proveit.programs.verifier.checkInvariant(program_id, knownInvariants, knownLoopInvariants, z3Expr, int(line))
+	if proveit.programs.verifier.invariantExistsInDB(invariant, knownInvariants):
+		msg = "Someone already submitted " + invariant +" as an invariant"
+		return simplejson.dumps({'message':msg})
+
+	(success, model) = proveit.programs.verifier.checkInvariant(program_id, knownInvariants, knownLoopInvariants, invariant, int(line))
 	if success:
 		msg = "Able to prove invariant: " + invariant
 		program.invariant_set.create(author=author, content=invariant, line=int(line), date=date,status=1)
@@ -40,10 +43,14 @@ def suggestLoopInvariant(request, program_id, author, invariant, loop_id):
 	print author," submitted ",invariant," as a loop invariant for loop id ", loop_id
 	program = Program.objects.get(pk=program_id)
 	date = timezone.now()
-	z3Expr = proveit.programs.verifier.parseUserInvariant(invariant)
 	knownInvariants = filter((lambda inv: inv.status == 1), program.invariant_set.all())
 	knownLoopInvariants = filter((lambda inv: inv.status == 1), program.loopinvariant_set.all())
-	(success, model) = proveit.programs.verifier.checkLoopInvariant(program_id, knownInvariants, knownLoopInvariants, z3Expr, int(loop_id))
+
+	if proveit.programs.verifier.loopinvariantExistsInDB(invariant, knownLoopInvariants):
+		msg = "Someone already submitted " + invariant +" as a loop invariant"
+		return simplejson.dumps({'message':msg})
+
+	(success, model) = proveit.programs.verifier.checkLoopInvariant(program_id, knownInvariants, knownLoopInvariants, invariant, int(loop_id))
 	if success:
 		msg = "Able to prove loop invariant: " + invariant
 		program.loopinvariant_set.create(author=author, content=invariant, loopId=int(loop_id), date=date,status=1)
