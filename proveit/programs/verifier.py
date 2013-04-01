@@ -142,4 +142,4 @@ def parseUserInvariant(s):
 	if succ == 0:
 		return obj
 	else:
-		raise CrowdproverException("Errorcode 1: Could not parse user invariant")
+		raise CrowdproverException("Errorcode 1: Could not parse user invariant - "+obj)
