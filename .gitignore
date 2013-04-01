@@ -1,3 +1,5 @@
 venv
 *.pyc
 *.swp
+proveit/settings.py
+proveit/bin
