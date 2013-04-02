@@ -64,15 +64,17 @@
       </div> <!--end div codeblock-->
 
       <div id="facts" class="box2">
+	<b>Invariants</b>:
 	<ul>
 	{% for invariant in program.invariant_set.all %}
-	    <li>[{{invariant.status}}] {{ invariant.content }} at line {{ invariant.line }} submitted by {{ invariant.author }}</li>
+	    <li>[{{invariant.status}}] <i>{{ invariant.content }}</i> at line {{ invariant.line }} submitted by {{ invariant.author }}</li>
 	{% endfor %}
 	</ul>
 	<br>
+	<b>Loop Invariants</b>:
 	<ul>
 	{% for invariant in program.loopinvariant_set.all %}
-	    <li>[{{invariant.status}}] {{ invariant.content }} with loopid {{ invariant.loopId }} submitted by {{ invariant.author }}</li>
+	    <li>[{{invariant.status}}] <i>{{ invariant.content }}</i> with loopid {{ invariant.loopId }} submitted by {{ invariant.author }}</li>
 	{% endfor %}
 	</ul>
 	<a href="{% url 'programs:detail' program.id %}">Suggest another invariant?</a>

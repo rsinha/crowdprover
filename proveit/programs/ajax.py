@@ -23,15 +23,18 @@ def suggestInvariant(request, program_id, author, invariant, line):
 	print author," submitted ",invariant," as an invariant for line ", line
 	program = Program.objects.get(pk=program_id)
 	date = timezone.now()
+
+	(exists, existingInv) = proveit.programs.verifier.invariantExistsInDB(invariant, int(line), program.invariant_set.all())
+	if exists:
+		msg = existingInv.author + " already submitted " + invariant +" as an invariant"
+		return simplejson.dumps({'message':msg})
+
 	knownInvariants = filter((lambda inv: inv.status == 1), program.invariant_set.all())
 	knownLoopInvariants = filter((lambda inv: inv.status == 1), program.loopinvariant_set.all())
-	#if proveit.programs.verifier.invariantExistsInDB(invariant, knownInvariants):
-	#	msg = "Someone already submitted " + invariant +" as an invariant"
-	#	return simplejson.dumps({'message':msg})
-
 	(success, model) = proveit.programs.verifier.checkInvariant(program_id, knownInvariants, knownLoopInvariants, invariant, int(line))
 	if success:
 		msg = "Able to prove invariant: " + invariant
+		print "Adding invariant", invariant, "to DB..."
 		program.invariant_set.create(author=author, content=invariant, line=int(line), date=date,status=1)
 	else:
 		msg = "Unable to prove invariant: " + invariant + "\ncex: " + str(model)
@@ -43,16 +46,17 @@ def suggestLoopInvariant(request, program_id, author, invariant, loop_id):
 	print author," submitted ",invariant," as a loop invariant for loop id ", loop_id
 	program = Program.objects.get(pk=program_id)
 	date = timezone.now()
-	knownInvariants = filter((lambda inv: inv.status == 1), program.invariant_set.all())
-	knownLoopInvariants = filter((lambda inv: inv.status == 1), program.loopinvariant_set.all())
-
-	if proveit.programs.verifier.loopinvariantExistsInDB(invariant, knownLoopInvariants):
-		msg = "Someone already submitted " + invariant +" as a loop invariant"
+	(exists, existingInv) = proveit.programs.verifier.loopinvariantExistsInDB(invariant, int(loop_id), program.loopinvariant_set.all())
+	if exists:
+		msg = existingInv.author + " already submitted " + invariant +" as a loop invariant"
 		return simplejson.dumps({'message':msg})
 
+	knownInvariants = filter((lambda inv: inv.status == 1), program.invariant_set.all())
+	knownLoopInvariants = filter((lambda inv: inv.status == 1), program.loopinvariant_set.all())
 	(success, model) = proveit.programs.verifier.checkLoopInvariant(program_id, knownInvariants, knownLoopInvariants, invariant, int(loop_id))
 	if success:
 		msg = "Able to prove loop invariant: " + invariant
+		print "Adding loop invariant", invariant, "to DB..."
 		program.loopinvariant_set.create(author=author, content=invariant, loopId=int(loop_id), date=date,status=1)
 	else:
 		msg = "Unable to prove loop invariant: " + invariant + "\ncex: " + str(model)
