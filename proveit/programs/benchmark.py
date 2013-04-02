@@ -1,5 +1,6 @@
 from proveit.z3.z3 import *
 
+
 class Z3Program(object):
 	def __init__(self, description):
 		self.description = description
@@ -91,3 +92,54 @@ class count_up_down_safe(Z3Program):
 		n = Int('n')
 		return (y == n)
 
+# The SymbolTable class stores symbol tables (which contains all program variables and type information).
+# It also provides functions to access a symbol table
+
+##### Symbol Table structure definition #####
+# Functions : ("fun", action, type, arity)
+### type is the return type
+# Variables : (type, action)
+# Arrays    : ("arr", action, type, length)
+### Array length could be an integer, an integer variable, or -1 (which means unknown)
+##### Symbol Table structure definition #####
+
+class SymbolTable:
+	symtab = {}
+	def build(self,description):
+		if description == 'count_up_down':
+			self.symtab = { "A"  : ("arr","math.sin","int",30) ,"f"  : ("fun","math.sin","int",1),"g" : ("fun","math.sin","bool",2),"x" : ("int","operator.mul"),"y" : ("int","operator.truediv"),"n" : ("int","operator.truediv")}
+		else:
+			raise CrowdproverException("Errorcode 2: unknown program description")
+
+	# Does iden exist in symtab?
+	def exists(self,iden):
+		if iden in self.symtab:
+			return True
+		else:
+			return False
+
+	# Get the type for the identifier. Only for simple data types.
+	def getTypeOfId(self,iden):
+		return self.symtab[iden][0]
+
+	# Does f exist and is a function?
+	def isFunction(self,f):
+		if (f in self.symtab) & (self.symtab[f][0]=='fun'):
+			return True
+		else:
+			return False
+
+	# Get return type for a function that already exists in symtab
+	def getReturnType(self,f):
+		return self.symtab[f][2]
+
+	# Does arr exist and is an array?
+	def isArray(self,arr):
+		if (arr in self.symtab) & (self.symtab[arr][0]=='arr'):
+			return True
+		else:
+			return False
+
+	# Get type of an array that already exists in symtab
+	def getArrayType(self,arr):
+		return self.symtab[arr][2]

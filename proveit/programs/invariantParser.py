@@ -95,17 +95,10 @@ class InvLexer:
 
 ############################## PARSER ##############################
 class InvParser:
-	# A simple symbol table for the program
-	# Functions : ("fun", action, type, arity)
-	### type is the return type
-	# Variables : (type, action)
-	# Arrays    : ("arr", action, type, length)
-	### Array length could be an integer, an integer variable, or -1 (which means unknown)
-	symtab = {}
-
+	st = SymbolTable()
 	# Create the parser. Takes description of the program to retrieve symbol table
 	def __init__(self,description):
-		self.symtab = { "f"  : ("fun","math.sin","int",1),"g" : ("fun","math.sin","bool",2),"x" : ("int","operator.mul"),"y" : ("int","operator.truediv"),"n" : ("int","operator.truediv")}
+		self.st.build(description)
 		self.lexer = InvLexer()
 		self.tokens = self.lexer.tokens
 		self.parser = yacc.yacc(module=self)
@@ -142,10 +135,9 @@ class InvParser:
 	def p_makeZ3_ID(self,p):
 		'identifier : ID'
 		iden = p[1]
-		symtab = self.symtab
 		# print "ID was detected",p[1]
-		if iden in symtab:
-			typ = symtab[iden][0]
+		if  self.st.exists(iden):
+			typ = self.st.getTypeOfId(iden)
 			if typ == 'int':
 				p[0] = Int(iden)
 			elif typ == 'bool':
@@ -160,9 +152,8 @@ class InvParser:
 		'funapp : ID "(" expr ")"'
 		arg = p[3]
 		f = p[1]
-		symtab = self.symtab
-		if (f in symtab) and (symtab[f][0]=='fun'):
-			rettyp = symtab[f][2]
+		if self.st.isFunction(f):
+			rettyp = self.st.getReturnType(f)
 			if rettyp == 'int':
 				func = Function(f,IntSort(),IntSort())
 				p[0] = func(arg)
@@ -179,9 +170,8 @@ class InvParser:
 		'arrindex : ID "[" expr "]"'
 		index = p[3]
 		arr = p[1]
-		symtab = self.symtab
-		if (arr in symtab) and (symtab[arr][0]=='arr'):
-			arrtyp = symtab[arr][2]
+		if self.st.isArray(arr):
+			arrtyp = self.st.getArrayType(arr)
 			if arrtyp == 'int':
 				arrind = Array(arr,IntSort(),IntSort())
 				p[0] = arrind[index]
@@ -308,7 +298,7 @@ class InvParser:
 def parseInvariant(s):
 	if not s: return (1,"PARSING ERROR: Empty input")
 	try:
-		p = InvParser(1)
+		p = InvParser("count_up_down")
 		psr = p.parser
 		result = psr.parse(s)
 		return (0,result)
