@@ -18,7 +18,7 @@ def substituteFormula(program_id, inv, line):
 
 	return new_inv
 
-def invariantExistsInDB(invariant, line, knownInvariants):
+def invariantExistsInDB(program_id, invariant, line, knownInvariants):
 	print "Checking existence of suggested invariant within DB..."
 	invariantZ3 = parseUserInvariant(invariant)
 	for knownInv in knownInvariants:
@@ -34,7 +34,7 @@ def invariantExistsInDB(invariant, line, knownInvariants):
 	print "Suggested invariant not found within DB..."
 	return (False, 0)
 		
-def loopinvariantExistsInDB(loopinvariant, loopId, knownLoopInvariants):
+def loopinvariantExistsInDB(program_id, loopinvariant, loopId, knownLoopInvariants):
 	print "Checking existence of suggested loop invariant within DB..."
 	loopinvariantZ3 = parseUserInvariant(loopinvariant)
 	for knownInv in knownLoopInvariants:
@@ -49,6 +49,7 @@ def loopinvariantExistsInDB(loopinvariant, loopId, knownLoopInvariants):
 			return (True, knownInv)
 	print "Suggested loop invariant not found within DB..."
 	return (False, 0)
+
 
 def checkInvariant(program_id, knownInvariants, knownLoopInvariants, inv, line):
 	program = Program.objects.get(pk=program_id)

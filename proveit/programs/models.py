@@ -7,6 +7,7 @@ class Program(models.Model):
     source = models.CharField(max_length=200) #filename
     binary = models.CharField(max_length=200) #binary name
     description = models.CharField(max_length=200) #description
+    status = models.IntegerField(default=0) #UNKNOWN=0, YES=1, NO=2
     pub_date = models.DateTimeField('date published') #date released
 
     def __unicode__(self):
