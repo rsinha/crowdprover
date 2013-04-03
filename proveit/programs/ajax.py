@@ -34,10 +34,11 @@ def suggestInvariant(request, program_id, author, invariant, line):
 		msg = "Able to prove invariant: " + invariant
 		print "Adding invariant", invariant, "to DB..."
 		program.invariant_set.create(author=author, content=invariant, line=int(line), date=date,status=1)
+		#The suggested inv may end up proving previously suggested inv
+		#try proving the unknown invariants now
+		proveit.programs.verifier.proveUnknownInvariants(program_id)
 		#try proving the program now
-		if proveit.programs.verifier.proveProgram(program_id):
-			program.status = 1
-			program.save()
+		proveit.programs.verifier.proveProgram(program_id)
 	else:
 		msg = "Unable to prove invariant: " + invariant + "\ncex: " + str(model)
 		program.invariant_set.create(author=author, content=invariant, line=int(line), date=date,status=0)
@@ -59,10 +60,12 @@ def suggestLoopInvariant(request, program_id, author, invariant, loop_id):
 		msg = "Able to prove loop invariant: " + invariant
 		print "Adding loop invariant", invariant, "to DB..."
 		program.loopinvariant_set.create(author=author, content=invariant, loopId=int(loop_id), date=date,status=1)
+		#The suggested inv may end up proving previously suggested inv
+		#try proving the unknown invariants now
+		proveit.programs.verifier.proveUnknownInvariants(program_id)
 		#try proving the program now
-		if proveit.programs.verifier.proveProgram(program_id):
-			program.status = 1
-			program.save()
+		proveit.programs.verifier.proveProgram(program_id)
+		#try proving the program now
 	else:
 		msg = "Unable to prove loop invariant: " + invariant + "\ncex: " + str(model)
 		program.loopinvariant_set.create(author=author, content=invariant, loopId=int(loop_id), date=date,status=0)

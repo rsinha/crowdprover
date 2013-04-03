@@ -62,11 +62,31 @@ def proveProgram(program_id):
 	assertions = z3program.programAsserts()
 	for assertion in assertions:
 		(success,model) = checkInvariant(program_id, assertion[1], assertion[0])
-		print "rohit"
 		if not(success):
-			return False 
+			return
 
-	return True	
+	program.status = 1
+	program.save()
+	return
+
+def proveUnknownInvariants(program_id):
+	program = Program.objects.get(pk=program_id)
+	factory = Z3ProgramFactory()
+	z3program = factory.newProgram(program.description)
+	unknownInvariants = filter((lambda inv: inv.status == 0), program.invariant_set.all())
+	unknownLoopInvariants = filter((lambda inv: inv.status == 0), program.loopinvariant_set.all())
+
+	for unknownInv in unknownInvariants:
+		(success,model) = checkInvariant(program_id, unknownInv.content, unknownInv.line)
+		if success:
+			unknownInv.status = 1
+			unknownInv.save()
+	for unknownLoopInv in unknownLoopInvariants:
+		(success,model) = checkLoopInvariant(program_id, unknownLoopInv.content, unknownLoopInv.loopId)
+		if success:
+			unknownLoopInv.status = 1
+			unknownLoopInv.save()
+	return
 
 def checkInvariant(program_id, inv, line):
 	program = Program.objects.get(pk=program_id)
