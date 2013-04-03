@@ -63,6 +63,13 @@ class count_up_down_safe(Z3Program):
 		print "constructed program formula: ", formula
 		return formula
 
+	def programAssertion(self):
+		x_10 = Int('x_proveit_10')
+		y_10 = Int('x_proveit_10')
+		n = Int('n')
+		formula = (y_10 == n)
+		return [formula]
+
 	def loopFormula(self, loopId):
 		if loopId == 1:
 			formula = BoolVal(True)
