@@ -18,9 +18,10 @@ def substituteFormula(program_id, inv, line):
 
 	return new_inv
 
-def invariantExistsInDB(program_id, invariant, line, knownInvariants):
+def invariantExistsInDB(program_id, invariant, line):
 	print "Checking existence of suggested invariant within DB..."
 	program = Program.objects.get(pk=program_id)
+	knownInvariants = program.invariant_set.all()
 	invariantZ3 = parseUserInvariant(invariant, program.description)
 	for knownInv in knownInvariants:
 		if knownInv.line != line:
@@ -35,9 +36,10 @@ def invariantExistsInDB(program_id, invariant, line, knownInvariants):
 	print "Suggested invariant not found within DB..."
 	return (False, 0)
 		
-def loopinvariantExistsInDB(program_id, loopinvariant, loopId, knownLoopInvariants):
+def loopinvariantExistsInDB(program_id, loopinvariant, loopId):
 	print "Checking existence of suggested loop invariant within DB..."
 	program = Program.objects.get(pk=program_id)
+	knownLoopInvariants = program.loopinvariant_set.all()
 	loopinvariantZ3 = parseUserInvariant(loopinvariant, program.description)
 	for knownInv in knownLoopInvariants:
 		if knownInv.loopId != loopId:
@@ -52,8 +54,21 @@ def loopinvariantExistsInDB(program_id, loopinvariant, loopId, knownLoopInvarian
 	print "Suggested loop invariant not found within DB..."
 	return (False, 0)
 
+def proveProgram(program_id):
+	program = Program.objects.get(pk=program_id)
+	factory = Z3ProgramFactory()
+	z3program = factory.newProgram(program.description)
 
-def checkInvariant(program_id, knownInvariants, knownLoopInvariants, inv, line):
+	assertions = z3program.programAsserts()
+	for assertion in assertions:
+		(success,model) = checkInvariant(program_id, assertion[1], assertion[0])
+		print "rohit"
+		if not(success):
+			return False 
+
+	return True	
+
+def checkInvariant(program_id, inv, line):
 	program = Program.objects.get(pk=program_id)
 	factory = Z3ProgramFactory()
 	z3program = factory.newProgram(program.description)
@@ -64,6 +79,9 @@ def checkInvariant(program_id, knownInvariants, knownLoopInvariants, inv, line):
 	ssainv = substituteFormula(program_id, invZ3,line)
 
 	print "Checking user invariant: ", str(ssainv)
+
+	knownInvariants = filter((lambda inv: inv.status == 1), program.invariant_set.all())
+	knownLoopInvariants = filter((lambda inv: inv.status == 1), program.loopinvariant_set.all())
 
 	s = Solver()
 	#program formula
@@ -99,7 +117,7 @@ def checkInvariant(program_id, knownInvariants, knownLoopInvariants, inv, line):
 		print s.model()
 		return (False, s.model())
 
-def checkLoopInvariant(program_id, knownInvariants, knownLoopInvariants, inv, loop_id):
+def checkLoopInvariant(program_id, inv, loop_id):
 	program = Program.objects.get(pk=program_id)
 	factory = Z3ProgramFactory()
 	z3program = factory.newProgram(program.description)
@@ -109,6 +127,9 @@ def checkLoopInvariant(program_id, knownInvariants, knownLoopInvariants, inv, lo
 	stateVars = map((lambda s : Int(s)), states)
 	preStateVars = map((lambda s : Int(s)), preStates)
 	postStateVars = map((lambda s : Int(s)), postStates)
+
+	knownInvariants = filter((lambda inv: inv.status == 1), program.invariant_set.all())
+	knownLoopInvariants = filter((lambda inv: inv.status == 1), program.loopinvariant_set.all())
 
 	print "Checking user loop invariant on entry: ", inv
 

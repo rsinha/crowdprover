@@ -64,6 +64,8 @@
       </div> <!--end div codeblock-->
 
       <div id="facts" class="box2">
+	<b>Program status</b>: {{ program.status }}
+	<br><br>
 	<b>Invariants</b>:
 	<ul>
 	{% for invariant in program.invariant_set.all %}

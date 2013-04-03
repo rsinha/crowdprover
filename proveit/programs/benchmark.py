@@ -12,8 +12,8 @@ class Z3Program(object):
 		return BoolVal(True)
 	def loopCondition(self, loopId):
 		return BoolVal(True)
-	def programAssertion(self):
-		return BoolVal(True)
+	def programAsserts(self):
+		return [(0,BoolVal(True))]
 
 class Z3ProgramFactory(object):
     def newProgram(self, description):
@@ -63,12 +63,9 @@ class count_up_down_safe(Z3Program):
 		print "constructed program formula: ", formula
 		return formula
 
-	def programAssertion(self):
-		x_10 = Int('x_proveit_10')
-		y_10 = Int('x_proveit_10')
-		n = Int('n')
-		formula = (y_10 == n)
-		return [formula]
+	def programAsserts(self):
+		formula = "y == n"
+		return [(10,formula)]
 
 	def loopFormula(self, loopId):
 		if loopId == 1:
@@ -93,11 +90,6 @@ class count_up_down_safe(Z3Program):
 		else:
 			raise CrowdproverException("Errorcode 3: unknown loop id")
 
-	def programAssertion(self):
-		x = Int('x')
-		y = Int('y')
-		n = Int('n')
-		return (y == n)
 
 # The SymbolTable class stores symbol tables (which contains all program variables and type information).
 # It also provides functions to access a symbol table
