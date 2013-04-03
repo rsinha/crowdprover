@@ -295,10 +295,10 @@ class InvParser:
 	# (0,x)  => Successfully parsed invariant, x is a Z3 object
 	# (1,x) => Error while parsing, x is the error message
 
-def parseInvariant(s):
+def parseInvariant(s,description):
 	if not s: return (1,"PARSING ERROR: Empty input")
 	try:
-		p = InvParser("count_up_down")
+		p = InvParser(description)
 		psr = p.parser
 		result = psr.parse(s)
 		return (0,result)

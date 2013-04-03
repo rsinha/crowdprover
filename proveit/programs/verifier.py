@@ -192,8 +192,8 @@ def loopExit(z3program, loop_id):
 	loops = info['loops']
 	return loops[loop_id][1]
 
-def parseUserInvariant(s):
-	(succ,obj) = parseInvariant(s)
+def parseUserInvariant(s,description):
+	(succ,obj) = parseInvariant(s,description)
 
 	if succ == 0:
 		return obj
