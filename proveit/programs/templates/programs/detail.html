@@ -111,7 +111,7 @@ input.invalid { background: red; color: #FDFDFD; }
 <span class='title'>Crowdsolving Software Verification</span>
 </div> <!--end div logo-->
 <div id='content'>
-<div id='basic-modal'>
+<!-- basic-modal was here -->
 <p>Please review this program, and provide us with invariants that hold at different program points.
 You can use the trace visualizer to help understand this program's behaviour.
 </p>
@@ -174,7 +174,7 @@ display: inline-block;
   <br>
 
         <div align="right">Select variables to observe</div>
-        <div align="right"><input type='image' src="http://crowdprover.herokuapp.com/static/images/watch1.png" name='basic' value="" class='basic' onclick="clickWatch()"/></div>
+        <div align="right"><input type='image' src="http://crowdprover.herokuapp.com/static/images/watch1.png" name='basic' value="" class='basic' onclick="clickWatch1()"/></div>
         <p>
         <label for="step">Step #:</label>
         <input type="text" id="step" style="border: 0; color: #f6931f; font-weight: bold;" />
@@ -213,6 +213,7 @@ display: inline-block;
       <br>
       <a href="{% url 'programs:results' program.id %}">View verification progress</a>
       <br>
+      <!--div align="left"><input type='image' src="http://crowdprover.herokuapp.com/static/images/watch1.png" name='basic' value="" class='basic' onclick="clickWatch2()"/></div-->
       <br>
       <b> Suggest an invariant </b>
       <br>  
@@ -248,6 +249,7 @@ display: inline-block;
       <br>
 
 
+    <div id='basic-modal'>
     <!-- modal content -->
     <div id="basic-modal-content" style="vertical-align:middle; text-align:left">
       <h3>Trace Visualizer Settings</h3>
@@ -270,20 +272,35 @@ display: inline-block;
         tabindex="8"
         align="right"/>
 
-
     </div> <!--end div basic-modal-content-->
 
     <!-- preload the images -->
     <div style='display:none'>
       <img src='http://crowdprover.herokuapp.com/static/images/x.png' alt='' />
     </div>
+
+
+
+    <!-- modal content -->
+    <!--div id="result-modal-content" style="visibility:hidden; vertical-align:middle; text-align:left">
+      <h3>Verification Progress</h3>
+      Folks have come up with the following invariants. <br><br>
+      <br><br>
+    </div--> <!--end div result-modal-content-->
+
+
+
     </div> <!--end div basic-modal-->
+
+
+
   </div> <!--end div content-->
   <div id='footer'>
     &copy; 2013 Some copyright?</a><br/>
     <a href='https://github.com/ericmmartin/simplemodal'>Big Thanks to SimpleModal, Snippets, EditableGrid, JQuery</a><br/>
   </div> <!--end div footer-->
 </div> <!--end div container-->
+
 
   <script type="text/javascript">
     var checkBoxCache = [{% for vartrace in trace.values %}false,{% endfor %}];
@@ -429,7 +446,7 @@ display: inline-block;
 		}
     	});
 
-      editableGrid = new EditableGrid("DemoGridFull1", {pageSize: 10, maxBars: 10});
+      editableGrid = new EditableGrid("DemoGridFull1", {pageSize: 5, maxBars: 10});
 
       EditableGrid.prototype.initializeGrid = function() 
       {
@@ -528,7 +545,7 @@ display: inline-block;
     }
 
 
-    function clickWatch() {
+    function clickWatch1() {
       $("#basic-modal-content").modal();
       {% for vartrace in trace.values %}
       var var_{{vartrace.alias}}_checkbox = ($('.var_{{vartrace.alias}} :checkbox'));
@@ -541,6 +558,13 @@ display: inline-block;
         }
       }
     }
+
+    /*
+    function clickWatch2() {
+      $("#result-modal-content").modal();
+      $("#result-modal-content").css("visibility", "visible");
+    }
+    */
 
     function submitWatch() {
     	{% for vartrace in trace.values %}
@@ -581,7 +605,7 @@ display: inline-block;
     		data.push({id: i, values: thisvalues});  
     	 }
     	
-      editableGrid = new EditableGrid("DemoGridFull2", {pageSize: 10, maxBars: 10});
+      editableGrid = new EditableGrid("DemoGridFull2", {pageSize: 5, maxBars: 10});
 
       EditableGrid.prototype.initializeGrid = function() 
       {
