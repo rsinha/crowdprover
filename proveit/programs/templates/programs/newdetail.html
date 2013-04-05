@@ -1,3 +1,5 @@
+{% load dajaxice_templatetags %}
+{% load url from future %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,10 +9,48 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+    <!--script src="http://crowdprover.herokuapp.com/static/js/jquery-1.9.1.js"></script-->
+    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/jquery.js"></script>
+    <script src="http://code.jquery.com/jquery-migrate-1.0.0.js"></script>
+    <!--script src="http://crowdprover.herokuapp.com/static/js/jquery-ui.js"></script-->
     <!-- Le styles -->
+
     <link href="http://crowdprover.herokuapp.com/static/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="http://crowdprover.herokuapp.com/static/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://crowdprover.herokuapp.com/static/bootstrap/css/docs.css" rel="stylesheet">
+
+
+    <link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/jquery.snippet.css" />
+    <script type="text/javascript" src="http://crowdprover.herokuapp.com/static/js/jquery.snippet.js"></script>
+
+    <script type="text/javascript">
+    // Feedback about submitted invariant
+    function feedback_callback(data){
+      alert(data.message);
+    }
+
+    // Submit invariant to the server
+    function send_invariant(){
+      author = $("#Invariant_Form :input[name=author]").val();
+      invariant = $("#Invariant_Form :input[name=content]").val();
+      line = $("#Invariant_Form :input[name=line]").val();
+      alert(author+" is submitting "+invariant+" as invariant for line " + line)
+      Dajaxice.proveit.programs.suggestInvariant(feedback_callback,{'program_id':{{program.id}},'author':author,'invariant':invariant,'line':line});
+    }
+    // Submit loop invariant to the server
+    function send_loop_invariant(){
+      author = $("#LoopInvariant_Form :input[name=author]").val();
+      invariant = $("#LoopInvariant_Form :input[name=content]").val();
+      loop_id = $("#LoopInvariant_Form :input[name=loopid]").val();
+      alert(author+" is submitting "+invariant+" as loop invariant for loop id " + loop_id)
+      Dajaxice.proveit.programs.suggestLoopInvariant(feedback_callback,{'program_id':{{program.id}},'author':author,'invariant':invariant,'loop_id':loop_id});
+    }
+
+    $(document).ready(function(){
+        $("pre.code1").snippet("cpp",{style:"navy",box:({{trace.firstLine}}).toString(),boxColor:"red",boxFill:"black",menu:false});
+    });
+    </script>
+
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -23,6 +63,9 @@
       <link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://crowdprover.herokuapp.com/static/bootstrap/ico/apple-touch-icon-72-precomposed.png">
                     <link rel="apple-touch-icon-precomposed" href="http://crowdprover.herokuapp.com/static/bootstrap/ico/apple-touch-icon-57-precomposed.png">
                                    <link rel="shortcut icon" href="http://crowdprover.herokuapp.com/static/bootstrap/ico/favicon.png">
+
+{% dajaxice_js_import %}
+
   </head>
 
   <body data-spy="scroll" data-target=".bs-docs-sidebar">
@@ -68,41 +111,42 @@
       <div class="span3 bs-docs-sidebar">
         <ul class="nav nav-list bs-docs-sidenav">
           <li><a href="#section_program"><i class="icon-chevron-right"></i> Code</a></li>
-          <li><a href="#section_rohit1"><i class="icon-chevron-right"></i> Results</a></li>
-          <li><a href="#section_rohit2"><i class="icon-chevron-right"></i> Trace Visualizer</a></li>
+          <li><a href="#section_results"><i class="icon-chevron-right"></i> Results</a></li>
+          <li><a href="#section_trace"><i class="icon-chevron-right"></i> Trace Visualizer</a></li>
           <li><a href="#section_feedback"><i class="icon-chevron-right"></i> Feedback</a></li>
         </ul>
       </div>
       <div class="span9">
 
 
-      <!-- Jumbotron -->
-      <section id="section_program">
+      <section id="section_heading">
       <div class="page-header">
-        <h1>Marketing stuff!</h1>
-        <p class="lead">Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-        <a class="btn btn-large btn-success" href="#">Get started today</a>
+        <h3>Code</h3>
+          <p>Review this program, and suggest us invariants that hold at different program points.
+             You can use the trace visualizer to help understand this program's behaviour.
+             You can also view what others have suggested.</p>
       </div>
       <section>
 
 
       <!-- Example row of columns -->
-      <section id="section_rohit1">
+      <section id="section_program">
       <div class="row-fluid">
-        <div class="span4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn" href="#">View details &raquo;</a></p>
-        </div>
-        <div class="span4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn" href="#">View details &raquo;</a></p>
+        <div class="span6">
+          <pre class="code1">{{code}}</pre>
        </div>
-        <div class="span4">
-          <h2>Heading</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa.</p>
-          <p><a class="btn" href="#">View details &raquo;</a></p>
+        <div class="span6" align="right">
+          <h5>Suggest an invariant for a specific line</h5>
+          <div align="right"> 
+            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	           <form action="javascript:void(0);" method="post" id="Invariant_Form">
+	           {% csrf_token %}
+	           <div>Your Name</br><textarea name="author" rows="1" cols="50"></textarea></div>
+	           <div>Your Invariant</br><textarea name="content" rows="3" cols="50"></textarea></div>
+	           <div>Line number after which your invariant holds</br><input type="number" name="line"></div>
+	           <div><input type="submit" onclick="send_invariant();" value="Suggest Invariant" class="btn btn-primary"></div>
+	           </form>
+          </div>
         </div>
       </div>
       </section>
@@ -110,30 +154,84 @@
 
       <!-- Next
       ================================================== -->
-      <section id="section_rohit2">
+      <section id="section_results">
         <div class="page-header">
-          <h1>What next?</h1>
+          <h3>Results</h3>
+          <p>Others have suggested the following invariants</p>
         </div>
-        <p class="lead">Head to the docs for information, examples, and code snippets, or take the next leap and customize Bootstrap for any upcoming project.</p>
-        <p class="lead">Head to the docs for information, examples, and code snippets, or take the next leap and customize Bootstrap for any upcoming project.</p>
-        <p class="lead">Head to the docs for information, examples, and code snippets, or take the next leap and customize Bootstrap for any upcoming project.</p>
-        <p class="lead">Head to the docs for information, examples, and code snippets, or take the next leap and customize Bootstrap for any upcoming project.</p>
-        <p class="lead">Head to the docs for information, examples, and code snippets, or take the next leap and customize Bootstrap for any upcoming project.</p>
-        <p class="lead">Head to the docs for information, examples, and code snippets, or take the next leap and customize Bootstrap for any upcoming project.</p>
-        <p class="lead">Head to the docs for information, examples, and code snippets, or take the next leap and customize Bootstrap for any upcoming project.</p>
-        <p class="lead">Head to the docs for information, examples, and code snippets, or take the next leap and customize Bootstrap for any upcoming project.</p>
-        <p class="lead">Head to the docs for information, examples, and code snippets, or take the next leap and customize Bootstrap for any upcoming project.</p>
-        <p class="lead">Head to the docs for information, examples, and code snippets, or take the next leap and customize Bootstrap for any upcoming project.</p>
-        <p class="lead">Head to the docs for information, examples, and code snippets, or take the next leap and customize Bootstrap for any upcoming project.</p>
-        <p class="lead">Head to the docs for information, examples, and code snippets, or take the next leap and customize Bootstrap for any upcoming project.</p>
-        <p class="lead">Head to the docs for information, examples, and code snippets, or take the next leap and customize Bootstrap for any upcoming project.</p>
-        <p class="lead">Head to the docs for information, examples, and code snippets, or take the next leap and customize Bootstrap for any upcoming project.</p>
-        <p class="lead">Head to the docs for information, examples, and code snippets, or take the next leap and customize Bootstrap for any upcoming project.</p>
+      <div class="row-fluid">
+        <div class="span6">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Invariant</th>
+              <th>Line</th>
+              <th>Author</th>
+            </tr>
+          </thead>
+          <tbody>
+	    {% for invariant in program.invariant_set.all %}
+            <tr>
+                {% if invariant.status == 0 %}
+	          <td> <button class="btn btn-mini btn-warning" type="button">Unknown</button> </td>
+                {% elif invariant.status == 1 %}
+	          <td> <button class="btn btn-mini btn-success" type="button">Correct</button> </td>
+                {% elif invariant.status == 2 %}
+	          <td> <button class="btn btn-mini btn-danger" type="button">Incorrect</button> </td>
+                {% elif invariant.status == 3 %}
+	          <td> <button class="btn btn-mini btn-info" type="button">Axiom</button> </td>
+                {% endif %}
+                  <td> {{ invariant.content }} </td>
+                  <td> {{ invariant.line }} </td>
+                  <td> {{ invariant.author }} </td>
+            </tr>
+	    {% endfor %}
+          </tbody>
+        </table>
+        </div> <!-- end span6-->
+        <div class="span6">
+
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Invariant</th>
+              <th>Loop</th>
+              <th>Author</th>
+            </tr>
+          </thead>
+          <tbody>
+	    {% for invariant in program.loopinvariant_set.all %}
+            <tr>
+                {% if invariant.status == 0 %}
+	          <td> <button class="btn btn-mini btn-warning" type="button">Unknown</button> </td>
+                {% elif invariant.status == 1 %}
+	          <td> <button class="btn btn-mini btn-success" type="button">Correct</button> </td>
+                {% elif invariant.status == 2 %}
+	          <td> <button class="btn btn-mini btn-danger" type="button">Incorrect</button> </td>
+                {% elif invariant.status == 3 %}
+	          <td> <button class="btn btn-mini btn-info" type="button">Axiom</button> </td>
+                {% endif %}
+                  <td> {{ invariant.content }} </td>
+                  <td> {{ invariant.loopId }} </td>
+                  <td> {{ invariant.author }} </td>
+            </tr>
+	    {% endfor %}
+          </tbody>
+        </table>
+        </div> <!-- end span6-->
+      </div>
       </section>
 
      </div>
      </div>
     </div> <!-- /container -->
+
+<!--
+Scratch:
+
+-->
 
     <!-- Footer
     ================================================== -->
@@ -156,7 +254,6 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster-->
-    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/jquery.js"></script>
     <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-transition.js"></script>
     <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-alert.js"></script>
     <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-modal.js"></script>
