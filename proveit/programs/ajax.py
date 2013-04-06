@@ -18,7 +18,7 @@ def computeTrace(request, program_id, inputs):
 	print "success"
 	return simplejson.dumps(trace)
 
-@dajaxice_register(method='POST')
+@dajaxice_register(method='GET')
 def suggestInvariant(request, program_id, author, invariant, line):
 	print author," submitted ",invariant," as an invariant for line ", line
 	program = Program.objects.get(pk=program_id)
@@ -49,7 +49,7 @@ def suggestInvariant(request, program_id, author, invariant, line):
 
 	return simplejson.dumps({'message':msg})
 
-@dajaxice_register(method='POST')
+@dajaxice_register(method='GET')
 def suggestLoopInvariant(request, program_id, author, invariant, loop_id):
 	print author," submitted ",invariant," as a loop invariant for loop id ", loop_id
 	program = Program.objects.get(pk=program_id)
