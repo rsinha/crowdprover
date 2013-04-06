@@ -18,12 +18,102 @@
     <link href="http://crowdprover.herokuapp.com/static/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="http://crowdprover.herokuapp.com/static/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://crowdprover.herokuapp.com/static/bootstrap/css/docs.css" rel="stylesheet">
+    <link href="http://crowdprover.herokuapp.com/static/bootstrap/css/slider.css" rel="stylesheet">
 
 
     <link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/jquery.snippet.css" />
     <script type="text/javascript" src="http://crowdprover.herokuapp.com/static/js/jquery.snippet.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/editablegrid-2.0.1.css" />
+    <script type='text/javascript' src='http://crowdprover.herokuapp.com/static/js/editablegrid-2.0.1.js'></script>
+
+    <style>
+  #slider1 {
+    width: 100%;
+  }
+
+    table.testgrid { 
+      border-collapse: collapse; 
+    border: 1px solid #CCB;
+    width: 100%;
+    }
+
+    table.testgrid tr {
+      border-bottom: 1px solid #DDD;
+    }
+
+    table.testgrid>tbody tr:hover {
+      background-color: #c0c0c0;
+    color: white;
+    }
+
+    table.testgrid>tbody tr:hover a {
+    color: black;
+    }
+
+    table.testgrid th {
+    background: #E5E5E5;
+    border: 1px solid #D5D5D5;
+    color: #555;
+           font-size: 11px;
+           text-align: left;
+           padding-left: 5px;
+           padding-right: 0px;
+           padding-top: 5px;
+           padding-bottom: 5px;
+           white-space: nowrap; 
+    }
+
+    table.testgrid td {
+    padding: 5px;
+    border: 1px solid #E0E0E0;
+    }
+
+    table.inputgrid { 
+      border-collapse: collapse; 
+    border: 1px solid #CCB;
+    width: 100%;
+    }
+
+    table.inputgrid tr {
+      border-bottom: 1px solid #DDD;
+    }
+
+    table.inputgrid>tbody tr:hover {
+      background-color: #888888;
+    color: white;
+    }
+
+    table.inputgrid>tbody tr:hover a {
+    color: white;
+    }
+
+    table.inputgrid th {
+    background: #E5E5E5;
+    border: 1px solid #D5D5D5;
+    color: #555;
+           font-size: 11px;
+           text-align: left;
+           padding-left: 5px;
+           padding-right: 0px;
+           padding-top: 5px;
+           padding-bottom: 5px;
+           white-space: nowrap; 
+    }
+
+    table.inputgrid td {
+    padding: 5px;
+    border: 1px solid #E0E0E0;
+    }
+
+
+    input.invalid { background: red; color: #FDFDFD; }
+
+    </style>
+
     <script type="text/javascript">
+    var checkBoxCache = [{% for vartrace in trace.values %}false,{% endfor %}];
+    var trace;
     // Feedback about submitted invariant
     function feedback_callback(data){
       alert(data.message);
@@ -31,7 +121,7 @@
 
     // Submit invariant to the server
     function send_invariant(){
-      author = $("#Invariant_Form :input[name=author]").val();
+      author = "Boomaholic";
       invariant = $("#Invariant_Form :input[name=content]").val();
       line = $("#Invariant_Form :input[name=line]").val();
       alert(author+" is submitting "+invariant+" as invariant for line " + line)
@@ -39,7 +129,7 @@
     }
     // Submit loop invariant to the server
     function send_loop_invariant(){
-      author = $("#LoopInvariant_Form :input[name=author]").val();
+      author = "Boomaholic";
       invariant = $("#LoopInvariant_Form :input[name=content]").val();
       loop_id = $("#LoopInvariant_Form :input[name=loopid]").val();
       alert(author+" is submitting "+invariant+" as loop invariant for loop id " + loop_id)
@@ -47,8 +137,148 @@
     }
 
     $(document).ready(function(){
-        $("pre.code1").snippet("cpp",{style:"navy",box:({{trace.firstLine}}).toString(),boxColor:"red",boxFill:"black",menu:false});
+        $("pre.code1").snippet("cpp",{style:"navy",boxColor:"red",boxFill:"black",menu:false});
+        $("pre.code2").snippet("cpp",{style:"navy",box:({{trace.firstLine}}).toString(),boxColor:"red",boxFill:"black",menu:false});
+        zeEditableGrid = 0;
+        editableInGrid = new EditableGrid("DemoGridAttach");
+        editableInGrid.load({ metadata: [
+          {name: "variable", datatype: "string", editable:false},
+          {name: "value", datatype: "string", editable:true},
+        ]});
+
+        editableInGrid.attachToHTMLTable("inputtable");
+        editableInGrid.renderGrid();
+        $('.jquery').each(function() {
+          eval($(this).html());
+        });
+        $('.button').button();
+        $('#slider1').slider();
+
     });
+
+    function compute_trace_callback(data){
+      trace = data;
+      oldStep = 1;
+
+      // this approach is interesting if you need to dynamically create data in Javascript 
+      var metadata = [];
+      metadata.push({ name: "step", label: "Step #", datatype: "integer", editable: false});
+      {% for vartrace in trace.values %}
+      j = {{forloop.counter}} - 1;
+      if (checkBoxCache[j]) {
+        metadata.push({ name: "{{vartrace.alias}}", label: "{{vartrace.name}}", datatype: "string", editable: false});
+      }
+      {% endfor %}
+
+      var data = [];
+      for (var i = 0; i < trace.length; i++) {
+        var thisvalues = {};
+        thisvalues.step = i + 1;
+        {% for vartrace in trace.values %}
+        j = {{forloop.counter}} - 1;
+                if (checkBoxCache[j]) {
+                  thisvalues.{{vartrace.alias}} = trace.values[j].values[i];
+        }
+        {% endfor %}
+        data.push({id: i, values: thisvalues});  
+      }
+
+      editableGrid = new EditableGrid("DemoGridFull1", {pageSize: 5, maxBars: 10});
+
+      EditableGrid.prototype.initializeGrid = function() 
+      {
+        with (this) {
+          // register the function that will handle model changes
+          modelChanged = function(rowIndex, columnIndex, oldValue, newValue, row) { 
+            
+          };
+          
+          // update paginator whenever the table is rendered (after a sort, filter, page change, etc.)
+          tableRendered = function() { this.updatePaginator(); };
+
+          rowSelected = function(oldRowIndex, newRowIndex) {
+            
+          };
+          
+          // render the grid (parameters will be ignored if we have attached to an existing HTML table)
+          //renderGrid("tablecontent", "testgrid", "tableid");
+          
+          // bind page size selector
+          $("#pagesize").val(pageSize).change(function() { editableGrid.setPageSize($("#pagesize").val()); });
+        }
+      };
+
+      EditableGrid.prototype.duplicate = function(rowIndex) 
+      {
+        
+        // copy values from given row
+        var values = this.getRowValues(rowIndex);
+        values['name'] = values['name'] + ' (copy)';
+
+        // get id for new row (max id + 1)
+        var newRowId = 0;
+        for (var r = 0; r < this.getRowCount(); r++) newRowId = Math.max(newRowId, parseInt(this.getRowId(r)) + 1);
+        
+        // add new row
+        this.insertAfter(rowIndex, newRowId, values); 
+      };
+
+      // function to render the paginator control
+      EditableGrid.prototype.updatePaginator = function()
+      {
+        
+        var paginator = $("#paginator").empty();
+        var nbPages = this.getPageCount();
+
+        // get interval
+        var interval = this.getSlidingPageInterval(20);
+        if (interval == null) return;
+        
+        // get pages in interval (with links except for the current page)
+        var pages = this.getPagesInInterval(interval, function(pageIndex, isCurrent) {
+          if (isCurrent) return "" + (pageIndex + 1);
+          return $("<a>").css("cursor", "pointer").html(pageIndex + 1).click(function(event) { editableGrid.setPageIndex(parseInt($(this).html()) - 1); });
+        });
+          
+        // "first" link
+        var link = $("<a>").html("<img src='" + image("gofirst.png") + "'/>&nbsp;");
+        if (!this.canGoBack()) link.css({ opacity : 0.4, filter: "alpha(opacity=40)" });
+        else link.css("cursor", "pointer").click(function(event) { editableGrid.firstPage(); });
+        paginator.append(link);
+
+        // "prev" link
+        link = $("<a>").html("<img src='" + image("prev.png") + "'/>&nbsp;");
+        if (!this.canGoBack()) link.css({ opacity : 0.4, filter: "alpha(opacity=40)" });
+        else link.css("cursor", "pointer").click(function(event) { editableGrid.prevPage(); });
+        paginator.append(link);
+
+        // pages
+        for (p = 0; p < pages.length; p++) paginator.append(pages[p]).append(" | ");
+        
+        // "next" link
+        link = $("<a>").html("<img src='" + image("next.png") + "'/>&nbsp;");
+        if (!this.canGoForward()) link.css({ opacity : 0.4, filter: "alpha(opacity=40)" });
+        else link.css("cursor", "pointer").click(function(event) { editableGrid.nextPage(); });
+        paginator.append(link);
+
+        // "last" link
+        link = $("<a>").html("<img src='" + image("golast.png") + "'/>&nbsp;");
+        if (!this.canGoForward()) link.css({ opacity : 0.4, filter: "alpha(opacity=40)" });
+        else link.css("cursor", "pointer").click(function(event) { editableGrid.lastPage(); });
+        paginator.append(link);
+      };
+
+  
+      editableGrid.load({"metadata": metadata, "data": data});
+      editableGrid.initializeGrid();
+      editableGrid.renderGrid("tablecontent", "testgrid");
+      zeEditableGrid = editableGrid;
+    }
+
+    function image(relativePath) {
+      return "http://crowdprover.herokuapp.com/static/images/" + relativePath;
+    }
+
     </script>
 
 
@@ -132,19 +362,54 @@
       <!-- Example row of columns -->
       <section id="section_program">
       <div class="row-fluid">
-        <div class="span6">
+        <div class="span5">
           <pre class="code1">{{code}}</pre>
        </div>
         <div class="span6" align="right">
           <h5>Suggest an invariant for a specific line</h5>
           <div align="right"> 
             {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-	           <form action="javascript:void(0);" method="post" id="Invariant_Form">
+	           <form action="javascript:void(0);" method="post" id="Invariant_Form" class="form-horizontal">
 	           {% csrf_token %}
-	           <div>Your Name</br><textarea name="author" rows="1" cols="50"></textarea></div>
-	           <div>Your Invariant</br><textarea name="content" rows="3" cols="50"></textarea></div>
-	           <div>Line number after which your invariant holds</br><input type="number" name="line"></div>
-	           <div><input type="submit" onclick="send_invariant();" value="Suggest Invariant" class="btn btn-primary"></div>
+                   <div class="control-group">
+                       <label class="control-label" for="Invariant_Form_inv">Invariant</label>
+                       <div class="controls">
+                         <input type="text" id="Invariant_Form_inv" placeholder="Predicate..." name="content">
+                       </div>
+                   </div>
+                   <div class="control-group">
+                       <label class="control-label" for="Invariant_Form_line">Line</label>
+                       <div class="controls">
+                         <input type="number" id="Invariant_Form_line" name="line">
+                       </div>
+                   </div>
+                   <!--label>Invariant</label>
+                   <input type="text" name="content" placeholder="Formula...">
+                   <label>Line number</label>
+	           <input type="number" name="line"></div-->
+	           <div><input type="submit" onclick="send_invariant();" value="Suggest Invariant" class="btn btn-primary" data-loading-text="Proving..."></div>
+                   </fieldset>
+	           </form>
+          </div>
+          <br>
+          <h5>Suggest a loop invariant for a specific loop</h5>
+          <div align="right"> 
+            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	           <form action="javascript:void(0);" method="post" id="LoopInvariant_Form" class="form-horizontal">
+	           {% csrf_token %}
+                   <div class="control-group">
+                       <label class="control-label" for="Invariant_Form_inv">Invariant</label>
+                       <div class="controls">
+                         <input type="text" id="Invariant_Form_inv" placeholder="Predicate..." name="content">
+                       </div>
+                   </div>
+                   <div class="control-group">
+                       <label class="control-label" for="Invariant_Form_line">Loop</label>
+                       <div class="controls">
+                         <input type="number" id="Invariant_Form_loop" name="loopid">
+                       </div>
+                   </div>
+	           <div><input type="submit" onclick="send_loop_invariant();" value="Suggest Loop Invariant" class="btn btn-primary"></div>
 	           </form>
           </div>
         </div>
@@ -159,8 +424,9 @@
           <h3>Results</h3>
           <p>Others have suggested the following invariants</p>
         </div>
-      <div class="row-fluid">
+      <div class="row-fluid" align="center">
         <div class="span6">
+        <h4>Invariants</h4>
         <table class="table table-hover">
           <thead>
             <tr>
@@ -190,8 +456,9 @@
           </tbody>
         </table>
         </div> <!-- end span6-->
-        <div class="span6">
 
+        <div class="span6" align="center">
+        <h4>Loop Invariants</h4>
         <table class="table table-hover">
           <thead>
             <tr>
@@ -224,6 +491,53 @@
       </div>
       </section>
 
+      <section id="section_trace">
+        <div class="page-header">
+          <h3>Trace Visualizer</h3>
+          <p>Set program inputs, and step through the execution trace.</p>
+        </div>
+        <div class="row-fluid">
+          <div class="span5">
+            <pre class="code2">{{code}}</pre>
+         </div>
+          <div class="span7" align="right">
+            <div class="row-fluid">
+              <div class="span10">
+              <table id="inputtable" class="inputgrid">
+              <tr>
+              <th>Variable</th><th>Value</th>
+              </tr>
+              {% for input in trace.inputs %}
+              <tr id="inputrow{{forloop.counter}}">
+              <td>{{input.name}}</td><td id="input{{forloop.counter}}">{{input.default}}</td>
+              </tr>
+              {% endfor %}
+              </table>
+            </div>
+            <div class="span2">
+              <button type="button" onclick="Dajaxice.proveit.programs.computeTrace(compute_trace_callback, {'program_id':{{program.id}}, 'inputs':[{%for input in trace.inputs %} $('#input{{forloop.counter}}').html() {% endfor %}]})" class="btn btn-small btn-primary" data-loading-text="Computing...">Compute Trace</button>
+            </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span10">
+              <p><input type="text" class="span2" value="" data-slider-min="1" data-slider-max="22" data-slider-step="1" data-slider-value="1" data-slider-id="slider1" id="slider1">
+              </p>
+            </div>
+            <div class="span2">
+              <div class="btn-group">
+                <button type="button" class="btn btn-primary btn-mini">Prev</button>
+                <button type="button" class="btn btn-primary btn-mini">Next</button>
+              </div>
+            </div>
+          </div>
+              <br>
+              <div id="visualtable">
+              </div> <!-- visualtable -->
+              <div id="tablecontent"></div>
+              <div id="paginator"></div>
+          </div>
+      </section>
+
      </div>
      </div>
     </div> <!-- /container -->
@@ -237,9 +551,9 @@ Scratch:
     ================================================== -->
     <footer class="footer">
       <div class="container">
-        <p>Designed and built with all the love in the world by <a href="http://twitter.com/mdo" target="_blank">@mdo</a> and <a href="http://twitter.com/fat" target="_blank">@fat</a>.</p>
-        <p>Code licensed under <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License v2.0</a>, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
-        <p><a href="http://glyphicons.com">Glyphicons Free</a> licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+        <p>Designed and built by <a href="https://github.com/rsinha" target="_blank">rsinha</a> and <a href="https://github.com/nishanttotla" target="_blank">nishanttotla</a>.</p>
+        <p>Code licensed under <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons 3.0</a>.</p>
+        <p>Special Thanks to JQuery, Bootstrap, Snippets, Editable Grid, Django, and Dajaxice. </p>
         <ul class="footer-links">
           <li><a href="http://blog.getbootstrap.com">Blog</a></li>
           <li class="muted">&middot;</li>
@@ -259,6 +573,7 @@ Scratch:
     <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-modal.js"></script>
     <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-dropdown.js"></script>
     <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-scrollspy.js"></script>
+    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-slider.js"></script>
     <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-tab.js"></script>
     <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-tooltip.js"></script>
     <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-popover.js"></script>
