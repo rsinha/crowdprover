@@ -62,7 +62,7 @@ def proveProgram(program_id):
 	assertions = z3program.programAsserts()
 	for assertion in assertions:
 		(success,model) = checkInvariant(program_id, assertion[1], assertion[0])
-		if not(success):
+		if success == 0:
 			return
 
 	program.status = 1
@@ -78,7 +78,7 @@ def proveUnknownInvariants(program_id):
 
 	for unknownInv in unknownInvariants:
 		(success,model) = checkInvariant(program_id, unknownInv.content, unknownInv.line)
-		if success:
+		if success == 1:
 			unknownInv.status = 1
 			unknownInv.save()
 	for unknownLoopInv in unknownLoopInvariants:
@@ -126,16 +126,25 @@ def checkInvariant(program_id, inv, line):
 		print "Using negated loop condition", Not(substituteFormula(program_id, loopCond, lastLineOfLoop))
 		s.add(Not(substituteFormula(program_id, loopCond, lastLineOfLoop)))
 
+	#First check for No (in all executions)
+	s.push()
+	s.add(ssainv)
+	if s.check() == unsat:
+		print "Proved invariant false"
+		return (2, 0)
+	s.pop()
+
+	s.push()
 	#negation of property
 	s.add(Not(ssainv))
 
 	if s.check() == unsat:
 		print "Proved invariant"
-		return (True, 0)
+		return (1, 0)
 	else:
 		print "Unable to prove invariant"
 		print s.model()
-		return (False, s.model())
+		return (0, s.model())
 
 def checkLoopInvariant(program_id, inv, loop_id):
 	program = Program.objects.get(pk=program_id)
@@ -179,12 +188,21 @@ def checkLoopInvariant(program_id, inv, loop_id):
 		print "Using negated loop condition", Not(substituteFormula(program_id, loopCond, lastLineOfLoop))
 		s.add(Not(substituteFormula(program_id, loopCond, lastLineOfLoop)))
 
+	#First check for No (in all executions)
+	s.push()
+	s.add(entryformula)
+	if s.check() == unsat:
+		print "Proved loop invariant false"
+		return (2, 0)
+	s.pop()
+
+	s.push()
 	s.add(Not(entryformula))
 
 	if s.check() == sat:
 		print "Loop invariant does not hold on entry"
 		print s.model()
-		return (False, s.model())
+		return (0, s.model())
 	else:
 		print "Loop invariant holds on entry. Checking inductively..."
 
@@ -213,11 +231,11 @@ def checkLoopInvariant(program_id, inv, loop_id):
 
 	if s.check() == unsat:
 		print "Proved loop invariant"
-		return (True, 0)
+		return (1, 0)
 	else:
 		print "Unable to prove loop invariant"
 		print s.model()
-		return (False, s.model())
+		return (0, s.model())
 
 def programStates(z3program):
 	info = z3program.programInfo()

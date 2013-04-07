@@ -40,7 +40,7 @@ def detail(request, program_id):
 	trace = proveit.programs.proveutils.computeTrace(proveit.programs.proveutils.absoluteMeta(program.source), proveit.programs.proveutils.absoluteBinary(program.binary), inputs) 
     except Program.DoesNotExist:
         raise Http404
-    return render(request, 'programs/detail.html', {'program': program, 'code': code, 'trace':trace})
+    return render(request, 'programs/newdetail.html', {'program': program, 'code': code, 'trace':trace})
 
 def results(request, program_id):
 	program = get_object_or_404(Program, pk=program_id)
