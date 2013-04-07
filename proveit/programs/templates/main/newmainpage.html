@@ -1,0 +1,139 @@
+{% load dajaxice_templatetags %}
+{% load url from future %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Bootstrap, from Twitter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="http://crowdprover.herokuapp.com/static/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href="http://crowdprover.herokuapp.com/static/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://crowdprover.herokuapp.com/static/bootstrap/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://crowdprover.herokuapp.com/static/bootstrap/ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://crowdprover.herokuapp.com/static/bootstrap/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="http://crowdprover.herokuapp.com/static/bootstrap/ico/apple-touch-icon-57-precomposed.png">
+                                   <link rel="shortcut icon" href="http://crowdprover.herokuapp.com/static/bootstrap/ico/favicon.png">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">proveIt</a>
+          <div class="nav-collapse collapse">
+            {% if not request.user.is_authenticated %}
+            <ul class="nav">
+              <li><a href="#">Home</a></li>
+              <li><a href="#">Tutorial</a></li>
+              <li><a href="/register">Register</a></li>
+            </ul>
+            <form class="navbar-form pull-right" action="{% url 'logging' %}" method="post">
+              {% csrf_token %}
+              <input type="text" name="username" class="span2" placeholder="Username">
+              <input type="password" name="password" class="span2" placeholder="Password">
+              <button type="submit" class="btn">Sign in</button>
+            </form>
+            {% endif %}
+            {% if request.user.is_authenticated %}
+            <ul class="nav">
+              <li><a href="#">Home</a></li>
+              <li><a href="/programs">Programs</a></li>
+              <li><a href="#">Tutorial</a></li>
+              <li><a href="#">My Account</a></li>
+            </ul>
+            <form class="navbar-form pull-right" action="{% url 'logout' %}" method="post">
+              {% csrf_token %}
+              <input type="text" name="uname" class="span2" readonly value="{{ request.user }}">
+              <button type="submit" class="btn">Logout</button>
+            </form>
+            {% endif %}
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- Main hero unit for a primary marketing message or call to action -->
+      <div class="hero-unit">
+        {% if request.user.is_authenticated %}
+        <h2>Welcome {{ request.user.first_name }}!</h2>
+        <p>To learn how to prove programs, check out our walkthrough tutorial. But if you're feeling really confident, you can go to the programs right away.</p>
+        <p><a href="#" class="btn btn-primary btn-large">Check tutorial &raquo;</a> <a href="/programs" class="btn btn-primary btn-large">Go to programs &raquo;</a></p>
+        {% else %}
+        <h2>Hello, human</h2>
+        <p>This is a crowdsourcing effort for program verification. Program verification is the task of proving that a computer program meets its specification. Computer programs are really complex. Programmers write them, but there are no guarantees, hence we need verification. But computers are having a hard time verifying programs - we need your help, human! To be part of this awesome effort, register now!</p>
+        <p><a href="/register" class="btn btn-primary btn-large">Register &raquo;</a></p>
+        {% endif %}
+      </div>
+
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="span4">
+          <h2>Crowdsourcing</h2>
+          <p>This is cool</p>
+          <p><a class="btn" href="#">Learn more &raquo;</a></p>
+        </div>
+        <div class="span4">
+          <h2>Verification</h2>
+          <p>Verification is so hard</p>
+          <p><a class="btn" href="#">Learn more &raquo;</a></p>
+       </div>
+        <div class="span4">
+          <h2>Something</h2>
+          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+          <p><a class="btn" href="#">Register &raquo;</a></p>
+        </div>
+      </div>
+
+      <hr>
+
+      <footer>
+        <p>&copy; Company 2013</p>
+      </footer>
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/jquery.js"></script>
+    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-transition.js"></script>
+    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-alert.js"></script>
+    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-modal.js"></script>
+    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-dropdown.js"></script>
+    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-scrollspy.js"></script>
+    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-tab.js"></script>
+    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-tooltip.js"></script>
+    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-popover.js"></script>
+    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-button.js"></script>
+    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-collapse.js"></script>
+    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-carousel.js"></script>
+    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-typeahead.js"></script>
+
+  </body>
+</html>

@@ -6,6 +6,7 @@ from django.utils import timezone
 import subprocess
 import sys
 import getopt
+from django.contrib.auth.decorators import login_required
 
 from proveit.programs.models import Program, Invariant, LoopInvariant
 import proveit.programs.proveutils

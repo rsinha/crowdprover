@@ -1,1 +1,12 @@
-<html><body><p>You are at the main page. Check out our <a href="/programs">programs</a></p></body></html>
+<html>
+<body>
+	{% if request.user.is_authenticated %}
+	<p>Hi {{ request.user }}! Welcome to proveIt - a crowdsourced program verifier. Check out our <a href="/programs">programs</a></p>
+	<p>Click <a href="/logout">here</a> to logout</p>
+	{% endif %}
+	{% if not request.user.is_authenticated %}
+	<p>Hello human, you must log in or register to start proving some programs.</p>
+	<p>Click <a href="/login">here</a> to login or <a href="/register">here</a> to register.</p>
+	{% endif %}
+</body>
+</html>
