@@ -11,6 +11,11 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
+    url(r'^login/', views.loginpage, name='login'),
+    url(r'^logout/', views.logoutuser, name='logout'),
+    url(r'^submit/', views.logging, name='logging'), # knew no better way to define the namespace 'logging' without assigning a new url to id
+    url(r'^register/', views.registerpage, name='register'),
+    url(r'^regsubmit/', views.registering, name='registering'), # knew no better way to define the namespace 'registering' without assigning a new url to id
     url(r'^programs/', include('proveit.programs.urls', namespace="programs")),
     url(dajaxice_config.dajaxice_url, include('dajaxice.urls')),
     url(r'^admin/', include(admin.site.urls)),

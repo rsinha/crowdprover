@@ -122,7 +122,8 @@
 
     // Submit invariant to the server
     function send_invariant(){
-      author = "Boomaholic";
+      //author = "Boomaholic";
+      author = "{{ request.user.username }}";
       invariant = $("#Invariant_Form :input[name=content]").val();
       line = $("#Invariant_Form :input[name=line]").val();
       alert(author+" is submitting "+invariant+" as invariant for line " + line)
@@ -130,7 +131,7 @@
     }
     // Submit loop invariant to the server
     function send_loop_invariant(){
-      author = "Boomaholic";
+      author = "{{ request.user.username }}";
       invariant = $("#LoopInvariant_Form :input[name=content]").val();
       loop_id = $("#LoopInvariant_Form :input[name=loopid]").val();
       alert(author+" is submitting "+invariant+" as loop invariant for loop id " + loop_id)
