@@ -117,6 +117,12 @@ def registering(request):
 	else:
 		username_error=""
 
+	if password=="" or password is None:
+		password_error="Password is compulsory"
+		form_valid = 0
+	else:
+		password_error=""
+
 	if form_valid == 0:
 		context = Context({'firstname_error':firstname_error,'lastname_error':lastname_error,'email_error':email_error,'username_error':username_error,'password_error':password_error})
 		return render(request,'main/register.html',context)
