@@ -12,13 +12,14 @@
     <!--script src="http://crowdprover.herokuapp.com/static/js/jquery-1.9.1.js"></script-->
     <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/jquery.js"></script>
     <script src="http://code.jquery.com/jquery-migrate-1.0.0.js"></script>
-    <!--script src="http://crowdprover.herokuapp.com/static/js/jquery-ui.js"></script-->
+    <script src="http://crowdprover.herokuapp.com/static/js/jquery-ui.js"></script>
+    <link rel="stylesheet" href="http://crowdprover.herokuapp.com/static/css/jquery-ui.css" />
     <!-- Le styles -->
 
     <link href="http://crowdprover.herokuapp.com/static/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="http://crowdprover.herokuapp.com/static/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://crowdprover.herokuapp.com/static/bootstrap/css/docs.css" rel="stylesheet">
-    <link href="http://crowdprover.herokuapp.com/static/bootstrap/css/slider.css" rel="stylesheet">
+    <!--link href="http://crowdprover.herokuapp.com/static/bootstrap/css/slider.css" rel="stylesheet"-->
 
 
     <link rel="stylesheet" type="text/css" href="http://crowdprover.herokuapp.com/static/css/jquery.snippet.css" />
@@ -152,7 +153,20 @@
           eval($(this).html());
         });
         $('.button').button();
-        $('#slider1').slider();
+        $( "#slider1" ).slider({
+            value:1,
+            min: 1,
+            max: {{trace.length}},
+            step: 1,
+            slide: function( event, ui ) {
+              var stepToLine = [{% for line in trace.lines %} {{line}}, {% endfor %}];
+              var pos = (stepToLine[ui.value-1]).toString();
+              $( "#step" ).val( ui.value );
+              $("pre.code1").snippet("cpp",{style:"navy",box:pos,boxColor:"red",boxFill:"black",menu:false});
+              var col = ui.value + 1;
+            }
+        });
+    $( "#step" ).val( $( "#slider1" ).slider( "value" ) );
 
     });
 
@@ -182,6 +196,49 @@
         {% endfor %}
         data.push({id: i, values: thisvalues});  
       }
+
+    $( "#slider1" ).slider({
+      value:1,
+      min: 1,
+      max: trace.length,
+      step: 1,
+      slide: function( event, ui ) {
+        var stepToLine = trace.lines;
+        var pos = (stepToLine[ui.value-1]).toString();
+        $( "#step" ).val( ui.value );
+        $("pre.code1").snippet("cpp",{style:"navy",box:pos,boxColor:"red",boxFill:"black",menu:false});
+        var stepsperpage = zeEditableGrid.pageSize;
+        var newStep = ui.value;
+        console.log(zeEditableGrid);
+        if (zeEditableGrid.getCurrentPageIndex() != Math.floor((oldStep - 1) / stepsperpage)) {
+          console.log("within 0:", zeEditableGrid.getCurrentPageIndex(), Math.floor((oldStep - 1) / stepsperpage));
+          zeEditableGrid.setPageIndex(Math.floor((oldStep - 1) / stepsperpage));
+        }
+        var minStep = zeEditableGrid.getCurrentPageIndex() * zeEditableGrid.pageSize + 1;
+        var maxStep = (zeEditableGrid.getCurrentPageIndex() + 1) * zeEditableGrid.pageSize;
+        console.log("within outside:", minStep, maxStep, oldStep, newStep);
+        if (minStep <= newStep && newStep <= maxStep) {
+          //from current page to current page
+          console.log("within 1:", minStep, maxStep, newStep, zeEditableGrid.getCurrentPageIndex());
+          var currentPage = zeEditableGrid.getCurrentPageIndex();
+          $("#tablecontent").find('tr').eq(newStep - currentPage * stepsperpage).css("background-color", "#FFFF00");
+          $("#tablecontent").find('tr').eq(oldStep - currentPage * stepsperpage).css("background-color", "#FFFFFF");
+        }
+        else if (oldStep == minStep && newStep < minStep) {
+          console.log("within 2:", minStep, maxStep, newStep, zeEditableGrid.getCurrentPageIndex());
+          zeEditableGrid.prevPage();
+          var currentPage = zeEditableGrid.getCurrentPageIndex();
+          $("#tablecontent").find('tr').eq(newStep - currentPage * stepsperpage).css("background-color", "#FFFF00");
+        }
+        else if (oldStep == maxStep && newStep > maxStep) {
+          console.log("within 3:", minStep, maxStep, newStep, zeEditableGrid.getCurrentPageIndex());
+          zeEditableGrid.nextPage();
+          var currentPage = zeEditableGrid.getCurrentPageIndex();
+          $("#tablecontent").find('tr').eq(newStep - currentPage * stepsperpage).css("background-color", "#FFFF00");
+        }
+        oldStep = newStep;
+        }
+      });
 
       editableGrid = new EditableGrid("DemoGridFull1", {pageSize: 5, maxBars: 10});
 
@@ -517,11 +574,14 @@
             <div class="span2">
               <button type="button" onclick="Dajaxice.proveit.programs.computeTrace(compute_trace_callback, {'program_id':{{program.id}}, 'inputs':[{%for input in trace.inputs %} $('#input{{forloop.counter}}').html() {% endfor %}]})" class="btn btn-small btn-primary" data-loading-text="Computing...">Compute Trace</button>
             </div>
+            <br><br>
             </div>
+            <input type="text" id="step" style="display:none;"/>
             <div class="row-fluid">
               <div class="span10">
-              <p><input type="text" class="span2" value="" data-slider-min="1" data-slider-max="22" data-slider-step="1" data-slider-value="1" data-slider-id="slider1" id="slider1">
-              </p>
+              <p><!--input type="text" class="span2" value="" data-slider-min="1" data-slider-max="2" data-slider-step="1" data-slider-value="1" data-slider-id="slider1" id="slider1"-->
+                <div id="slider1"></div>
+              
             </div>
             <div class="span2">
               <div class="btn-group">
@@ -573,7 +633,7 @@ Scratch:
     <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-modal.js"></script>
     <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-dropdown.js"></script>
     <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-scrollspy.js"></script>
-    <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-slider.js"></script>
+    <!--script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-slider.js"></script-->
     <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-tab.js"></script>
     <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-tooltip.js"></script>
     <script src="http://crowdprover.herokuapp.com/static/bootstrap/js/bootstrap-popover.js"></script>
