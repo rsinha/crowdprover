@@ -276,6 +276,11 @@
       alert(data.message);
     }
 
+    function compute_trace() {
+        Dajaxice.proveit.programs.computeTrace(compute_trace_callback, {'program_id':{{program.id}}, 'inputs':[{%for input in trace.inputs %} $('#input{{forloop.counter}}').html() {% endfor %}]});
+        $('#compute_trace_button').button('loading');
+    }
+
     // Submit invariant to the server
     function send_invariant(){
       //author = "Boomaholic";
@@ -332,6 +337,8 @@
     function compute_trace_callback(data){
       trace = data;
       oldStep = 1;
+
+      $('#compute_trace_button').button('reset');
 
       // this approach is interesting if you need to dynamically create data in Javascript 
       var metadata = [];
@@ -778,7 +785,7 @@
               </table>
             </div>
             <div class="span2">
-              <button type="button" onclick="Dajaxice.proveit.programs.computeTrace(compute_trace_callback, {'program_id':{{program.id}}, 'inputs':[{%for input in trace.inputs %} $('#input{{forloop.counter}}').html() {% endfor %}]})" class="btn btn-small btn-primary" data-loading-text="Computing...">Compute Trace</button>
+              <button type="button" id="compute_trace_button" onclick="compute_trace();" class="btn btn-small btn-primary" data-loading-text="Computing...">Compute Trace</button>
             </div>
             <br><br>
             </div>
