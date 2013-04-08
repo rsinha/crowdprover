@@ -125,8 +125,7 @@
 
   <body data-spy="scroll" data-target=".bs-docs-sidebar">
 
-    <!-- Navbar
-    ================================================== -->
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
@@ -137,26 +136,36 @@
           </button>
           <a class="brand" href="#">proveIt</a>
           <div class="nav-collapse collapse">
+            {% if not request.user.is_authenticated %}
             <ul class="nav">
-              <li class="">
-                <a href="/">Home</a>
-              </li>
-              <li class="">
-                <a href="/programs">Programs</a>
-              </li>
-              <li class="">
-                <a href="#">Awards</a>
-              </li>
-              <li class="">
-                <a href="#">Contact Us</a>
-              </li>
+              <li><a href="/">Home</a></li>
+              <li><a href="#">Tutorial</a></li>
+              <li><a href="/register">Register</a></li>
             </ul>
-          </div>
+            <form class="navbar-form pull-right" action="{% url 'logging' %}" method="post">
+              {% csrf_token %}
+              <input type="text" name="username" class="span2" placeholder="Username">
+              <input type="password" name="password" class="span2" placeholder="Password">
+              <button type="submit" class="btn">Sign in</button>
+            </form>
+            {% endif %}
+            {% if request.user.is_authenticated %}
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/programs">Programs</a></li>
+              <li><a href="#">Awards</a></li>
+              <li><a href="#">Contact us</a></li>
+            </ul>
+            <form class="navbar-form pull-right" action="{% url 'logout' %}" method="post">
+              {% csrf_token %}
+              <input type="text" name="uname" class="span2" readonly value="{{ request.user }}">
+              <button type="submit" class="btn">Logout</button>
+            </form>
+            {% endif %}
+          </div><!--/.nav-collapse -->
         </div>
       </div>
     </div>
-
-
 
     <div class="container">
 
