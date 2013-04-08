@@ -290,8 +290,8 @@
 	case 0: code = "Maybe Invariant"; break;
 	case 1: code = "Correct Invariant"; break;
 	case 2: code = "Incorrect Invariant"; break;
-	case 4: code = "Parse Error"; break;
-	case 5: code = "Duplicate Invariant"; break;
+	case 3: code = "Parse Error"; break;
+	case 4: code = "Duplicate Invariant"; break;
       }
       $('#suggest_invariant_button').popover({animation: true, content: data.content, title: code});
       $('#suggest_invariant_button').popover('show');
@@ -304,8 +304,8 @@
 	case 0: code = "Maybe Loop Invariant"; break;
 	case 1: code = "Correct Loop Invariant"; break;
 	case 2: code = "Incorrect Loop Invariant"; break;
-	case 4: code = "Parse Error"; break;
-	case 5: code = "Duplicate Loop Invariant"; break;
+	case 3: code = "Parse Error"; break;
+	case 4: code = "Duplicate Loop Invariant"; break;
       }
       $('#suggest_loop_invariant_button').popover({animation: true, ccontent: data.content, title: code});
       $('#suggest_loop_invariant_button').popover('show');
