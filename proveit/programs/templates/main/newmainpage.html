@@ -142,7 +142,7 @@
         {% if request.user.is_authenticated %}
         <h1>Welcome {{ request.user.first_name }}!</h1>
         <p>To learn how to prove programs, check out our walkthrough tutorial. If you're feeling confident, you can head over to the programs right away.</p>
-        <p><a href="#" class="btn btn-primary btn-large">Check tutorial &raquo;</a> <a href="/programs" class="btn btn-primary btn-large">Go to programs &raquo;</a></p>
+        <p><a href="#" class="btn btn-info btn-large">Tutorial &raquo;</a> <a href="/programs" class="btn btn-success btn-large">Prove programs &raquo;</a></p>
         {% else %}
         <h1>proveIt</h1>
         <p class="lead">This is a crowdsourcing effort for program verification. We use program verification to prove that a computer program meets its specification. Most programs are large and complex. Programmers write them with no correctness guarantees, hence we need verification. However, automated verification algorithms are having a hard time verifying programs - we need your help, human! To be part of this awesome effort, register now!</p>
@@ -166,7 +166,7 @@
         </div>
         <div class="span4" align="center">
           <h2>What?</h2>
-          <p>Still wondering what all this means? This tutorial is possibly worth a 1000 words. Learn more about how you can help us.</p>
+          <p>Still wondering what all this means? This tutorial is possibly worth a 1000 words. Please <a href="mailto:devteam@crowdprover.herokuapp.com">contact us</a> if you have any questions or concerns.</p>
           <p><a class="btn btn-info" href="">Tutorial &raquo;</a></p>
         </div>
       </div>
