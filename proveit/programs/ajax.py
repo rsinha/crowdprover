@@ -28,7 +28,7 @@ def suggestInvariant(request, program_id, author, invariant, line):
 
 	(exists, existingInv) = proveit.programs.verifier.invariantExistsInDB(program_id, invariant, int(line))
 	if exists:
-		msg = existingInv.author + " already submitted an equivalent invariant"
+		msg = existingInv.author + " already submitted an equivalent invariant: " + str(existingInv)
 		response = {}
 		response['code'] = 4 #denotes duplicate submission
 		response['invariant'] = str(existingInv)
@@ -70,7 +70,7 @@ def suggestLoopInvariant(request, program_id, author, invariant, loop_id):
 	date = timezone.now()
 	(exists, existingInv) = proveit.programs.verifier.loopinvariantExistsInDB(program_id, invariant, int(loop_id))
 	if exists:
-		msg = existingInv.author + " already submitted an equivalent loop invariant"
+		msg = existingInv.author + " already submitted an equivalent loop invariant" + str(existingInv)
 		response = {}
 		response['code'] = 4 #denotes duplicate submission
 		response['invariant'] = str(existingInv)
