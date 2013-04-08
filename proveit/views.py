@@ -25,7 +25,10 @@ def logging(request):
 		context = Context({})
 		return render(request,'main/newmainpage.html',context)
 
-	# TODO: Add check for request.post QueryDict being empty
+	# TODO: This check seems a little strange. Could there be faults?
+	if not request.POST:
+		context =  Context({})
+		return render(request,'main/newmainpage.html',context)
 
 	# Try to sign user in
 	username = request.POST['username']
@@ -59,8 +62,12 @@ def registering(request):
 		context = Context({})
 		return render(request,'main/newmainpage.html',context)
 
-	# TODO: Add check for request.post QueryDict being empty
+	# TODO: This check for non-emptiness of the POST request seems strange to me. Could there be a better way?
 	# TODO: Use Django forms for the register form validation
+
+	if not request.POST:
+		context =  Context({})
+		return render(request,'main/newmainpage.html',context)
 
 	firstname = request.POST['firstname']
 	lastname = request.POST['lastname']
