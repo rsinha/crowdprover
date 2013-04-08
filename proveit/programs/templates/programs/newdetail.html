@@ -115,6 +115,7 @@
     <script type="text/javascript">
     var checkBoxCache = [{% for vartrace in trace.values %}false,{% endfor %}];
     var trace;
+    var computeTraceCount = 0;
 
     function saveSettings() {
       {% for vartrace in trace.values %}
@@ -265,6 +266,23 @@
       $('#settingsModal').modal('hide');
     }
 
+    function slide_prev() {
+	currentVal = $('#slider1').slider("value");
+        min = $('#slider1').slider("option", "min");
+	if (currentVal > min) {
+	  $('#slider1').slider("value", currentVal - 1);
+          $( "#step" ).val( currentVal - 1 );
+        }
+    }
+    function slide_next() {
+	currentVal = $('#slider1').slider("value");
+        max = $('#slider1').slider("option", "max");
+	if (currentVal < max) {
+	  $('#slider1').slider("value", currentVal + 1);
+          $( "#step" ).val( currentVal + 1 );
+        }
+    }
+
     // Feedback about submitted invariant
     function send_invariant_callback(data){
       $('#suggest_invariant_button').button('reset');
@@ -337,6 +355,7 @@
     function compute_trace_callback(data){
       trace = data;
       oldStep = 1;
+      computeTraceCount += 1;
 
       $('#compute_trace_button').button('reset');
 
@@ -363,12 +382,20 @@
         data.push({id: i, values: thisvalues});  
       }
 
+    //$( "#slider1" ).slider("destroy");
     $( "#slider1" ).slider({
       value:1,
       min: 1,
       max: trace.length,
       step: 1,
-      slide: function( event, ui ) {
+      slide: function( event, ui ) {slideHandler(event,ui);}
+    });
+       
+    if (computeTraceCount == 1) {
+      $('#slider1').slider().bind('slidechange',function(event,ui){slideHandler(event,ui);});
+    }
+
+      slideHandler = function(event,ui) {
         var stepToLine = trace.lines;
         var pos = (stepToLine[ui.value-1]).toString();
         $( "#step" ).val( ui.value );
@@ -398,8 +425,7 @@
           $("#tablecontent").find('tr').eq(newStep - currentPage * stepsperpage).css("background-color", "#FFFF00");
         }
         oldStep = newStep;
-        }
-      });
+      }
 
       editableGrid = new EditableGrid("DemoGridFull1", {pageSize: 5, maxBars: 10});
 
@@ -495,7 +521,7 @@
       $("pre.code2").snippet("cpp",{style:"navy",box:trace.firstLine.toString(),boxColor:"red",boxFill:"black",menu:false});
       $('#slider').slider("option", "max", trace.length);
       $('#slider').slider("value", 1);
-      $( "#step" ).val( $( "#slider" ).slider( "value" ) );
+      $( "#step" ).val( $( "#slider1" ).slider( "value" ) );
 
       var stepsperpage = zeEditableGrid.pageSize;
       if (zeEditableGrid.getCurrentPageIndex() != Math.floor((oldStep - 1) / stepsperpage)) {
@@ -797,8 +823,8 @@
             </div>
             <div class="span2">
               <div class="btn-group">
-                <button type="button" class="btn btn-primary btn-mini">Prev</button>
-                <button type="button" class="btn btn-primary btn-mini">Next</button>
+                <button type="button" class="btn btn-primary btn-mini" onclick="slide_prev();">Prev</button>
+                <button type="button" class="btn btn-primary btn-mini" onclick="slide_next();">Next</button>
               </div>
             </div>
           </div>
