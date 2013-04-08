@@ -9,6 +9,8 @@ from proveit.programs.models import Program, Invariant, LoopInvariant
 import proveit.programs.proveutils
 import proveit.programs.verifier
 
+#TODO: parse errors result in code 3, implement graceful response to parse errors
+
 @dajaxice_register(method='GET')
 def computeTrace(request, program_id, inputs):
 	print inputs
@@ -26,17 +28,29 @@ def suggestInvariant(request, program_id, author, invariant, line):
 
 	(exists, existingInv) = proveit.programs.verifier.invariantExistsInDB(program_id, invariant, int(line))
 	if exists:
-		msg = existingInv.author + " already submitted " + invariant +" as an invariant"
-		return simplejson.dumps({'message':msg})
+		msg = existingInv.author + " already submitted an equivalent invariant"
+		response = {}
+		response['code'] = 4 #denotes duplicate submission
+		response['invariant'] = str(existingInv)
+		response['author'] = str(existingInv.author)
+		response['content'] = msg
+		return simplejson.dumps(response)
 
 	(success, model) = proveit.programs.verifier.checkInvariant(program_id, invariant, int(line))
-	msg = ""
+	response = {}
+	print "boomserver"
+	response['invariant'] = invariant
+	response['author'] = author
 	if success == 1:
-		msg = "Able to prove invariant: " + invariant + " correct"
+		response['code'] = 1
+		response['content'] = "Able to prove invariant: " + invariant + " correct"
 	elif success == 2:
-		msg = "Able to prove invariant: " + invariant + " incorrect"
+		response['code'] = 2
+		response['content'] = "Able to prove invariant: " + invariant + " incorrect"
 	elif success == 0:
-		msg = "Unable to prove invariant: " + invariant + "\ncex: " + str(model)
+		response['code'] = 0
+		response['content'] = "Unable to prove invariant: " + invariant
+		response['cex'] = str(model) #TODO: Fix this
 	print "Adding invariant", invariant, "to DB..."
 	program.invariant_set.create(author=author, content=invariant, line=int(line), date=date,status=success)
 
@@ -47,7 +61,7 @@ def suggestInvariant(request, program_id, author, invariant, line):
 		#try proving the program now
 		proveit.programs.verifier.proveProgram(program_id)
 
-	return simplejson.dumps({'message':msg})
+	return simplejson.dumps(response)
 
 @dajaxice_register(method='POST')
 def suggestLoopInvariant(request, program_id, author, invariant, loop_id):
@@ -56,17 +70,28 @@ def suggestLoopInvariant(request, program_id, author, invariant, loop_id):
 	date = timezone.now()
 	(exists, existingInv) = proveit.programs.verifier.loopinvariantExistsInDB(program_id, invariant, int(loop_id))
 	if exists:
-		msg = existingInv.author + " already submitted " + invariant +" as a loop invariant"
-		return simplejson.dumps({'message':msg})
+		msg = existingInv.author + " already submitted an equivalent loop invariant"
+		response = {}
+		response['code'] = 4 #denotes duplicate submission
+		response['invariant'] = str(existingInv)
+		response['author'] = str(existingInv.author)
+		response['content'] = msg
+		return simplejson.dumps(response)
 
 	(success, model) = proveit.programs.verifier.checkLoopInvariant(program_id, invariant, int(loop_id))
-	msg = ""
+	response = {}
+	response['invariant'] = invariant
+	response['author'] = author
 	if success == 1:
-		msg = "Able to prove loop invariant: " + invariant + " correct"
+		response['code'] = 1
+		response['content'] = "Able to prove loop invariant: " + invariant + " correct"
 	if success == 2:
-		msg = "Able to prove loop invariant: " + invariant + " incorrect"
+		response['code'] = 2
+		response['content'] = "Able to prove loop invariant: " + invariant + " incorrect"
 	elif success == 0:
-		msg = "Unable to prove loop invariant: " + invariant + "\ncex: " + str(model)
+		response['code'] = 0
+		response['content'] = "Unable to prove loop invariant: " + invariant
+		response['cex'] = str(model) #TODO: Fix this
 	print "Adding loop invariant", invariant, "to DB..."
 	program.loopinvariant_set.create(author=author, content=invariant, loopId=int(loop_id), date=date,status=success)
 
@@ -76,7 +101,6 @@ def suggestLoopInvariant(request, program_id, author, invariant, loop_id):
 		proveit.programs.verifier.proveUnknownInvariants(program_id)
 		#try proving the program now
 		proveit.programs.verifier.proveProgram(program_id)
-		#try proving the program now
 
-	return simplejson.dumps({'message':msg})
+	return simplejson.dumps(response)
 

@@ -286,12 +286,29 @@
     // Feedback about submitted invariant
     function send_invariant_callback(data){
       $('#suggest_invariant_button').button('reset');
-      alert(data.message);
+      switch(data.code) {
+	case 0: code = "Maybe Invariant"; break;
+	case 1: code = "Correct Invariant"; break;
+	case 2: code = "Incorrect Invariant"; break;
+	case 4: code = "Parse Error"; break;
+	case 5: code = "Duplicate Invariant"; break;
+      }
+      $('#suggest_invariant_button').popover({animation: true, content: data.content, title: code});
+      $('#suggest_invariant_button').popover('show');
     }
+
     // Feedback about submitted loop invariant
     function send_loop_invariant_callback(data){
       $('#suggest_loop_invariant_button').button('reset');
-      alert(data.message);
+      switch(data.code) {
+	case 0: code = "Maybe Loop Invariant"; break;
+	case 1: code = "Correct Loop Invariant"; break;
+	case 2: code = "Incorrect Loop Invariant"; break;
+	case 4: code = "Parse Error"; break;
+	case 5: code = "Duplicate Loop Invariant"; break;
+      }
+      $('#suggest_loop_invariant_button').popover({animation: true, ccontent: data.content, title: code});
+      $('#suggest_loop_invariant_button').popover('show');
     }
 
     function compute_trace() {
@@ -301,20 +318,19 @@
 
     // Submit invariant to the server
     function send_invariant(){
-      //author = "Boomaholic";
+      $('#suggest_invariant_button').popover('destroy');
       author = "{{ request.user.username }}";
       invariant = $("#Invariant_Form :input[name=content]").val();
       line = $("#Invariant_Form :input[name=line]").val();
-      alert(author+" is submitting "+invariant+" as invariant for line " + line);
       $('#suggest_invariant_button').button('loading');
       Dajaxice.proveit.programs.suggestInvariant(send_invariant_callback,{'program_id':{{program.id}},'author':author,'invariant':invariant,'line':line});
     }
     // Submit loop invariant to the server
     function send_loop_invariant(){
+      $('#suggest_loop_invariant_button').popover('destroy');
       author = "{{ request.user.username }}";
       invariant = $("#LoopInvariant_Form :input[name=content]").val();
       loop_id = $("#LoopInvariant_Form :input[name=loopid]").val();
-      alert(author+" is submitting "+invariant+" as loop invariant for loop id " + loop_id)
       $('#suggest_loop_invariant_button').button('loading');
       Dajaxice.proveit.programs.suggestLoopInvariant(send_loop_invariant_callback,{'program_id':{{program.id}},'author':author,'invariant':invariant,'loop_id':loop_id});
     }
@@ -683,7 +699,7 @@
                    <input type="text" name="content" placeholder="Formula...">
                    <label>Line number</label>
 	           <input type="number" name="line"></div-->
-	           <div><input type="submit" onclick="send_invariant();" id="suggest_invariant_button" value="Suggest Invariant" class="btn btn-primary" data-loading-text="Proving..."></div>
+	           <div><input type="submit" onclick="send_invariant();" id="suggest_invariant_button" value="Suggest Invariant" class="btn btn-primary" data-toggle="popover" data-placement="right" data-loading-text="Proving..."></div>
                    </fieldset>
 	           </form>
           </div>
@@ -705,7 +721,7 @@
                          <input type="number" id="Invariant_Form_loop" name="loopid">
                        </div>
                    </div>
-	           <div><input type="submit" onclick="send_loop_invariant();" id="suggest_loop_invariant_button" value="Suggest Loop Invariant" class="btn btn-primary" data-loading-text="Proving..."></div>
+	           <div><input type="submit" onclick="send_loop_invariant();" id="suggest_loop_invariant_button" value="Suggest Loop Invariant" class="btn btn-primary" data-toggle="popover" data-placement="right" data-loading-text="Proving..."></div>
 	           </form>
           </div>
         </div>
