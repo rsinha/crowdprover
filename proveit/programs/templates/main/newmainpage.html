@@ -5,20 +5,80 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Bootstrap, from Twitter</title>
+    <title>proveIt</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
 
     <!-- Le styles -->
     <link href="http://crowdprover.herokuapp.com/static/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="http://crowdprover.herokuapp.com/static/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
     <style type="text/css">
       body {
-        padding-top: 60px;
-        padding-bottom: 40px;
+        padding-top: 20px;
+        padding-bottom: 60px;
       }
+
+      .container {
+        margin: 0 auto;
+        max-width: 1000px;
+      }
+      .container > hr {
+        margin: 60px 0;
+      }
+
+      .jumbotron {
+        margin: 80px 0;
+        text-align: center;
+      }
+      .jumbotron h1 {
+        font-size: 80px;
+        line-height: 1;
+      }
+      .jumbotron .lead {
+        font-size: 24px;
+        line-height: 1.25;
+      }
+      .jumbotron .btn {
+        font-size: 21px;
+        padding: 14px 24px;
+      }
+
+      .marketing {
+        margin: 60px 0;
+      }
+      .marketing p + h4 {
+        margin-top: 28px;
+      }
+
+
+      .footer {
+        text-align: center;
+        padding: 30px 0;
+        margin-top: 70px;
+        border-top: 1px solid #e5e5e5;
+        background-color: #f5f5f5;
+      }
+      .footer p {
+        margin-bottom: 0;
+        color: #777;
+      }
+      .footer-links {
+        margin: 10px 0;
+      }
+      .footer-links li {
+        display: inline;
+        padding: 0 2px;
+     }
+      .footer-links li:first-child {
+        padding-left: 0;
+      }
+      .footer {
+        padding-top: 20px;
+        padding-bottom: 20px;
+      }
+
     </style>
-    <link href="http://crowdprover.herokuapp.com/static/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -78,43 +138,55 @@
 
     <div class="container">
 
-      <!-- Main hero unit for a primary marketing message or call to action -->
-      <div class="hero-unit">
+      <div class="jumbotron">
         {% if request.user.is_authenticated %}
-        <h2>Welcome {{ request.user.first_name }}!</h2>
-        <p>To learn how to prove programs, check out our walkthrough tutorial. But if you're feeling really confident, you can go to the programs right away.</p>
+        <h1>Welcome {{ request.user.first_name }}!</h1>
+        <p>To learn how to prove programs, check out our walkthrough tutorial. If you're feeling confident, you can head over to the programs right away.</p>
         <p><a href="#" class="btn btn-primary btn-large">Check tutorial &raquo;</a> <a href="/programs" class="btn btn-primary btn-large">Go to programs &raquo;</a></p>
         {% else %}
-        <h2>Hello, human</h2>
-        <p>This is a crowdsourcing effort for program verification. Program verification is the task of proving that a computer program meets its specification. Computer programs are really complex. Programmers write them, but there are no guarantees, hence we need verification. But computers are having a hard time verifying programs - we need your help, human! To be part of this awesome effort, register now!</p>
-        <p><a href="/register" class="btn btn-primary btn-large">Register &raquo;</a></p>
+        <h1>proveIt</h1>
+        <p class="lead">This is a crowdsourcing effort for program verification. We use program verification to prove that a computer program meets its specification. Most programs are large and complex. Programmers write them with no correctness guarantees, hence we need verification. However, automated verification algorithms are having a hard time verifying programs - we need your help, human! To be part of this awesome effort, register now!</p>
+        <p><a href="/register" class="btn btn-success btn-large">Get started today &raquo;</a></p>
         {% endif %}
-      </div>
-
-      <!-- Example row of columns -->
-      <div class="row">
-        <div class="span4">
-          <h2>Crowdsourcing</h2>
-          <p>This is cool</p>
-          <p><a class="btn" href="#">Learn more &raquo;</a></p>
-        </div>
-        <div class="span4">
-          <h2>Verification</h2>
-          <p>Verification is so hard</p>
-          <p><a class="btn" href="#">Learn more &raquo;</a></p>
-       </div>
-        <div class="span4">
-          <h2>Something</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-          <p><a class="btn" href="#">Register &raquo;</a></p>
-        </div>
       </div>
 
       <hr>
 
-      <footer>
-        <p>&copy; Company 2013</p>
+      <!-- Example row of columns -->
+      <div class="row-fluid">
+        <div class="span4" align="center">
+          <h2>Crowdsourcing</h2>
+          <p>Programmers often have intuition about a program's goal or intentions. This intuition is invaluable in the verification process.</p>
+          <p><a class="btn btn-info" href="http://en.wikipedia.org/wiki/Crowdsourcing">More details &raquo;</a></p>
+        </div>
+        <div class="span4" align="center">
+          <h2>Formal Verification</h2>
+          <p>We use formal methods rooted in logic and program semantics to prove correctness properties of software.</p>
+          <p><a class="btn btn-info" href="http://en.wikipedia.org/wiki/Formal_verification">More details &raquo;</a></p>
+        </div>
+        <div class="span4" align="center">
+          <h2>What?</h2>
+          <p>Still wondering what all this means? This tutorial is possibly worth a 1000 words. Learn more about how you can help us.</p>
+          <p><a class="btn btn-info" href="">Tutorial &raquo;</a></p>
+        </div>
+      </div>
+
+
+      <footer class="footer">
+      <div class="container">
+        <p>Designed and built by <a href="https://github.com/nishanttotla" target="_blank">nishanttotla</a> and <a href="https://github.com/rsinha" target="_blank">rsinha</a>.</p>
+        <p>Code licensed under <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons 3.0</a>.</p>
+        <p>Special Thanks to JQuery, Bootstrap, Snippets, Editable Grid, Django, and Dajaxice. </p>
+        <ul class="footer-links">
+          <li><a href="http://blog.getbootstrap.com">Blog</a></li>
+          <li class="muted">&middot;</li>
+          <li><a href="https://github.com/twitter/bootstrap/issues?state=open">Issues</a></li>
+          <li class="muted">&middot;</li>
+          <li><a href="https://github.com/twitter/bootstrap/blob/master/CHANGELOG.md">Changelog</a></li>
+        </ul>
+      </div>
       </footer>
+
 
     </div> <!-- /container -->
 
