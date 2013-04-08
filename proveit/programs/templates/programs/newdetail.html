@@ -266,7 +266,13 @@
     }
 
     // Feedback about submitted invariant
-    function feedback_callback(data){
+    function send_invariant_callback(data){
+      $('#suggest_invariant_button').button('reset');
+      alert(data.message);
+    }
+    // Feedback about submitted loop invariant
+    function send_loop_invariant_callback(data){
+      $('#suggest_loop_invariant_button').button('reset');
       alert(data.message);
     }
 
@@ -276,8 +282,9 @@
       author = "{{ request.user.username }}";
       invariant = $("#Invariant_Form :input[name=content]").val();
       line = $("#Invariant_Form :input[name=line]").val();
-      alert(author+" is submitting "+invariant+" as invariant for line " + line)
-      Dajaxice.proveit.programs.suggestInvariant(feedback_callback,{'program_id':{{program.id}},'author':author,'invariant':invariant,'line':line});
+      alert(author+" is submitting "+invariant+" as invariant for line " + line);
+      $('#suggest_invariant_button').button('loading');
+      Dajaxice.proveit.programs.suggestInvariant(send_invariant_callback,{'program_id':{{program.id}},'author':author,'invariant':invariant,'line':line});
     }
     // Submit loop invariant to the server
     function send_loop_invariant(){
@@ -285,7 +292,8 @@
       invariant = $("#LoopInvariant_Form :input[name=content]").val();
       loop_id = $("#LoopInvariant_Form :input[name=loopid]").val();
       alert(author+" is submitting "+invariant+" as loop invariant for loop id " + loop_id)
-      Dajaxice.proveit.programs.suggestLoopInvariant(feedback_callback,{'program_id':{{program.id}},'author':author,'invariant':invariant,'loop_id':loop_id});
+      $('#suggest_loop_invariant_button').button('loading');
+      Dajaxice.proveit.programs.suggestLoopInvariant(send_loop_invariant_callback,{'program_id':{{program.id}},'author':author,'invariant':invariant,'loop_id':loop_id});
     }
 
     $(document).ready(function(){
@@ -642,7 +650,7 @@
                    <input type="text" name="content" placeholder="Formula...">
                    <label>Line number</label>
 	           <input type="number" name="line"></div-->
-	           <div><input type="submit" onclick="send_invariant();" value="Suggest Invariant" class="btn btn-primary" data-loading-text="Proving..."></div>
+	           <div><input type="submit" onclick="send_invariant();" id="suggest_invariant_button" value="Suggest Invariant" class="btn btn-primary" data-loading-text="Proving..."></div>
                    </fieldset>
 	           </form>
           </div>
@@ -664,7 +672,7 @@
                          <input type="number" id="Invariant_Form_loop" name="loopid">
                        </div>
                    </div>
-	           <div><input type="submit" onclick="send_loop_invariant();" value="Suggest Loop Invariant" class="btn btn-primary"></div>
+	           <div><input type="submit" onclick="send_loop_invariant();" id="suggest_loop_invariant_button" value="Suggest Loop Invariant" class="btn btn-primary" data-loading-text="Proving..."></div>
 	           </form>
           </div>
         </div>
