@@ -551,6 +551,60 @@
       return "http://crowdprover.herokuapp.com/static/images/" + relativePath;
     }
 
+    function filter_inv() {
+      //first find the checked choice
+      var statusid = ""; //id of the chosen option for which invariants are to be displayed
+      if ($("#inv_all").is(":checked")) statusid = "All";
+      else if ($("#inv_correct").is(":checked")) statusid = "Correct";
+      else if ($("#inv_unknown").is(":checked")) statusid = "Unknown";
+      else if ($("#inv_incorrect").is(":checked")) statusid = "Incorrect";
+      else statusid = "Axiom"
+
+
+      var line = $('#filter_inv_line').val(); //value entered by the user
+      var allrows = $("#inv_results_tbody").children(); //all the tr rows of the tbody
+      var numrows = allrows.length
+      for (var i=0;i<numrows;i++) {
+        li = $($(allrows[i]).children()[2]).html() //line number for the ith invariant
+        si = $($(allrows[i]).children()[0]).children().html() //status of the ith invariant
+        li_trimmed = li.trim()
+        si_trimmed = si.trim()
+        if ( (line == "" || li_trimmed==line) && (statusid == si_trimmed || statusid == "All") ) {
+          $(allrows[i]).show()
+        }
+        else {
+          $(allrows[i]).hide()
+        }
+      }
+    }
+
+    function filter_loopinv() {
+      //first find the checked choice
+      var statusid = ""; //id of the chosen option for which invariants are to be displayed
+      if ($("#loopinv_all").is(":checked")) statusid = "All";
+      else if ($("#loopinv_correct").is(":checked")) statusid = "Correct";
+      else if ($("#loopinv_unknown").is(":checked")) statusid = "Unknown";
+      else if ($("#loopinv_incorrect").is(":checked")) statusid = "Incorrect";
+      else statusid = "Axiom"
+
+
+      var loopid = $('#filter_loopinv_id').val(); //value entered by the user
+      var allrows = $("#loopinv_results_tbody").children(); //all the tr rows of the tbody
+      var numrows = allrows.length
+      for (var i=0;i<numrows;i++) {
+        li = $($(allrows[i]).children()[2]).html() //loop id for the ith invariant
+        si = $($(allrows[i]).children()[0]).children().html() //status of the ith invariant
+        li_trimmed = li.trim()
+        si_trimmed = si.trim()
+        if ( (loopid == "" || li_trimmed==loopid) && (statusid == si_trimmed || statusid == "All") ) {
+          $(allrows[i]).show()
+        }
+        else {
+          $(allrows[i]).hide()
+        }
+      }
+    }
+
     </script>
 
 
@@ -736,9 +790,22 @@
           <h3>Results</h3>
           <p>Others have suggested the following invariants</p>
         </div>
+
       <div class="row-fluid" align="center">
         <div class="span6">
         <h4>Invariants</h4>
+        <div class="form-horizontal">
+          <input type="number" id="filter_inv_line" placeholder="Line number" class="span4">
+          <select class="span4" id="filter_inv_status">
+            <option id="inv_all">All</option>
+            <option id="inv_correct">Correct</option>
+            <option id="inv_unknown">Unknown</option>
+            <option id="inv_incorrect">Incorrect</option>
+            <option id="inv_axiom">Axiom</option>
+          </select>
+          <button class="btn btn-small btn-inverse" id="filter_inv_button" onclick="filter_inv();" data-loading-text="Filtering..." type="button">Filter</button>
+      </div>
+        
         <table class="table table-hover">
           <thead>
             <tr>
@@ -748,7 +815,7 @@
               <th>Author</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="inv_results_tbody">
 	    {% for invariant in program.invariant_set.all %}
             <tr>
                 {% if invariant.status == 0 %}
@@ -771,6 +838,19 @@
 
         <div class="span6" align="center">
         <h4>Loop Invariants</h4>
+
+        <div class="form-horizontal">
+          <input type="number" id="filter_loopinv_id" placeholder="Loop number" class="span4">
+          <select class="span4" id="filter_loopinv_status">
+            <option id="loopinv_all">All</option>
+            <option id="loopinv_correct">Correct</option>
+            <option id="loopinv_unknown">Unknown</option>
+            <option id="loopinv_incorrect">Incorrect</option>
+            <option id="loopinv_axiom">Axiom</option>
+          </select>
+          <button class="btn btn-small btn-inverse" id="filter_loopinv_button" onclick="filter_loopinv();" data-loading-text="Filtering..." type="button">Filter</button>
+        </div>
+
         <table class="table table-hover">
           <thead>
             <tr>
@@ -780,7 +860,7 @@
               <th>Author</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="loopinv_results_tbody">
 	    {% for invariant in program.loopinvariant_set.all %}
             <tr>
                 {% if invariant.status == 0 %}
