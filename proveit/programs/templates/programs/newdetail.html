@@ -605,6 +605,10 @@
       }
     }
 
+    var disqus_def_name = "{{ user.get_full_name}}";
+    var disqus_def_email = "{{ user.email }}";
+    alert(disqus_def_name)
+
     </script>
 
 
@@ -709,7 +713,7 @@
           <li><a href="#section_program"><i class="icon-chevron-right"></i> Code</a></li>
           <li><a href="#section_results"><i class="icon-chevron-right"></i> Results</a></li>
           <li><a href="#section_trace"><i class="icon-chevron-right"></i> Trace Visualizer</a></li>
-          <li><a href="#section_feedback"><i class="icon-chevron-right"></i> Feedback</a></li>
+          <li><a href="#section_feedback"><i class="icon-chevron-right"></i> Comments</a></li>
         </ul>
       </div>
       <div class="span9">
@@ -940,6 +944,10 @@
           <h3>Comments</h3>
           <p>Post queries or discuss about this program</p>
         </div>
+            {% load disqus_tags %}
+            {% disqus_dev %}
+            {% disqus_show_comments %}
+
       </section>
 
      </div>

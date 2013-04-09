@@ -136,11 +136,15 @@ INSTALLED_APPS = (
     'proveit.programs',
     'proveit.z3',
     'dajaxice',
+    'disqus',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
+
+DISQUS_API_KEY = '8UHdUOYEwTvm8JJC83wEoa6WGg7MLcTyCF5w6KY14U55ImHgamp8gkuEhPCWfeK5'
+DISQUS_WEBSITE_SHORTNAME = 'crowdprover'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -174,15 +178,15 @@ LOGGING = {
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
 DATABASES['default'] =  dj_database_url.config()
-#DATABASES = {
+# DATABASES = {
 #    'default': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME': 'proveit',
-#        'USER': 'crowdprover',
-#        'PASSWORD': 'crowdprover',
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': '/Users/nishant/Sites/mysite/mysitedb.db',
+#        'USER': '',
+#        'PASSWORD': '',
 #        'HOST': ''
 #    }
-#}
+# }
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
