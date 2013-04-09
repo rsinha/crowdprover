@@ -607,7 +607,6 @@
 
     var disqus_def_name = "{{ user.get_full_name}}";
     var disqus_def_email = "{{ user.email }}";
-    alert(disqus_def_name)
 
     </script>
 
@@ -946,6 +945,7 @@
         </div>
             {% load disqus_tags %}
             {% disqus_dev %}
+            {% set_disqus_identifier program.id %}
             {% disqus_show_comments %}
 
       </section>
