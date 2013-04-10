@@ -18,6 +18,11 @@ def substituteFormula(program_id, inv, line):
 
 	return new_inv
 
+def parseableInvariant(program, invariant):
+	print "boommmmmm"
+	(succ,obj) = parseInvariant(invariant,program.description)
+	return (succ == 0)
+
 def invariantExistsInDB(program_id, invariant, line):
 	print "Checking existence of suggested invariant within DB..."
 	program = Program.objects.get(pk=program_id)

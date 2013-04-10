@@ -26,6 +26,18 @@ def suggestInvariant(request, program_id, author, invariant, line):
 	program = Program.objects.get(pk=program_id)
 	date = timezone.now()
 
+	print "boom1"
+	if not(proveit.programs.verifier.parseableInvariant(program, invariant)):
+		print "boom2"
+		msg = "Could not parse your invariant"
+		response = {}
+		response['code'] = 3 #denotes parse error
+		response['invariant'] = invariant
+		response['author'] = author
+		response['content'] = msg
+		return simplejson.dumps(response)
+	print "boom3"
+
 	(exists, existingInv) = proveit.programs.verifier.invariantExistsInDB(program_id, invariant, int(line))
 	if exists:
 		msg = existingInv.author + " already submitted an equivalent invariant: " + str(existingInv)
@@ -38,7 +50,6 @@ def suggestInvariant(request, program_id, author, invariant, line):
 
 	(success, model) = proveit.programs.verifier.checkInvariant(program_id, invariant, int(line))
 	response = {}
-	print "boomserver"
 	response['invariant'] = invariant
 	response['author'] = author
 	if success == 1:
@@ -68,6 +79,17 @@ def suggestLoopInvariant(request, program_id, author, invariant, loop_id):
 	print author," submitted ",invariant," as a loop invariant for loop id ", loop_id
 	program = Program.objects.get(pk=program_id)
 	date = timezone.now()
+
+	if not proveit.programs.verifier.parseableInvariant(program, invariant):
+		msg = "Could not parse your invariant"
+		response = {}
+		response['code'] = 3 #denotes parse error
+		response['invariant'] = invariant
+		response['author'] = author
+		response['content'] = msg
+		return simplejson.dumps(response)
+
+
 	(exists, existingInv) = proveit.programs.verifier.loopinvariantExistsInDB(program_id, invariant, int(loop_id))
 	if exists:
 		msg = existingInv.author + " already submitted an equivalent loop invariant" + str(existingInv)
