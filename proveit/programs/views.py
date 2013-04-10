@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from proveit.programs.models import Program, Invariant, LoopInvariant
 import proveit.programs.proveutils
 
+@login_required
 def index(request):
     program_list = Program.objects.all()
     context = Context({
@@ -18,6 +19,7 @@ def index(request):
     })
     return render(request, 'programs/index.html', context)
 
+@login_required
 def detail(request, program_id):
     try:
         program = Program.objects.get(pk=program_id)
@@ -42,6 +44,7 @@ def detail(request, program_id):
         raise Http404
     return render(request, 'programs/newdetail.html', {'program': program, 'code': code, 'trace':trace})
 
+@login_required
 def results(request, program_id):
 	program = get_object_or_404(Program, pk=program_id)
 	code = open(proveit.programs.proveutils.absoluteSource(program.source), 'r').read() 

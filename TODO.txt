@@ -1,0 +1,34 @@
+Stuff to do:
+1. *** Add openid support for logins
+2. Add multiple programs to check for unknown issues
+3. *** Check if social OAuth is possible
+4. Remove confirm form resubmission and try to dissociate views from urls if possible
+5. *** Click line number to add invariant
+6. User profile page
+7. 
+8. Distinguish these: Is an invariant status "unknown" because of insufficient facts, or there is actually a valid cex
+9. *** "Forgot password" functionality
+10. *** "Remember me" when signing in
+11. Autofill user details in Disqus
+12. *** Add email sending facility (sendgrid)
+13. *** Add auxiliary user database to support more user info
+14. Add incentive mechanism - scores for invariants, leaderboards, and user proficiency level
+15. What does it mean to say that a program is correct? We're not even passing assertions between programs
+16. Exception handling when submitting invariant (parsing or Z3 errors etc. not handled right now)
+17. *** Further refine invariant filter in the results
+18. *** Along with checking variable values in the trace, allow the user to also track values of predicates (both correct and unknown status), just so that the user can realize how predicates are behaving
+19. Display partial traces only for programs that are parts of larger programs
+20. Display the right line numbers for programs that are parts of larger programs
+21. Allow user to give counter examples for unknown invariants?
+22. Add migration capability on Heroku
+23. How to deal with asserts inside a loop body?
+
+Possible solution for 19,20 (as discussed before also, but writing here just for the record): There is only one program, even if it is ever divided up. We only choose what lines of it to display upon any program page on the front end. Facts that are entered for parts are of course proved modulo known facts for the entire program
+
+*** = check later
+
+---- Discussion (4/9/13) ----
+
+1. If A and B by themselves are unknown invariants on their own, A^B may turn out to be a correct invariant. The backend should occasionally combine all the "unknown" invariants and check them together, drop some, fork, check, drop, etc.
+2. Code division: Just display chunks, but invariants are always attached to the parent program
+
