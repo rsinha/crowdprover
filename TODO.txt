@@ -22,13 +22,21 @@ Stuff to do:
 21. Allow user to give counter examples for unknown invariants?
 22. Add migration capability on Heroku
 23. How to deal with asserts inside a loop body?
-
-Possible solution for 19,20 (as discussed before also, but writing here just for the record): There is only one program, even if it is ever divided up. We only choose what lines of it to display upon any program page on the front end. Facts that are entered for parts are of course proved modulo known facts for the entire program
+24. Results table should be AJAX
+25. Correction to parser - correct grammar to remove the reduce/reduce conflict
 
 *** = check later
+
+---- Steps when adding a new program to the database ----
+1. Create instrumented code
+2. Create unix binary
+3. Create Z3Program child class for the program
+4. Add symbol table
+5. Add entry in Z3ProgramFactory
 
 ---- Discussion (4/9/13) ----
 
 1. If A and B by themselves are unknown invariants on their own, A^B may turn out to be a correct invariant. The backend should occasionally combine all the "unknown" invariants and check them together, drop some, fork, check, drop, etc.
 2. Code division: Just display chunks, but invariants are always attached to the parent program
+Possible solution for 19,20 (as discussed before also, but writing here just for the record): There is only one program, even if it is ever divided up. We only choose what lines of it to display upon any program page on the front end. Facts that are entered for parts are of course proved modulo known facts for the entire program
 
