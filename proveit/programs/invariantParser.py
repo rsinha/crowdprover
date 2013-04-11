@@ -131,6 +131,7 @@ class InvParser:
 		'torf : FALSE'
 		p[0] = BoolVal(False)
 
+	### Rules for integer atoms ###
 	# Rule for simple identifiers
 	def p_makeZ3_ID(self,p):
 		'identifier : ID'
@@ -140,8 +141,6 @@ class InvParser:
 			typ = self.st.getTypeOfId(iden)
 			if typ == 'int':
 				p[0] = Int(iden)
-			elif typ == 'bool':
-				p[0] = Bool(iden)
 			else:
 				raise Exception("Type error for "+iden+". Correct type is "+typ)
 		else:
@@ -157,11 +156,8 @@ class InvParser:
 			if rettyp == 'int':
 				func = Function(f,IntSort(),IntSort())
 				p[0] = func(arg)
-			elif rettyp == 'bool':
-				func = Function(f,IntSort(),BoolSort())
-				p[0] = func(arg)
 			else:
-				raise Exception("Unknown return type for function: "+f+". Correct type is "+rettyp)
+				raise Exception("Incorrect return type for function: "+f+". Correct type is "+rettyp)
 		else:
 			raise Exception("Unknown function: "+f)
 
@@ -175,11 +171,8 @@ class InvParser:
 			if arrtyp == 'int':
 				arrind = Array(arr,IntSort(),IntSort())
 				p[0] = arrind[index]
-			elif arrtyp == 'bool':
-				arrind = Array(arr,IntSort(),BoolSort())
-				p[0] = arrind[index]
 			else:
-				raise Exception("Unknown type of array: "+arr+". Correct type is "+arrtyp)
+				raise Exception("Incorrect return type of array: "+arr+". Correct type is "+arrtyp)
 		else:
 			raise Exception("Unknown array: "+arr)
 
@@ -246,11 +239,57 @@ class InvParser:
 		else:
 			raise Exception("Unknown comparison operator: "+p[2])
 
+
+	### Rules for boolean atoms ###
+	# Rule for simple identifiers
+	def p_makeZ3_BID(self,p):
+		'bidentifier : ID'
+		iden = p[1]
+		# print "ID was detected",p[1]
+		if  self.st.exists(iden):
+			typ = self.st.getTypeOfId(iden)
+			if typ == 'bool':
+				p[0] = Bool(iden)
+			else:
+				raise Exception("Type error for "+iden+". Correct type is "+typ)
+		else:
+			raise Exception("Unknown Identifier: "+iden)
+
+	# Rule for function application
+	def p_makeZ3_BFUNAPP(self,p):
+		'bfunapp : ID "(" expr ")"'
+		arg = p[3]
+		f = p[1]
+		if self.st.isFunction(f):
+			rettyp = self.st.getReturnType(f)
+			if rettyp == 'bool':
+				func = Function(f,IntSort(),BoolSort())
+				p[0] = func(arg)
+			else:
+				raise Exception("Incorrect return type for function: "+f+". Correct type is "+rettyp)
+		else:
+			raise Exception("Unknown function: "+f)
+
+	# Rule for array indexing
+	def p_makeZ3_BARRINDEX(self,p):
+		'barrindex : ID "[" expr "]"'
+		index = p[3]
+		arr = p[1]
+		if self.st.isArray(arr):
+			arrtyp = self.st.getArrayType(arr)
+			if arrtyp == 'bool':
+				arrind = Array(arr,IntSort(),BoolSort())
+				p[0] = arrind[index]
+			else:
+				raise Exception("Incorrect type of array: "+arr+". Correct type is "+arrtyp)
+		else:
+			raise Exception("Unknown array: "+arr)
+
 	# Rule for boolean atom
 	def p_makeZ3_BATOM(self,p):
-		'''batom : funapp
-				| arrindex
-				| identifier
+		'''batom : bfunapp
+				| barrindex
+				| bidentifier
 				| compatom
 				| torf'''
 		p[0] = p[1]
