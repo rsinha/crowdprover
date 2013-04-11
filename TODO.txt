@@ -28,6 +28,7 @@ Stuff to do:
 27. Should variables be allowed to be used in invariants only if they are defined? This saves us from dealing with trashy invariants
 +++ 28. What happens when a variable has multiple updates inside the loop?
 +++ 29. Add a program with if-else statement
++++ 30. Multiple functions?
 
 *** = future work
 +++ = important
