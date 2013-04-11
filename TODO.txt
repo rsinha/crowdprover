@@ -23,7 +23,7 @@ Stuff to do:
 22. Add migration capability on Heroku
 23. How to deal with asserts inside a loop body?
 24. Results table should be AJAX
-25. Correction to parser - correct grammar to remove the reduce/reduce conflict
+25. 
 
 *** = check later
 

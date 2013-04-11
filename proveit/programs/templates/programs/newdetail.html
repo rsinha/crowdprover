@@ -808,6 +808,16 @@
           </select>
           <button class="btn btn-small btn-inverse" id="filter_inv_button" onclick="filter_inv();" data-loading-text="Filtering..." type="button">Filter</button>
       </div>
+
+      <script type="text/javascript">
+        $("#filter_inv_line").keyup(function() {
+          filter_inv();
+        });
+
+        $("#filter_inv_status").change(function() {
+          filter_inv();
+        });
+      </script>
         
         <table class="table table-hover">
           <thead>
@@ -853,6 +863,16 @@
           </select>
           <button class="btn btn-small btn-inverse" id="filter_loopinv_button" onclick="filter_loopinv();" data-loading-text="Filtering..." type="button">Filter</button>
         </div>
+
+      <script type="text/javascript">
+        $("#filter_loopinv_id").keyup(function() {
+          filter_loopinv();
+        });
+
+        $("#filter_loopinv_status").change(function() {
+          filter_loopinv();
+        });
+      </script>
 
         <table class="table table-hover">
           <thead>
