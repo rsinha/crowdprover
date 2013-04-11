@@ -25,6 +25,9 @@ Stuff to do:
 24. Results table should be AJAX
 +++ 25. Related to (21), also use the "interesting" inputs that users give to try and refute other facts.
 +++ 26. Combine "unknown" loop invariants in the hope that they are auxiliary invariants for each other
+27. Should variables be allowed to be used in invariants only if they are defined? This saves us from dealing with trashy invariants
++++ 28. What happens when a variable has multiple updates inside the loop?
++++ 29. Add a program with if-else statement
 
 *** = future work
 +++ = important
@@ -35,6 +38,8 @@ Stuff to do:
 3. Create Z3Program child class for the program
 4. Add symbol table
 5. Add entry in Z3ProgramFactory
+6. Add cleaned up code and meta to the static/code folder
+7. Enter in database
 
 ---- Discussion (4/9/13) ----
 
