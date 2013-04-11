@@ -1,31 +1,33 @@
 Stuff to do:
-1. *** Add openid support for logins
-2. Add multiple programs to check for unknown issues
-3. *** Check if social OAuth is possible
+*** 1. Add openid support for logins
++++ 2. Add multiple programs to check for unknown issues
+*** 3. Check if social OAuth is possible
 4. Remove confirm form resubmission and try to dissociate views from urls if possible
-5. *** Click line number to add invariant
+*** 5. Click line number to add invariant
 6. User profile page
 7. 
-8. Distinguish these: Is an invariant status "unknown" because of insufficient facts, or there is actually a valid cex
-9. *** "Forgot password" functionality
-10. *** "Remember me" when signing in
+8. 
+*** 9. "Forgot password" functionality
+*** 10. "Remember me" when signing in
 11. Autofill user details in Disqus
-12. *** Add email sending facility (sendgrid)
-13. *** Add auxiliary user database to support more user info
+*** 12. Add email sending facility (sendgrid)
+*** 13. Add auxiliary user database to support more user info
 14. Add incentive mechanism - scores for invariants, leaderboards, and user proficiency level
 15. What does it mean to say that a program is correct? We're not even passing assertions between programs
 16. Exception handling when submitting invariant (parsing or Z3 errors etc. not handled right now)
-17. *** Further refine invariant filter in the results
-18. *** Along with checking variable values in the trace, allow the user to also track values of predicates (both correct and unknown status), just so that the user can realize how predicates are behaving
+*** 17. Further refine invariant filter in the results
+*** 18. Along with checking variable values in the trace, allow the user to also track values of predicates (both correct and unknown status), just so that the user can realize how predicates are behaving
 19. Display partial traces only for programs that are parts of larger programs
 20. Display the right line numbers for programs that are parts of larger programs
-21. Allow user to give counter examples for unknown invariants?
++++ 21. Allow user to give counter examples for unknown invariants
 22. Add migration capability on Heroku
-23. How to deal with asserts inside a loop body?
++++ 23. How to deal with asserts inside a loop body?
 24. Results table should be AJAX
-25. 
++++ 25. Related to (21), also use the "interesting" inputs that users give to try and refute other facts.
++++ 26. Combine "unknown" loop invariants in the hope that they are auxiliary invariants for each other
 
-*** = check later
+*** = future work
++++ = important
 
 ---- Steps when adding a new program to the database ----
 1. Create instrumented code
