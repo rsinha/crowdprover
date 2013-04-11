@@ -16,11 +16,11 @@ class Z3Program(object):
 		return [(0,BoolVal(True))]
 
 class Z3ProgramFactory(object):
-    def newProgram(self, description):
-        if description == 'count_up_down':
-        	return count_up_down_safe(description)
-    	elif description == 'dillig_example': 
-    		return dillig(description)
+	def newProgram(self, description):
+		if description == 'count_up_down':
+			return count_up_down_safe(description)
+		elif description == 'dillig_example':
+			return dillig(description)
 		else:
 			raise CrowdproverException("Errorcode 2: unknown program description")
 
@@ -60,12 +60,12 @@ class dillig(Z3Program):
 		formula = And(formula, n >= IntVal(0))
 
 		for q in range(3,24):
-			i[q] = Int('i' + '_proveit_' + str[q])
-			j[q] = Int('j' + '_proveit_' + str[q])
-			z[q] = Int('z' + '_proveit_' + str[q])
-			x[q] = Int('x' + '_proveit_' + str[q])
-			y[q] = Int('y' + '_proveit_' + str[q])
-			w[q] = Int('w' + '_proveit_' + str[q])
+			i[q] = Int('i' + '_proveit_' + str(q))
+			j[q] = Int('j' + '_proveit_' + str(q))
+			z[q] = Int('z' + '_proveit_' + str(q))
+			x[q] = Int('x' + '_proveit_' + str(q))
+			y[q] = Int('y' + '_proveit_' + str(q))
+			w[q] = Int('w' + '_proveit_' + str(q))
 
 		formula = And(formula, i[3] == IntVal(1))
 		formula = And(formula, j[3] == j[3])
@@ -172,6 +172,7 @@ class dillig(Z3Program):
 		elif loopId == 2:
 			j = Int('j')
 			n = Int('n')
+			return (j<n)
 		else:
 			raise CrowdproverException("Errorcode 3: unknown loop id")
 
