@@ -972,7 +972,7 @@
           <p>Post queries or discuss about this program</p>
         </div>
             {% load disqus_tags %}
-            {% disqus_dev %}
+            {% set_disqus_url program.description %}
             {% set_disqus_identifier program.id %}
             {% disqus_show_comments %}
 

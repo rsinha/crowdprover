@@ -20,7 +20,7 @@ class InvLexer:
 	)
 
 	# Literals
-	literals = ['+','-','*','/','^','(',')','[',']','~','&','|']
+	literals = ['+','-','*','/','^','(',')','[',']','~','&','|','%']
 
 	# Regular expression rules for tokens
 
@@ -109,6 +109,7 @@ class InvParser:
 		('left','&'),
 		('right','NEG'),
 		('left','COMPARISON'),
+		('left','%'),
 	    ('left','+','-'),
 	    ('left','*','/'),
 	    ('right','^'),
@@ -191,6 +192,7 @@ class InvParser:
 				| expr "*" expr
 				| expr "+" expr
 				| expr "-" expr
+				| expr "%" expr
 				| atom'''
 		if len(p) == 2:
 			p[0] = p[1]
@@ -206,6 +208,8 @@ class InvParser:
 				p[0] = p[1]+p[3]
 			elif p[2] == '-':
 				p[0] = p[1]-p[3]
+			elif p[2] == '%':
+				p[0] = p[1]%p[3]
 			else:
 				raise Exception("Unknown operator found: "+p[2])
 
