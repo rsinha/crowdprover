@@ -48,6 +48,7 @@ class dillig(Z3Program):
 		info['states'] =  states
 		info['loops'] = loops
 		info['codelines'] = (3,24)
+		info['inputs'] = inputs
 
 		return info
 

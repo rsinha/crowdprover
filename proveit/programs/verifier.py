@@ -101,7 +101,6 @@ def modelToCex(program_id, model):
 	meta = proveit.programs.proveutils.absoluteMeta(program.source)
 	binary = proveit.programs.proveutils.absoluteBinary(program.binary)
 
-
 	trace = {}
 	trace['inputs'] = []
 	meta = open(meta, 'r').readlines()
