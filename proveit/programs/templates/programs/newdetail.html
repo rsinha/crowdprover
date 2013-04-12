@@ -292,6 +292,7 @@
 
     // Feedback about submitted invariant
     function send_invariant_callback(response){
+      oldStep2 = 1;
       $('#suggest_invariant_button').button('reset');
       switch(response.code) {
 	case 0: code = "Maybe Invariant";
@@ -321,19 +322,19 @@
         min: 1,
         max: response.cex.length,
         step: 1,
-        slide: function( event, ui ) {slideHandler(event,ui);}
+        slide: function( event, ui ) {slideHandler2(event,ui);}
       });
       
 
-      slideHandler = function(event,ui) {
+      slideHandler2 = function(event,ui) {
         var stepToLine = response.cex.lines;
         var pos = (stepToLine[ui.value-1]).toString();
         $( "#step2" ).val( ui.value );
         $("pre.code3").snippet("cpp",{style:"navy",box:pos,boxColor:"red",boxFill:"black",menu:false});
-        var newStep = ui.value;
-        $("#tablecontent2").find('tr').eq(newStep).css("background-color", "#FFFF00");
-        $("#tablecontent2").find('tr').eq(oldStep).css("background-color", "#FFFFFF");
-        oldStep = newStep;
+        var newStep2 = ui.value;
+        $("#tablecontent2").find('tr').eq(newStep2).css("background-color", "#FFFF00");
+        $("#tablecontent2").find('tr').eq(oldStep2).css("background-color", "#FFFFFF");
+        oldStep2 = newStep2;
       }
 
 
@@ -366,9 +367,6 @@
             
           };
           
-          // update paginator whenever the table is rendered (after a sort, filter, page change, etc.)
-          tableRendered = function() { this.updatePaginator(); };
-
           rowSelected = function(oldRowIndex, newRowIndex) {
             
           };
@@ -405,12 +403,7 @@
       $('#slider2').slider("value", 1);
       $( "#step2" ).val( $( "#slider2" ).slider( "value" ) );
 
-      var stepsperpage = zeEditableGrid.pageSize;
-      if (zeEditableGrid.getCurrentPageIndex() != Math.floor((oldStep - 1) / stepsperpage)) {
-          zeEditableGrid.setPageIndex(Math.floor((oldStep - 1) / stepsperpage));
-      }
-      var currentPage = zeEditableGrid.getCurrentPageIndex();
-      $("#tablecontent2").find('tr').eq(oldStep - currentPage * stepsperpage).css("background-color", "#FFFF00");
+      $("#tablecontent2").find('tr').eq(1).css("background-color", "#FFFF00");
  
     }
 
