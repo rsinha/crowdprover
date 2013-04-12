@@ -93,6 +93,72 @@ def proveUnknownInvariants(program_id):
 			unknownLoopInv.save()
 	return
 
+def modelToLoopCex(program_id, loop_id, model):
+	program = Program.objects.get(pk=program_id)
+	factory = Z3ProgramFactory()
+	z3program = factory.newProgram(program.description)
+	info = z3program.programInfo()
+	meta = proveit.programs.proveutils.absoluteMeta(program.source)
+	binary = proveit.programs.proveutils.absoluteBinary(program.binary)
+
+
+	trace = {}
+	trace['inputs'] = []
+	meta = open(meta, 'r').readlines()
+	for line in meta:
+		elements = line.rstrip().split(',')
+		varname = ""
+		vardefault = ""
+		for element in elements:
+			element_t = element.split(':')[0]
+			element_v = element.split(':')[1]
+			if element_t == 'name':
+				varname = element_v
+			elif element_t == 'default':
+				vardefault = element_v
+		trace['inputs'] += [{'name':varname, 'default':vardefault}]
+
+	values = {}
+	trace['length'] = 2 #pre n post
+	trace['lines'] = [info['loops'][loop_id][0], info['loops'][loop_id][1]]
+	trace['values'] = []
+	for state in info['states'].keys():
+		values[state] = []
+		z3Var = Int(state + '_proveit_pre')
+		z3Interp = model[z3Var]
+		if str(z3Interp) == 'None':
+			values[state] += ['']
+		else:
+			values[state] += [str(z3Interp)]
+	for state in info['states'].keys():
+		z3Var = Int(state + '_proveit_post')
+		z3Interp = model[z3Var]
+		if str(z3Interp) == 'None':
+			values[state] += ['']
+		else:
+			values[state] += [str(z3Interp)]
+
+	trace['firstLine'] = info['loops'][loop_id][0]
+	for state in info['states'].keys():
+		trace['values'] += [{'name': state, 'values':values[state]}]
+
+	inputs = {}
+	inputs['names'] = []
+	inputs['values'] = []
+	inputs['length'] = len(info['inputs'].keys())
+	for input in info['inputs'].keys():
+		z3Var = Int(input)
+		z3Interp = model[z3Var]
+		if str(z3Interp) == 'None':
+			inputs['names'] += [input]
+			inputs['values'] += ['']
+		else:
+			inputs['names'] += [input]
+			inputs['values'] += [str(z3Interp)]
+	trace['inputs'] = inputs
+	print "modelToLoopCex returned: ", str(trace)
+	return trace
+
 def modelToCex(program_id, model):
 	program = Program.objects.get(pk=program_id)
 	factory = Z3ProgramFactory()
@@ -312,7 +378,7 @@ def checkLoopInvariant(program_id, inv, loop_id):
 	else:
 		print "Unable to prove loop invariant"
 		print s.model()
-		return (0, modelToCex(program_id, s.model()))
+		return (0, modelToLoopCex(program_id, loop_id, s.model()))
 
 def programStates(z3program):
 	info = z3program.programInfo()

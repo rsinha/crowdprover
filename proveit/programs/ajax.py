@@ -48,12 +48,15 @@ def suggestInvariant(request, program_id, author, invariant, line):
 	response['invariant'] = invariant
 	response['author'] = author
 	if success == 1:
+		print "returning code 1"
 		response['code'] = 1
 		response['content'] = "Able to prove invariant: " + invariant + " correct"
 	elif success == 2:
+		print "returning code 2"
 		response['code'] = 2
 		response['content'] = "Able to prove invariant: " + invariant + " incorrect"
 	elif success == 0:
+		print "returning code 0"
 		response['code'] = 0
 		response['content'] = "Unable to prove invariant: " + invariant
 		response['cex'] = model
@@ -102,13 +105,13 @@ def suggestLoopInvariant(request, program_id, author, invariant, loop_id):
 	if success == 1:
 		response['code'] = 1
 		response['content'] = "Able to prove loop invariant: " + invariant + " correct"
-	if success == 2:
+	elif success == 2:
 		response['code'] = 2
 		response['content'] = "Able to prove loop invariant: " + invariant + " incorrect"
 	elif success == 0:
 		response['code'] = 0
-		response['content'] = "Unable to prove loop invariant: " + invariant
-		response['cex'] = str(model) #TODO: Fix this
+		response['content'] = "Unable to prove loop invariant inductively: " + invariant
+		response['cex'] = model
 	print "Adding loop invariant", invariant, "to DB..."
 	program.loopinvariant_set.create(author=author, content=invariant, loopId=int(loop_id), date=date,status=success)
 
