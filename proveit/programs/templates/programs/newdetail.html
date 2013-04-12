@@ -110,8 +110,14 @@
    #cexModal .modal-body {
     min-width: 640px;
     }
+   #loopcexModal .modal-body {
+    min-width: 640px;
+    }
 
    #cexModal {
+	width: 900px; /* SET THE WIDTH OF THE MODAL */
+   }
+   #loopcexModal {
 	width: 900px; /* SET THE WIDTH OF THE MODAL */
    }
 
@@ -296,7 +302,7 @@
       $('#suggest_invariant_button').button('reset');
       switch(response.code) {
 	case 0: code = "Maybe Invariant";
-		content = "Not sure if " + "<b>" + response.invariant + "</b>" + " holds for all executions. We got a counter-example.";
+		content = "Not sure if " + "<b>" + response.invariant + "</b>" + " holds in all executions. We got a counter-example.";
 		content += '<br><center><a href="#cexModal" role="button" class="btn btn-warning btn-small" data-toggle="modal">Counter-Example</a></center>'
 		break;
 	case 1: code = "Correct Invariant";
@@ -409,7 +415,6 @@
       editableGrid.load({"metadata": metadata, "data": data});
       editableGrid.initializeGrid();
       editableGrid.renderGrid("tablecontent3", "testgrid");
-      zeEditableGrid = editableGrid;
 
       $("pre.code3").snippet("cpp",{style:"navy",box:response.cex.firstLine.toString(),boxColor:"red",boxFill:"black",menu:false});
       $('#slider2').slider("option", "max", response.cex.length);
@@ -421,17 +426,132 @@
     }
 
     // Feedback about submitted loop invariant
-    function send_loop_invariant_callback(data){
+    function send_loop_invariant_callback(response){
+      oldStep3 = 1;
       $('#suggest_loop_invariant_button').button('reset');
-      switch(data.code) {
-	case 0: code = "Maybe Loop Invariant"; break;
-	case 1: code = "Correct Loop Invariant"; break;
-	case 2: code = "Incorrect Loop Invariant"; break;
-	case 3: code = "Parse Error"; break;
-	case 4: code = "Duplicate Loop Invariant"; break;
+      switch(response.code) {
+	case 0: code = "Maybe Loop Invariant";
+		content = "Not sure if " + "<b>" + response.invariant + "</b>" + " holds in all executions. We got a counter-example.";
+		content += '<br><center><a href="#loopcexModal" role="button" class="btn btn-warning btn-small" data-toggle="modal">Counter-Example</a></center>'
+		break;
+	case 1: code = "Correct Loop Invariant";
+		content = "<b>" + response.invariant + "</b>" + " holds for all executions.";
+		break;
+	case 2: code = "Incorrect Loop Invariant";
+		content = "<b>" + response.invariant + "</b>" + " never holds for any execution.";
+		break;
+	case 3: code = "Parse Error";
+		content = "We had trouble parsing " + "<b>" + response.invariant + "</b>";
+		break;
+	case 4: code = "Duplicate Loop Invariant";
+		content = response.author + " already submitted an equivalent invariant " + "<b>" + response.invariant + "</b>";
+		break;
       }
-      $('#suggest_loop_invariant_button').popover({animation: true, content: data.content, title: code});
+      $('#suggest_loop_invariant_button').popover({html:true, animation: true, content: content, title: code});
       $('#suggest_loop_invariant_button').popover('show');
+	
+      if (response.code != 0) {return;} //The following only needs to happen for counterexampes
+
+      $( "#slider3" ).slider({
+        value:1,
+        min: 1,
+        max: response.cex.length,
+        step: 1,
+        slide: function( event, ui ) {slideHandler3(event,ui);}
+      });
+      
+
+      slideHandler3 = function(event,ui) {
+        var stepToLine = response.cex.lines;
+        var pos = (stepToLine[ui.value-1]).toString();
+        $( "#step3" ).val( ui.value );
+        $("pre.code4").snippet("cpp",{style:"navy",box:pos,boxColor:"red",boxFill:"black",menu:false});
+        var newStep3 = ui.value;
+        $("#tablecontent5").find('tr').eq(newStep3).css("background-color", "#FFFF00");
+        $("#tablecontent5").find('tr').eq(oldStep3).css("background-color", "#FFFFFF");
+        oldStep3 = newStep3;
+      }
+
+      
+      editableGrid = new EditableGrid("DemoGridFull4", {maxBars: 10});
+      editableInGrid2 = new EditableGrid("DemoGridFull5", {maxBars: 10});
+
+      EditableGrid.prototype.initializeGrid = function() 
+      {
+        with (this) {
+          // register the function that will handle model changes
+          modelChanged = function(rowIndex, columnIndex, oldValue, newValue, row) { 
+            
+          };
+          
+          rowSelected = function(oldRowIndex, newRowIndex) {
+            
+          };
+          
+        }
+      };
+
+      EditableGrid.prototype.duplicate = function(rowIndex) 
+      {
+        
+        // copy values from given row
+        var values = this.getRowValues(rowIndex);
+        values['name'] = values['name'] + ' (copy)';
+
+        // get id for new row (max id + 1)
+        var newRowId = 0;
+        for (var r = 0; r < this.getRowCount(); r++) newRowId = Math.max(newRowId, parseInt(this.getRowId(r)) + 1);
+        
+        // add new row
+        this.insertAfter(rowIndex, newRowId, values); 
+      };
+
+
+      var metadata = [];
+      metadata.push({ name: "variable", label: "Variable", datatype: "string", editable: false});
+      metadata.push({ name: "value", label: "Value", datatype: "string", editable: false});
+      var data = [];
+      for (var i = 0; i < response.cex.inputs.length; i++) {
+        var thisvalues = {};
+	thisvalues.variable = response.cex.inputs.names[i];
+	thisvalues.value = response.cex.inputs.values[i];
+        data.push({id: i, values: thisvalues});  
+       }
+      editableInGrid2.load({"metadata": metadata, "data": data});
+      editableInGrid2.initializeGrid();
+      editableInGrid2.renderGrid("tablecontent4", "testgrid");
+
+
+      // this approach is interesting if you need to dynamically create data in Javascript 
+      metadata = [];
+      metadata.push({ name: "step", label: "Step #", datatype: "integer", editable: false});
+      {% for vartrace in trace.values %}
+      j = {{forloop.counter}} - 1;
+      metadata.push({ name: "{{vartrace.alias}}", label: "{{vartrace.name}}", datatype: "string", editable: false});
+      {% endfor %}
+
+      data = [];
+      for (var i = 0; i < response.cex.length; i++) {
+        var thisvalues = {};
+        thisvalues.step = i + 1;
+        {% for vartrace in trace.values %}
+        j = {{forloop.counter}} - 1;
+        thisvalues.{{vartrace.alias}} = response.cex.values[j].values[i];
+        {% endfor %}
+        data.push({id: i, values: thisvalues});  
+       }
+  
+      editableGrid.load({"metadata": metadata, "data": data});
+      editableGrid.initializeGrid();
+      editableGrid.renderGrid("tablecontent5", "testgrid");
+
+      $("pre.code4").snippet("cpp",{style:"navy",box:response.cex.firstLine.toString(),boxColor:"red",boxFill:"black",menu:false});
+      $('#slider3').slider("option", "max", response.cex.length);
+      $('#slider3').slider("value", 1);
+      $( "#step3" ).val( $( "#slider3" ).slider( "value" ) );
+
+      $("#tablecontent5").find('tr').eq(1).css("background-color", "#FFFF00");
+ 
     }
 
     function compute_trace() {
@@ -462,6 +582,7 @@
         $("pre.code1").snippet("cpp",{style:"navy",boxColor:"red",boxFill:"black",menu:false});
         $("pre.code2").snippet("cpp",{style:"navy",box:({{trace.firstLine}}).toString(),boxColor:"red",boxFill:"black",menu:false});
         $("pre.code3").snippet("cpp",{style:"navy",boxColor:"red",boxFill:"black",menu:false});
+        $("pre.code4").snippet("cpp",{style:"navy",boxColor:"red",boxFill:"black",menu:false});
         zeEditableGrid = 0;
         editableInGrid = new EditableGrid("DemoGridAttach");
         editableInGrid.load({ metadata: [
@@ -1184,6 +1305,37 @@ Scratch:
   </div>
 </div>
 
+<div id="loopcexModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel3" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel3">Counter-Example</h3>
+  </div>
+  <div class="modal-body">
+        <div class="row-fluid">
+          <div class="span6">
+            <pre class="code4">{{code}}</pre>
+         </div> 
+          <div class="span6" align="right">
+            <input type="text" id="step3" style="display:none;"/>
+            <br>
+            <div id="visualtable4"></div> <!-- visualtable -->
+            <div id="tablecontent4"></div>
+            <br>
+            <div class="row-fluid">
+                <div id="slider3"></div>
+            </div> 
+              <br>
+              <div id="visualtable5"></div> <!-- visualtable -->
+              <div id="tablecontent5"></div>
+              <br>
+         </div> 
+       </div> 
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <!--button class="btn btn-primary">Save changes</button-->
+  </div>
+</div>
 
 
 
