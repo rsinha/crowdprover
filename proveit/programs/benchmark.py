@@ -31,6 +31,9 @@ class dillig(Z3Program):
 	def programInfo(self):
 		info = {}
 
+		inputs = {}
+		inputs['n'] = 'integer'
+
 		states = {}
 		states['i'] = 'integer'
 		states['j'] = 'integer'
@@ -44,6 +47,7 @@ class dillig(Z3Program):
 		loops[2] = (15,22)
 		info['states'] =  states
 		info['loops'] = loops
+		info['codelines'] = (3,24)
 
 		return info
 
@@ -187,6 +191,9 @@ class count_up_down_safe(Z3Program):
 	def programInfo(self):
 		info = {}
 
+		inputs = {}
+		inputs['n'] = 'integer'
+
 		states = {}
 		states['x'] = 'integer'
 		states['y'] = 'integer'
@@ -195,6 +202,7 @@ class count_up_down_safe(Z3Program):
 		loops[1] = (5,9)
 
 		info['states'] = states
+		info['inputs'] = inputs
 		info['loops'] = loops
 		info['codelines'] = (3,11)
 

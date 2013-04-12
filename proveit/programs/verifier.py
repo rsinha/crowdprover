@@ -148,6 +148,21 @@ def modelToCex(program_id, model):
 	for state in info['states'].keys():
 		trace['values'] += [{'name': state, 'values':values[state]}]
 
+	inputs = {}
+	inputs['names'] = []
+	inputs['values'] = []
+	inputs['length'] = len(info['inputs'].keys())
+	for input in info['inputs'].keys():
+		z3Var = Int(input)
+		z3Interp = model[z3Var]
+		if str(z3Interp) == 'None':
+			inputs['names'] += [input]
+			inputs['values'] += ['']
+		else:
+			inputs['names'] += [input]
+			inputs['values'] += [str(z3Interp)]
+	trace['inputs'] = inputs	
+
 	print "modelToCex returned: ", str(trace)
 	return trace
 

@@ -332,32 +332,14 @@
         $( "#step2" ).val( ui.value );
         $("pre.code3").snippet("cpp",{style:"navy",box:pos,boxColor:"red",boxFill:"black",menu:false});
         var newStep2 = ui.value;
-        $("#tablecontent2").find('tr').eq(newStep2).css("background-color", "#FFFF00");
-        $("#tablecontent2").find('tr').eq(oldStep2).css("background-color", "#FFFFFF");
+        $("#tablecontent3").find('tr').eq(newStep2).css("background-color", "#FFFF00");
+        $("#tablecontent3").find('tr').eq(oldStep2).css("background-color", "#FFFFFF");
         oldStep2 = newStep2;
       }
 
-
-      // this approach is interesting if you need to dynamically create data in Javascript 
-      var metadata = [];
-      metadata.push({ name: "step", label: "Step #", datatype: "integer", editable: false});
-      {% for vartrace in trace.values %}
-      j = {{forloop.counter}} - 1;
-      metadata.push({ name: "{{vartrace.alias}}", label: "{{vartrace.name}}", datatype: "string", editable: false});
-      {% endfor %}
-
-      var data = [];
-      for (var i = 0; i < response.cex.length; i++) {
-        var thisvalues = {};
-        thisvalues.step = i + 1;
-        {% for vartrace in trace.values %}
-        j = {{forloop.counter}} - 1;
-        thisvalues.{{vartrace.alias}} = response.cex.values[j].values[i];
-        {% endfor %}
-        data.push({id: i, values: thisvalues});  
-       }
       
       editableGrid = new EditableGrid("DemoGridFull2", {maxBars: 10});
+      editableInGrid2 = new EditableGrid("DemoGridFull3", {maxBars: 10});
 
       EditableGrid.prototype.initializeGrid = function() 
       {
@@ -370,9 +352,6 @@
           rowSelected = function(oldRowIndex, newRowIndex) {
             
           };
-          
-          // render the grid (parameters will be ignored if we have attached to an existing HTML table)
-          //renderGrid("tablecontent2", "testgrid", "tableid");
           
         }
       };
@@ -392,10 +371,44 @@
         this.insertAfter(rowIndex, newRowId, values); 
       };
 
+
+      var metadata = [];
+      metadata.push({ name: "variable", label: "Variable", datatype: "string", editable: false});
+      metadata.push({ name: "value", label: "Value", datatype: "string", editable: false});
+      var data = [];
+      for (var i = 0; i < response.cex.inputs.length; i++) {
+        var thisvalues = {};
+	thisvalues.variable = response.cex.inputs.names[i];
+	thisvalues.value = response.cex.inputs.values[i];
+        data.push({id: i, values: thisvalues});  
+       }
+      editableInGrid2.load({"metadata": metadata, "data": data});
+      editableInGrid2.initializeGrid();
+      editableInGrid2.renderGrid("tablecontent2", "testgrid");
+
+
+      // this approach is interesting if you need to dynamically create data in Javascript 
+      metadata = [];
+      metadata.push({ name: "step", label: "Step #", datatype: "integer", editable: false});
+      {% for vartrace in trace.values %}
+      j = {{forloop.counter}} - 1;
+      metadata.push({ name: "{{vartrace.alias}}", label: "{{vartrace.name}}", datatype: "string", editable: false});
+      {% endfor %}
+
+      data = [];
+      for (var i = 0; i < response.cex.length; i++) {
+        var thisvalues = {};
+        thisvalues.step = i + 1;
+        {% for vartrace in trace.values %}
+        j = {{forloop.counter}} - 1;
+        thisvalues.{{vartrace.alias}} = response.cex.values[j].values[i];
+        {% endfor %}
+        data.push({id: i, values: thisvalues});  
+       }
   
       editableGrid.load({"metadata": metadata, "data": data});
       editableGrid.initializeGrid();
-      editableGrid.renderGrid("tablecontent2", "testgrid");
+      editableGrid.renderGrid("tablecontent3", "testgrid");
       zeEditableGrid = editableGrid;
 
       $("pre.code3").snippet("cpp",{style:"navy",box:response.cex.firstLine.toString(),boxColor:"red",boxFill:"black",menu:false});
@@ -403,7 +416,7 @@
       $('#slider2').slider("value", 1);
       $( "#step2" ).val( $( "#slider2" ).slider( "value" ) );
 
-      $("#tablecontent2").find('tr').eq(1).css("background-color", "#FFFF00");
+      $("#tablecontent3").find('tr').eq(1).css("background-color", "#FFFF00");
  
     }
 
@@ -1152,12 +1165,15 @@ Scratch:
           <div class="span6" align="right">
             <input type="text" id="step2" style="display:none;"/>
             <br>
+            <div id="visualtable2"></div> <!-- visualtable -->
+            <div id="tablecontent2"></div>
+            <br>
             <div class="row-fluid">
                 <div id="slider2"></div>
             </div> 
               <br>
-              <div id="visualtable2"></div> <!-- visualtable -->
-              <div id="tablecontent2"></div>
+              <div id="visualtable3"></div> <!-- visualtable -->
+              <div id="tablecontent3"></div>
               <br>
          </div> 
        </div> 
