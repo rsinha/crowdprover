@@ -9,14 +9,12 @@ from proveit.programs.models import Program, Invariant, LoopInvariant
 import proveit.programs.proveutils
 import proveit.programs.verifier
 
-#TODO: parse errors result in code 3, implement graceful response to parse errors
-
 @dajaxice_register(method='GET')
 def computeTrace(request, program_id, inputs):
 	print inputs
 	program = Program.objects.get(pk=program_id)
 	print "program id: ", program_id
-	trace = proveit.programs.proveutils.computeTrace(proveit.programs.proveutils.absoluteMeta(program.source),proveit.programs.proveutils.absoluteBinary(program.binary), inputs) 
+	trace = proveit.programs.proveutils.computeTrace(proveit.programs.proveutils.absoluteMeta(program.source),proveit.programs.proveutils.absoluteBinary(program.binary), inputs)
 	print "success"
 	return simplejson.dumps(trace)
 
@@ -26,9 +24,7 @@ def suggestInvariant(request, program_id, author, invariant, line):
 	program = Program.objects.get(pk=program_id)
 	date = timezone.now()
 
-	print "boom1"
 	if not(proveit.programs.verifier.parseableInvariant(program, invariant)):
-		print "boom2"
 		msg = "Could not parse your invariant"
 		response = {}
 		response['code'] = 3 #denotes parse error
@@ -36,7 +32,6 @@ def suggestInvariant(request, program_id, author, invariant, line):
 		response['author'] = author
 		response['content'] = msg
 		return simplejson.dumps(response)
-	print "boom3"
 
 	(exists, existingInv) = proveit.programs.verifier.invariantExistsInDB(program_id, invariant, int(line))
 	if exists:
@@ -61,7 +56,7 @@ def suggestInvariant(request, program_id, author, invariant, line):
 	elif success == 0:
 		response['code'] = 0
 		response['content'] = "Unable to prove invariant: " + invariant
-		response['cex'] = str(model) #TODO: Fix this
+		response['cex'] = model
 	print "Adding invariant", invariant, "to DB..."
 	program.invariant_set.create(author=author, content=invariant, line=int(line), date=date,status=success)
 

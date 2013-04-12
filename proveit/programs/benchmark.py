@@ -36,7 +36,8 @@ class count_up_down_safe(Z3Program):
 
 		info['states'] = states
 		info['loops'] = loops
-		
+		info['codelines'] = (3,11)
+
 		return info
 
 	def programFormula(self):

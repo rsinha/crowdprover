@@ -2,6 +2,7 @@ from proveit.programs.models import Program, Invariant, LoopInvariant
 from proveit.z3.z3 import *
 from proveit.programs.benchmark import *
 from proveit.programs.invariantParser import parseInvariant
+import proveit.programs.proveutils
 
 def substituteFormula(program_id, inv, line):
 	program = Program.objects.get(pk=program_id)
@@ -19,7 +20,6 @@ def substituteFormula(program_id, inv, line):
 	return new_inv
 
 def parseableInvariant(program, invariant):
-	print "boommmmmm"
 	(succ,obj) = parseInvariant(invariant,program.description)
 	return (succ == 0)
 
@@ -93,6 +93,64 @@ def proveUnknownInvariants(program_id):
 			unknownLoopInv.save()
 	return
 
+def modelToCex(program_id, model):
+	program = Program.objects.get(pk=program_id)
+	factory = Z3ProgramFactory()
+	z3program = factory.newProgram(program.description)
+	info = z3program.programInfo()
+	meta = proveit.programs.proveutils.absoluteMeta(program.source)
+	binary = proveit.programs.proveutils.absoluteBinary(program.binary)
+
+
+	trace = {}
+	trace['inputs'] = []
+	meta = open(meta, 'r').readlines()
+	for line in meta:
+		elements = line.rstrip().split(',')
+		varname = ""
+		vardefault = ""
+		for element in elements:
+			element_t = element.split(':')[0]
+			element_v = element.split(':')[1]
+			if element_t == 'name':
+				varname = element_v
+			elif element_t == 'default':
+				vardefault = element_v
+		trace['inputs'] += [{'name':varname, 'default':vardefault}]
+
+	firstLinehit = False
+	values = {}
+	trace['length'] = 0
+	trace['lines'] = []
+	trace['values'] = []
+	for state in info['states'].keys():
+		values[state] = []
+	for line in range(info['codelines'][0],info['codelines'][1]):
+		skipThisLine = True
+		for state in info['states'].keys():
+			z3Var = Int(state + '_proveit_' + str(line))
+			z3Interp = model[z3Var]
+			if str(z3Interp) != 'None':
+				skipThisLine = False
+		if (skipThisLine):
+			continue
+		trace['lines'] += [line]
+		trace['length'] += 1
+		for state in info['states'].keys():
+			z3Var = Int(state + '_proveit_' + str(line))
+			z3Interp = model[z3Var]
+			if str(z3Interp) == 'None':
+				values[state] += ['']
+			else:
+				values[state] += [str(z3Interp)]
+			
+	trace['firstLine'] = min(trace['lines'])
+	for state in info['states'].keys():
+		trace['values'] += [{'name': state, 'values':values[state]}]
+
+	print "modelToCex returned: ", str(trace)
+	return trace
+
 def checkInvariant(program_id, inv, line):
 	program = Program.objects.get(pk=program_id)
 	factory = Z3ProgramFactory()
@@ -149,7 +207,7 @@ def checkInvariant(program_id, inv, line):
 	else:
 		print "Unable to prove invariant"
 		print s.model()
-		return (0, s.model())
+		return (0, modelToCex(program_id, s.model()))
 
 def checkLoopInvariant(program_id, inv, loop_id):
 	program = Program.objects.get(pk=program_id)
@@ -207,7 +265,7 @@ def checkLoopInvariant(program_id, inv, loop_id):
 	if s.check() == sat:
 		print "Loop invariant does not hold on entry"
 		print s.model()
-		return (0, s.model())
+		return (0, modelToCex(program_id, s.model()))
 	else:
 		print "Loop invariant holds on entry. Checking inductively..."
 
@@ -240,7 +298,7 @@ def checkLoopInvariant(program_id, inv, loop_id):
 	else:
 		print "Unable to prove loop invariant"
 		print s.model()
-		return (0, s.model())
+		return (0, modelToCex(program_id, s.model()))
 
 def programStates(z3program):
 	info = z3program.programInfo()
