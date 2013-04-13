@@ -127,14 +127,14 @@ def modelToLoopCex(program_id, loop_id, model):
 		z3Var = Int(state + '_proveit_pre')
 		z3Interp = model[z3Var]
 		if str(z3Interp) == 'None':
-			values[state] += ['']
+			values[state] += ['-']
 		else:
 			values[state] += [str(z3Interp)]
 	for state in info['states'].keys():
 		z3Var = Int(state + '_proveit_post')
 		z3Interp = model[z3Var]
 		if str(z3Interp) == 'None':
-			values[state] += ['']
+			values[state] += ['-']
 		else:
 			values[state] += [str(z3Interp)]
 
@@ -151,7 +151,7 @@ def modelToLoopCex(program_id, loop_id, model):
 		z3Interp = model[z3Var]
 		if str(z3Interp) == 'None':
 			inputs['names'] += [input]
-			inputs['values'] += ['']
+			inputs['values'] += ['-']
 		else:
 			inputs['names'] += [input]
 			inputs['values'] += [str(z3Interp)]
@@ -205,7 +205,7 @@ def modelToCex(program_id, model):
 			z3Var = Int(state + '_proveit_' + str(line))
 			z3Interp = model[z3Var]
 			if str(z3Interp) == 'None':
-				values[state] += ['']
+				values[state] += ['-']
 			else:
 				values[state] += [str(z3Interp)]
 			
@@ -222,7 +222,7 @@ def modelToCex(program_id, model):
 		z3Interp = model[z3Var]
 		if str(z3Interp) == 'None':
 			inputs['names'] += [input]
-			inputs['values'] += ['']
+			inputs['values'] += ['-']
 		else:
 			inputs['names'] += [input]
 			inputs['values'] += [str(z3Interp)]

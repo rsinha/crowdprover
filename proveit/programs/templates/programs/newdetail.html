@@ -406,7 +406,13 @@
         var thisvalues = {};
         thisvalues.step = i + 1;
         {% for vartrace in trace.values %}
-        j = {{forloop.counter}} - 1;
+        //j = {{forloop.counter}} - 1;
+	j = 0;
+	for (var k = 0; k < response.cex.values.length; k++) {
+		if (response.cex.values[k].name == '{{vartrace.name}}') {
+			j = k;
+		}
+	}
         thisvalues.{{vartrace.alias}} = response.cex.values[j].values[i];
         {% endfor %}
         data.push({id: i, values: thisvalues});  
@@ -535,7 +541,13 @@
         var thisvalues = {};
         thisvalues.step = i + 1;
         {% for vartrace in trace.values %}
-        j = {{forloop.counter}} - 1;
+        //j = {{forloop.counter}} - 1;
+	j = 0;
+	for (var k = 0; k < response.cex.values.length; k++) {
+		if (response.cex.values[k].name == '{{vartrace.name}}') {
+			j = k;
+		}
+	}
         thisvalues.{{vartrace.alias}} = response.cex.values[j].values[i];
         {% endfor %}
         data.push({id: i, values: thisvalues});  
@@ -652,9 +664,9 @@
       slide: function( event, ui ) {slideHandler(event,ui);}
     });
        
-    if (computeTraceCount == 1) {
+    //if (computeTraceCount == 1) {
       $('#slider1').slider().bind('slidechange',function(event,ui){slideHandler(event,ui);});
-    }
+    //}
 
       slideHandler = function(event,ui) {
         var stepToLine = trace.lines;
@@ -1206,7 +1218,7 @@
               <div id="tablecontent"></div>
               <div id="paginator"></div>
               <br>
-              <a href="#settingsModal" role="button" class="btn btn-primary btn-small" data-toggle="modal">Settings</a>
+              <a href="#settingsModal" role="button" class="btn btn-primary" data-toggle="modal">Trace Settings</a>
           </div>
 
       </section>
