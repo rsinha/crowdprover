@@ -19,16 +19,16 @@ Stuff to do:
 *** 18. Along with checking variable values in the trace, allow the user to also track values of predicates (both correct and unknown status), just so that the user can realize how predicates are behaving
 19. Display partial traces only for programs that are parts of larger programs
 20. Display the right line numbers for programs that are parts of larger programs
-+++ 21. Allow user to give counter examples for unknown invariants
+*** 21. Allow user to give counter examples for unknown invariants (this doesn't help verification)
 22. Add migration capability on Heroku
 +++ 23. How to deal with asserts inside a loop body?
 24. Results table should be AJAX
 +++ 25. Related to (21), also use the "interesting" inputs that users give to try and refute other facts.
 +++ 26. Combine "unknown" loop invariants in the hope that they are auxiliary invariants for each other
 27. Should variables be allowed to be used in invariants only if they are defined? This saves us from dealing with trashy invariants
-+++ 28. What happens when a variable has multiple updates inside the loop?
 +++ 29. Add a program with if-else statement
 +++ 30. Multiple functions?
+31. Checkbox to prevent DB additions
 
 *** = future work
 +++ = important
