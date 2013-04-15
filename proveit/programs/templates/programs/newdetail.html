@@ -129,6 +129,7 @@
     var checkBoxCache = [{% for vartrace in trace.values %}false,{% endfor %}];
     var trace;
     var computeTraceCount = 0;
+    var oldStep = 1;
 
     function saveSettings() {
       {% for vartrace in trace.values %}
@@ -145,12 +146,6 @@
       }
 
       if (! renderAgain) {
-        var stepsperpage = zeEditableGrid.pageSize;
-        if (zeEditableGrid.getCurrentPageIndex() != Math.floor((oldStep - 1) / stepsperpage)) {
-          zeEditableGrid.setPageIndex(Math.floor((oldStep - 1) / stepsperpage));
-        }
-        var currentPage = zeEditableGrid.getCurrentPageIndex();
-        $("#tablecontent").find('tr').eq(oldStep - currentPage * stepsperpage).css("background-color", "#FFFF00");
         $('#settingsModal').modal('hide');
         return;
       }
@@ -613,14 +608,44 @@
             min: 1,
             max: {{trace.length}},
             step: 1,
-            slide: function( event, ui ) {
-              var stepToLine = [{% for line in trace.lines %} {{line}}, {% endfor %}];
-              var pos = (stepToLine[ui.value-1]).toString();
-              $( "#step" ).val( ui.value );
-              $("pre.code2").snippet("cpp",{style:"navy",box:pos,boxColor:"red",boxFill:"black",menu:false});
-              var col = ui.value + 1;
-            }
+            slide: function( event, ui ) {slideHandler(event,ui);}
         });
+
+      $('#slider1').slider().bind('slidechange',function(event,ui){slideHandler(event,ui);});
+      slideHandler = function(event,ui) {
+        var stepToLine = trace.lines;
+        var pos = (stepToLine[ui.value-1]).toString();
+        $( "#step" ).val( ui.value );
+        $("pre.code2").snippet("cpp",{style:"navy",box:pos,boxColor:"red",boxFill:"black",menu:false});
+        var stepsperpage = zeEditableGrid.pageSize;
+        var newStep = ui.value;
+       
+	if (newStep == oldStep) { return; }
+ 
+        if (zeEditableGrid.getCurrentPageIndex() != Math.floor((oldStep - 1) / stepsperpage)) {
+          zeEditableGrid.setPageIndex(Math.floor((oldStep - 1) / stepsperpage));
+        }
+        var minStep = zeEditableGrid.getCurrentPageIndex() * stepsperpage + 1;
+        var maxStep = (zeEditableGrid.getCurrentPageIndex() + 1) * stepsperpage;
+        if (minStep <= newStep && newStep <= maxStep) {
+          //from current page to current page
+          var currentPage = zeEditableGrid.getCurrentPageIndex();
+          $("#tablecontent").find('tr').eq(newStep - currentPage * stepsperpage).css("background-color", "#FFFF00");
+          $("#tablecontent").find('tr').eq(oldStep - currentPage * stepsperpage).css("background-color", "#FFFFFF");
+        }
+        else if (oldStep == minStep && newStep < minStep) {
+          zeEditableGrid.prevPage();
+          var currentPage = zeEditableGrid.getCurrentPageIndex();
+          $("#tablecontent").find('tr').eq(newStep - currentPage * stepsperpage).css("background-color", "#FFFF00");
+        }
+        else if (oldStep == maxStep && newStep > maxStep) {
+          zeEditableGrid.nextPage();
+          var currentPage = zeEditableGrid.getCurrentPageIndex();
+          $("#tablecontent").find('tr').eq(newStep - currentPage * stepsperpage).css("background-color", "#FFFF00");
+        }
+        oldStep = newStep;
+      }
+
         $( "#step" ).val( $( "#slider1" ).slider( "value" ) );
         Dajaxice.proveit.programs.computeTrace(compute_trace_callback, {'program_id':{{program.id}}, 'inputs':[{%for input in trace.inputs %} $('#input{{forloop.counter}}').html() {% endfor %}]});
     });
@@ -653,51 +678,6 @@
         }
         {% endfor %}
         data.push({id: i, values: thisvalues});  
-      }
-
-    //$( "#slider1" ).slider("destroy");
-    $( "#slider1" ).slider({
-      value:1,
-      min: 1,
-      max: trace.length,
-      step: 1,
-      slide: function( event, ui ) {slideHandler(event,ui);}
-    });
-       
-    //if (computeTraceCount == 1) {
-      $('#slider1').slider().bind('slidechange',function(event,ui){slideHandler(event,ui);});
-    //}
-
-      slideHandler = function(event,ui) {
-        var stepToLine = trace.lines;
-        var pos = (stepToLine[ui.value-1]).toString();
-        $( "#step" ).val( ui.value );
-        $("pre.code2").snippet("cpp",{style:"navy",box:pos,boxColor:"red",boxFill:"black",menu:false});
-        var stepsperpage = zeEditableGrid.pageSize;
-        var newStep = ui.value;
-        
-        if (zeEditableGrid.getCurrentPageIndex() != Math.floor((oldStep - 1) / stepsperpage)) {
-          zeEditableGrid.setPageIndex(Math.floor((oldStep - 1) / stepsperpage));
-        }
-        var minStep = zeEditableGrid.getCurrentPageIndex() * stepsperpage + 1;
-        var maxStep = (zeEditableGrid.getCurrentPageIndex() + 1) * stepsperpage;
-        if (minStep <= newStep && newStep <= maxStep) {
-          //from current page to current page
-          var currentPage = zeEditableGrid.getCurrentPageIndex();
-          $("#tablecontent").find('tr').eq(newStep - currentPage * stepsperpage).css("background-color", "#FFFF00");
-          $("#tablecontent").find('tr').eq(oldStep - currentPage * stepsperpage).css("background-color", "#FFFFFF");
-        }
-        else if (oldStep == minStep && newStep < minStep) {
-          zeEditableGrid.prevPage();
-          var currentPage = zeEditableGrid.getCurrentPageIndex();
-          $("#tablecontent").find('tr').eq(newStep - currentPage * stepsperpage).css("background-color", "#FFFF00");
-        }
-        else if (oldStep == maxStep && newStep > maxStep) {
-          zeEditableGrid.nextPage();
-          var currentPage = zeEditableGrid.getCurrentPageIndex();
-          $("#tablecontent").find('tr').eq(newStep - currentPage * stepsperpage).css("background-color", "#FFFF00");
-        }
-        oldStep = newStep;
       }
 
       editableGrid = new EditableGrid("DemoGridFull1", {pageSize: 5, maxBars: 10});
