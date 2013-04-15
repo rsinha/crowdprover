@@ -11,11 +11,8 @@ import proveit.programs.verifier
 
 @dajaxice_register(method='GET')
 def computeTrace(request, program_id, inputs):
-	print inputs
 	program = Program.objects.get(pk=program_id)
-	print "program id: ", program_id
 	trace = proveit.programs.proveutils.computeTrace(proveit.programs.proveutils.absoluteMeta(program.source),proveit.programs.proveutils.absoluteBinary(program.binary), inputs)
-	print "success"
 	return simplejson.dumps(trace)
 
 @dajaxice_register(method='POST')
@@ -48,27 +45,23 @@ def suggestInvariant(request, program_id, author, invariant, line):
 	response['invariant'] = invariant
 	response['author'] = author
 	if success == 1:
-		print "returning code 1"
 		response['code'] = 1
 		response['content'] = "Able to prove invariant: " + invariant + " correct"
 	elif success == 2:
-		print "returning code 2"
 		response['code'] = 2
 		response['content'] = "Able to prove invariant: " + invariant + " incorrect"
 	elif success == 0:
-		print "returning code 0"
 		response['code'] = 0
 		response['content'] = "Unable to prove invariant: " + invariant
 		response['cex'] = model
 	print "Adding invariant", invariant, "to DB..."
 	program.invariant_set.create(author=author, content=invariant, line=int(line), date=date,status=success)
 
-	if success == 1:
-		#The suggested inv may end up proving previously suggested inv
-		#try proving the unknown invariants now
-		proveit.programs.verifier.proveUnknownInvariants(program_id)
-		#try proving the program now
-		proveit.programs.verifier.proveProgram(program_id)
+	#The suggested inv may end up proving previously suggested inv
+	#try proving the unknown invariants now
+	proveit.programs.verifier.proveUnknownInvariants(program_id)
+	#try proving the program now
+	proveit.programs.verifier.proveProgram(program_id)
 
 	return simplejson.dumps(response)
 
@@ -78,7 +71,7 @@ def suggestLoopInvariant(request, program_id, author, invariant, loop_id):
 	program = Program.objects.get(pk=program_id)
 	date = timezone.now()
 
-	if not proveit.programs.verifier.parseableInvariant(program, invariant):
+	if not(proveit.programs.verifier.parseableInvariant(program, invariant)):
 		msg = "Could not parse your invariant"
 		response = {}
 		response['code'] = 3 #denotes parse error
@@ -115,12 +108,11 @@ def suggestLoopInvariant(request, program_id, author, invariant, loop_id):
 	print "Adding loop invariant", invariant, "to DB..."
 	program.loopinvariant_set.create(author=author, content=invariant, loopId=int(loop_id), date=date,status=success)
 
-	if success == 1:
-		#The suggested inv may end up proving previously suggested inv
-		#try proving the unknown invariants now
-		proveit.programs.verifier.proveUnknownInvariants(program_id)
-		#try proving the program now
-		proveit.programs.verifier.proveProgram(program_id)
+	#The suggested inv may end up proving previously suggested inv
+	#try proving the unknown invariants now
+	proveit.programs.verifier.proveUnknownInvariants(program_id)
+	#try proving the program now
+	proveit.programs.verifier.proveProgram(program_id)
 
 	return simplejson.dumps(response)
 

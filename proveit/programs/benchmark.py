@@ -128,7 +128,6 @@ class dillig(Z3Program):
 		formula = And(formula, y[23] == y[22])
 		formula = And(formula, w[23] == w[22])
 
-		print "constructed program formula:", formula
 		return formula
 
 	def programAsserts(self):
@@ -155,7 +154,6 @@ class dillig(Z3Program):
 			formula = And(formula, j_pre < n)
 			formula = And(formula, j_post == j_pre + 1)
 			formula = And(formula, i_post == i_pre + 3)
-			print "constructed loop formula for loop 1:", formula
 			return formula
 		elif loopId == 2:
 			formula = And(formula, j_pre < n)
@@ -164,7 +162,6 @@ class dillig(Z3Program):
 			formula = And(formula, x_post == x_pre + (z_post%2))
 			formula = And(formula, w_post == w_pre + 2)
 			formula = And(formula, j_post == j_pre + 1)
-			print "constructed loop formula for loop 2:", formula
 			return formula
 		else:
 			raise CrowdproverException("Errorcode 3: unknown loop id")
@@ -228,7 +225,6 @@ class count_up_down_safe(Z3Program):
 		formula = And(formula, x[10] == x[9])
 		formula = And(formula, y[10] == y[9])
 
-		print "constructed program formula: ", formula
 		return formula
 
 	def programAsserts(self):
@@ -245,7 +241,6 @@ class count_up_down_safe(Z3Program):
 			formula = And(formula, x_pre > IntVal(0))
 			formula = And(formula, x_post == x_pre - 1)
 			formula = And(formula, y_post == y_pre + 1)
-			print "constructed loop formula: ", formula
 			return formula
 		else:
 			raise CrowdproverException("Errorcode 3: unknown loop id")

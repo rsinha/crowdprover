@@ -1,3 +1,4 @@
+from django.utils import timezone
 from proveit.programs.models import Program, Invariant, LoopInvariant
 from proveit.z3.z3 import *
 from proveit.programs.benchmark import *
@@ -78,6 +79,7 @@ def proveUnknownInvariants(program_id):
 	program = Program.objects.get(pk=program_id)
 	factory = Z3ProgramFactory()
 	z3program = factory.newProgram(program.description)
+	info = z3program.programInfo()
 	unknownInvariants = filter((lambda inv: inv.status == 0), program.invariant_set.all())
 	unknownLoopInvariants = filter((lambda inv: inv.status == 0), program.loopinvariant_set.all())
 
@@ -91,6 +93,23 @@ def proveUnknownInvariants(program_id):
 		if success:
 			unknownLoopInv.status = 1
 			unknownLoopInv.save()
+	
+	for loopid in info['loops'].keys():
+		submittedLoopInvariants = filter((lambda inv: inv.loopId == loopid), program.loopinvariant_set.all())
+		combinedAuthor = lambda x : lambda y: x if x in y else (x + ',' + y)
+		candidates = []
+		candidates += [('('+x.content+')' + ' & ' + '('+y.content+')', combinedAuthor(x.author)(y.author)) for x in submittedLoopInvariants for y in submittedLoopInvariants if x != y]
+		candidates += [('('+x.content+')' + ' | ' + '('+y.content+')', combinedAuthor(x.author)(y.author)) for x in submittedLoopInvariants for y in submittedLoopInvariants if x != y]
+		print "candidates: ", candidates
+		for candidate in candidates:
+			(exists, existingInv) = loopinvariantExistsInDB(program_id, candidate[0], loopid)
+			if exists:
+				continue
+			(success,model) = checkLoopInvariant(program_id, candidate[0], loopid)
+			if success:
+				date = timezone.now()
+				program.loopinvariant_set.create(author=candidate[1], content=candidate[0], loopId=loopid, date=date,status=1)
+
 	return
 
 def modelToLoopCex(program_id, loop_id, model):
@@ -156,7 +175,6 @@ def modelToLoopCex(program_id, loop_id, model):
 			inputs['names'] += [input]
 			inputs['values'] += [str(z3Interp)]
 	trace['inputs'] = inputs
-	print "modelToLoopCex returned: ", str(trace)
 	return trace
 
 def modelToCex(program_id, model):
@@ -228,7 +246,6 @@ def modelToCex(program_id, model):
 			inputs['values'] += [str(z3Interp)]
 	trace['inputs'] = inputs	
 
-	print "modelToCex returned: ", str(trace)
 	return trace
 
 def checkInvariant(program_id, inv, line):
@@ -286,7 +303,6 @@ def checkInvariant(program_id, inv, line):
 		return (1, 0)
 	else:
 		print "Unable to prove invariant"
-		print s.model()
 		return (0, modelToCex(program_id, s.model()))
 
 def checkLoopInvariant(program_id, inv, loop_id):
@@ -344,7 +360,6 @@ def checkLoopInvariant(program_id, inv, loop_id):
 
 	if s.check() == sat:
 		print "Loop invariant does not hold on entry"
-		print s.model()
 		return (0, modelToCex(program_id, s.model()))
 	else:
 		print "Loop invariant holds on entry. Checking inductively..."
@@ -377,7 +392,6 @@ def checkLoopInvariant(program_id, inv, loop_id):
 		return (1, 0)
 	else:
 		print "Unable to prove loop invariant"
-		print s.model()
 		return (0, modelToLoopCex(program_id, loop_id, s.model()))
 
 def programStates(z3program):
