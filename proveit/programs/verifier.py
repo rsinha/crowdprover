@@ -93,10 +93,11 @@ def proveUnknownInvariants(program_id):
 		if success:
 			unknownLoopInv.status = 1
 			unknownLoopInv.save()
-	
+"""	
 	for loopid in info['loops'].keys():
+		print "loopid: ", loopid
 		submittedLoopInvariants = filter((lambda inv: inv.loopId == loopid), program.loopinvariant_set.all())
-		combinedAuthor = lambda x : lambda y: x if x in y else (x + ',' + y)
+		combinedAuthor = lambda x : lambda y: x if x in y else (y if y in x else (x + ',' + y))
 		candidates = []
 		candidates += [('('+x.content+')' + ' & ' + '('+y.content+')', combinedAuthor(x.author)(y.author)) for x in submittedLoopInvariants for y in submittedLoopInvariants if x != y]
 		candidates += [('('+x.content+')' + ' | ' + '('+y.content+')', combinedAuthor(x.author)(y.author)) for x in submittedLoopInvariants for y in submittedLoopInvariants if x != y]
@@ -109,7 +110,7 @@ def proveUnknownInvariants(program_id):
 			if success:
 				date = timezone.now()
 				program.loopinvariant_set.create(author=candidate[1], content=candidate[0], loopId=loopid, date=date,status=1)
-
+"""
 	return
 
 def modelToLoopCex(program_id, loop_id, model):
@@ -277,13 +278,13 @@ def checkInvariant(program_id, inv, line):
 		firstLineOfLoop = loopEntry(z3program, knownLoopInv.loopId)
 		s.add(substituteFormula(program_id, parseUserInvariant(knownLoopInv.content, program.description), lastLineOfLoop))
 		s.add(substituteFormula(program_id, parseUserInvariant(knownLoopInv.content, program.description), firstLineOfLoop))
-		print "Using known loop invariant: ", substituteFormula(program_id, parseUserInvariant(knownLoopInv.content, program.description), lastLineOfLoop)
-		print "Using known loop invariant: ", substituteFormula(program_id, parseUserInvariant(knownLoopInv.content, program.description), firstLineOfLoop)
+		#print "Using known loop invariant: ", substituteFormula(program_id, parseUserInvariant(knownLoopInv.content, program.description), lastLineOfLoop)
+		#print "Using known loop invariant: ", substituteFormula(program_id, parseUserInvariant(knownLoopInv.content, program.description), firstLineOfLoop)
 	#negation of loop conditions
 	for loopid in info['loops'].keys():
 		lastLineOfLoop = loopExit(z3program, loopid)
 		loopCond = z3program.loopCondition(loopid)
-		print "Using negated loop condition", Not(substituteFormula(program_id, loopCond, lastLineOfLoop))
+		#print "Using negated loop condition", Not(substituteFormula(program_id, loopCond, lastLineOfLoop))
 		s.add(Not(substituteFormula(program_id, loopCond, lastLineOfLoop)))
 
 	#First check for No (in all executions)
@@ -330,7 +331,7 @@ def checkLoopInvariant(program_id, inv, loop_id):
 	#known invariants
 	for knownInv in knownInvariants:
 		s.add(substituteFormula(program_id, parseUserInvariant(knownInv.content, program.description), knownInv.line))
-		print "Using known invariant: ", substituteFormula(program_id, parseUserInvariant(knownInv.content, program.description), knownInv.line)
+		#print "Using known invariant: ", substituteFormula(program_id, parseUserInvariant(knownInv.content, program.description), knownInv.line)
 	#known loop invariants
 	info = z3program.programInfo()
 	for knownLoopInv in knownLoopInvariants:
@@ -338,13 +339,13 @@ def checkLoopInvariant(program_id, inv, loop_id):
 		firstLineOfLoop = loopEntry(z3program, knownLoopInv.loopId)
 		s.add(substituteFormula(program_id, parseUserInvariant(knownLoopInv.content, program.description), lastLineOfLoop))
 		s.add(substituteFormula(program_id, parseUserInvariant(knownLoopInv.content, program.description), firstLineOfLoop))
-		print "Using known loop invariant: ", substituteFormula(program_id, parseUserInvariant(knownLoopInv.content, program.description), lastLineOfLoop)
-		print "Using known loop invariant: ", substituteFormula(program_id, parseUserInvariant(knownLoopInv.content, program.description), firstLineOfLoop)
+		#print "Using known loop invariant: ", substituteFormula(program_id, parseUserInvariant(knownLoopInv.content, program.description), lastLineOfLoop)
+		#print "Using known loop invariant: ", substituteFormula(program_id, parseUserInvariant(knownLoopInv.content, program.description), firstLineOfLoop)
 	#negation of loop conditions
 	for loopid in info['loops'].keys():
 		lastLineOfLoop = loopExit(z3program, loopid)
 		loopCond = z3program.loopCondition(loopid)
-		print "Using negated loop condition", Not(substituteFormula(program_id, loopCond, lastLineOfLoop))
+		#print "Using negated loop condition", Not(substituteFormula(program_id, loopCond, lastLineOfLoop))
 		s.add(Not(substituteFormula(program_id, loopCond, lastLineOfLoop)))
 
 	#First check for No (in all executions)
