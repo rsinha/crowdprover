@@ -57,11 +57,12 @@ def suggestInvariant(request, program_id, author, invariant, line):
 	print "Adding invariant", invariant, "to DB..."
 	program.invariant_set.create(author=author, content=invariant, line=int(line), date=date,status=success)
 
-	#The suggested inv may end up proving previously suggested inv
-	#try proving the unknown invariants now
-	proveit.programs.verifier.proveUnknownInvariants(program_id)
-	#try proving the program now
-	proveit.programs.verifier.proveProgram(program_id)
+	if success == 1:
+		#The suggested inv may end up proving previously suggested inv
+		#try proving the unknown invariants now
+		proveit.programs.verifier.proveUnknownInvariants(program_id)
+		#try proving the program now
+		proveit.programs.verifier.proveProgram(program_id)
 
 	return simplejson.dumps(response)
 
@@ -108,11 +109,12 @@ def suggestLoopInvariant(request, program_id, author, invariant, loop_id):
 	print "Adding loop invariant", invariant, "to DB..."
 	program.loopinvariant_set.create(author=author, content=invariant, loopId=int(loop_id), date=date,status=success)
 
-	#The suggested inv may end up proving previously suggested inv
-	#try proving the unknown invariants now
-	proveit.programs.verifier.proveUnknownInvariants(program_id)
-	#try proving the program now
-	proveit.programs.verifier.proveProgram(program_id)
+	if success == 1:
+		#The suggested inv may end up proving previously suggested inv
+		#try proving the unknown invariants now
+		proveit.programs.verifier.proveUnknownInvariants(program_id)
+		#try proving the program now
+		proveit.programs.verifier.proveProgram(program_id)
 
 	return simplejson.dumps(response)
 

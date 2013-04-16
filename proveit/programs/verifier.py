@@ -93,25 +93,8 @@ def proveUnknownInvariants(program_id):
 		if success:
 			unknownLoopInv.status = 1
 			unknownLoopInv.save()
-"""	
-	for loopid in info['loops'].keys():
-		print "loopid: ", loopid
-		submittedLoopInvariants = filter((lambda inv: inv.loopId == loopid), program.loopinvariant_set.all())
-		combinedAuthor = lambda x : lambda y: x if x in y else (y if y in x else (x + ',' + y))
-		candidates = []
-		candidates += [('('+x.content+')' + ' & ' + '('+y.content+')', combinedAuthor(x.author)(y.author)) for x in submittedLoopInvariants for y in submittedLoopInvariants if x != y]
-		candidates += [('('+x.content+')' + ' | ' + '('+y.content+')', combinedAuthor(x.author)(y.author)) for x in submittedLoopInvariants for y in submittedLoopInvariants if x != y]
-		print "candidates: ", candidates
-		for candidate in candidates:
-			(exists, existingInv) = loopinvariantExistsInDB(program_id, candidate[0], loopid)
-			if exists:
-				continue
-			(success,model) = checkLoopInvariant(program_id, candidate[0], loopid)
-			if success:
-				date = timezone.now()
-				program.loopinvariant_set.create(author=candidate[1], content=candidate[0], loopId=loopid, date=date,status=1)
-"""
 	return
+
 
 def modelToLoopCex(program_id, loop_id, model):
 	program = Program.objects.get(pk=program_id)
