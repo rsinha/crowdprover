@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 
 from proveit.programs.models import Program, Invariant, LoopInvariant
 import proveit.programs.proveutils
-from proveit.programs.benchmark import *
+import proveit.programs.benchmark
 
 
 @login_required
@@ -25,7 +25,7 @@ def index(request):
 def detail(request, program_id):
     try:
         program = Program.objects.get(pk=program_id)
-	factory = Z3ProgramFactory()
+	factory = proveit.programs.benchmark.Z3ProgramFactory()
 	z3program = factory.newProgram(program.description)
 	info = z3program.programInfo()
 	print "program id: ", program_id
