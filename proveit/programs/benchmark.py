@@ -45,6 +45,9 @@ class dillig(Z3Program):
 		loops = {}
 		loops[1] = (5,9)
 		loops[2] = (15,22)
+		loops['minLoop'] = 1
+		loops['maxLoop'] = 2
+
 		info['states'] =  states
 		info['loops'] = loops
 		info['codelines'] = (3,24)
@@ -198,6 +201,8 @@ class count_up_down_safe(Z3Program):
 
 		loops = {}
 		loops[1] = (5,9)
+		loops['minLoop'] = 1
+		loops['maxLoop'] = 1
 
 		info['states'] = states
 		info['inputs'] = inputs

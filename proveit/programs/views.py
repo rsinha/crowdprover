@@ -10,6 +10,8 @@ from django.contrib.auth.decorators import login_required
 
 from proveit.programs.models import Program, Invariant, LoopInvariant
 import proveit.programs.proveutils
+from proveit.programs.benchmark import *
+
 
 @login_required
 def index(request):
@@ -23,6 +25,9 @@ def index(request):
 def detail(request, program_id):
     try:
         program = Program.objects.get(pk=program_id)
+	factory = Z3ProgramFactory()
+	z3program = factory.newProgram(program.description)
+	info = z3program.programInfo()
 	print "program id: ", program_id
 	code = open(proveit.programs.proveutils.absoluteSource(program.source), 'r').read()
 	meta = open(proveit.programs.proveutils.absoluteMeta(program.source), 'r').readlines()
@@ -42,7 +47,7 @@ def detail(request, program_id):
 	trace = proveit.programs.proveutils.computeTrace(proveit.programs.proveutils.absoluteMeta(program.source), proveit.programs.proveutils.absoluteBinary(program.binary), inputs) 
     except Program.DoesNotExist:
         raise Http404
-    return render(request, 'programs/newdetail.html', {'program': program, 'code': code, 'trace':trace})
+    return render(request, 'programs/newdetail.html', {'program': program, 'info':info, 'code': code, 'trace':trace})
 
 @login_required
 def results(request, program_id):
