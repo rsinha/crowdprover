@@ -1,6 +1,5 @@
 Stuff to do:
 *** 1. Add openid support for logins
-+++ 2. Add multiple programs to check for unknown issues
 *** 3. Check if social OAuth is possible
 4. Remove confirm form resubmission and try to dissociate views from urls if possible
 *** 5. Click line number to add invariant
@@ -21,7 +20,6 @@ Stuff to do:
 20. Display the right line numbers for programs that are parts of larger programs
 *** 21. Allow user to give counter examples for unknown invariants (this doesn't help verification)
 22. Add migration capability on Heroku
-+++ 23. How to deal with asserts inside a loop body?
 24. Results table should be AJAX
 +++ 25. Related to (21), also use the "interesting" inputs that users give to try and refute other facts.
 +++ 26. Combine "unknown" loop invariants in the hope that they are auxiliary invariants for each other
@@ -29,6 +27,8 @@ Stuff to do:
 +++ 29. Add a program with if-else statement
 +++ 30. Multiple functions?
 31. Checkbox to prevent DB additions
++++ 32. Tutorial page.
++++ 33. Only suggest invariants, not loop invariants.
 
 *** = future work
 +++ = important
