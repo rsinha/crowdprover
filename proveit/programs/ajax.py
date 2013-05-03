@@ -31,6 +31,7 @@ def getInvariantCex(request, program_id, invariant, line,invariant_id):
 	if not(exists):
 		msg = "Something went wrong. Plase submit an error report."
 		response['code'] = 5
+		response['content'] = msg
 		return simplejson.dumps(response)
 
 	response = {}
@@ -50,6 +51,45 @@ def getInvariantCex(request, program_id, invariant, line,invariant_id):
 		response['cex'] = model
 
 	return simplejson.dumps(response)
+
+
+@dajaxice_register(method='POST')
+def getLoopInvariantCex(request, program_id, invariant, loopid, invariant_id):
+	program = Program.objects.get(pk=program_id)
+	date = timezone.now()
+
+	if not(proveit.programs.verifier.parseableInvariant(program, invariant)):
+		msg = "Something went wrong. Plase submit an error report."
+		response['code'] = 5
+		response['content'] = msg
+		return simplejson.dumps(response)
+
+	(exists, existingInv) = proveit.programs.verifier.loopinvariantExistsInDB(program_id, invariant, int(loopid))
+	if not(exists):
+		msg = "Something went wrong. Plase submit an error report."
+		response['code'] = 5
+		response['content'] = msg
+		return simplejson.dumps(response)
+
+	response = {}
+	response['invariant'] = existingInv.content
+	response['author'] = existingInv.author
+	response['invariant_id'] = invariant_id
+	if existingInv.status == 1:
+		response['code'] = 1
+		response['content'] = "Able to prove invariant: " + existingInv.content + " correct"
+	elif existingInv.status == 2:
+		response['code'] = 2
+		response['content'] = "Able to prove invariant: " + existingInv.content + " incorrect"
+	elif existingInv.status == 0:
+		(success, model) = proveit.programs.verifier.checkLoopInvariant(program_id, existingInv.content, existingInv.loopId)
+		response['code'] = 0
+		response['content'] = "Unable to prove invariant: " + existingInv.content
+		response['cex'] = model
+
+	return simplejson.dumps(response)
+
+
 
 
 @dajaxice_register(method='POST')
