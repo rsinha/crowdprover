@@ -292,10 +292,161 @@
     }
 
     // Feedback about submitted invariant
+    function get_invariant_cex_callback(response){
+	oldStep2 = 1;
+	$('#suggest_invariant_button').popover('destroy');
+	{% for invariant in program.invariant_set.all %}
+	$('#result_invariant_button{{forloop.counter}}').popover('destroy');
+	{% endfor %}
+
+	switch(response.code) {
+	case 0: code = "Maybe Invariant";
+		content = "Not sure if " + "<b>" + response.invariant + "</b>" + " holds in all executions. We got a counter-example.";
+		content += '<br><center><a href="#cexModal" role="button" class="btn btn-warning btn-small" data-toggle="modal">Counter-Example</a></center>'
+		break;
+	case 1: code = "Correct Invariant";
+		content = "<b>" + response.invariant + "</b>" + " holds for all executions.";
+		break;
+	case 2: code = "Incorrect Invariant";
+		content = "<b>" + response.invariant + "</b>" + " never holds for any execution.";
+		break;
+	case 3: code = "Parse Error";
+		content = "We had trouble parsing " + "<b>" + response.invariant + "</b>";
+		break;
+	case 4: code = "Duplicate Invariant";
+		content = response.author + " already submitted an equivalent invariant " + "<b>" + response.invariant + "</b>";
+		break;
+	}
+
+	switch(response.invariant_id) {
+	{% for invariant in program.invariant_set.all %}
+	case {{forloop.counter}}:
+		$('#result_invariant_button{{forloop.counter}}').popover({html:true, animation: true, content: content, title: code});
+		$('#result_invariant_button{{forloop.counter}}').popover('show');
+		break;
+	{% endfor %}
+	}
+	
+      if (response.code != 0) {return;} //The following only needs to happen for counterexampes
+
+      $( "#slider2" ).slider({
+        value:1,
+        min: 1,
+        max: response.cex.length,
+        step: 1,
+        slide: function( event, ui ) {slideHandler2(event,ui);}
+      });
+      
+
+      slideHandler2 = function(event,ui) {
+        var stepToLine = response.cex.lines;
+        var pos = (stepToLine[ui.value-1]).toString();
+        $( "#step2" ).val( ui.value );
+        $("pre.code3").snippet("cpp",{style:"navy",box:pos,boxColor:"red",boxFill:"black",menu:false});
+        var newStep2 = ui.value;
+        $("#tablecontent3").find('tr').eq(newStep2).css("background-color", "#FFFF00");
+        $("#tablecontent3").find('tr').eq(oldStep2).css("background-color", "#FFFFFF");
+        oldStep2 = newStep2;
+      }
+
+      
+      editableGrid = new EditableGrid("DemoGridFull2", {maxBars: 10});
+      editableInGrid2 = new EditableGrid("DemoGridFull3", {maxBars: 10});
+
+      EditableGrid.prototype.initializeGrid = function() 
+      {
+        with (this) {
+          // register the function that will handle model changes
+          modelChanged = function(rowIndex, columnIndex, oldValue, newValue, row) { 
+            
+          };
+          
+          rowSelected = function(oldRowIndex, newRowIndex) {
+            
+          };
+          
+        }
+      };
+
+      EditableGrid.prototype.duplicate = function(rowIndex) 
+      {
+        
+        // copy values from given row
+        var values = this.getRowValues(rowIndex);
+        values['name'] = values['name'] + ' (copy)';
+
+        // get id for new row (max id + 1)
+        var newRowId = 0;
+        for (var r = 0; r < this.getRowCount(); r++) newRowId = Math.max(newRowId, parseInt(this.getRowId(r)) + 1);
+        
+        // add new row
+        this.insertAfter(rowIndex, newRowId, values); 
+      };
+
+
+      var metadata = [];
+      metadata.push({ name: "variable", label: "Variable", datatype: "string", editable: false});
+      metadata.push({ name: "value", label: "Value", datatype: "string", editable: false});
+      var data = [];
+      for (var i = 0; i < response.cex.inputs.length; i++) {
+        var thisvalues = {};
+	thisvalues.variable = response.cex.inputs.names[i];
+	thisvalues.value = response.cex.inputs.values[i];
+        data.push({id: i, values: thisvalues});  
+       }
+      editableInGrid2.load({"metadata": metadata, "data": data});
+      editableInGrid2.initializeGrid();
+      editableInGrid2.renderGrid("tablecontent2", "testgrid");
+
+
+      // this approach is interesting if you need to dynamically create data in Javascript 
+      metadata = [];
+      metadata.push({ name: "step", label: "Step #", datatype: "integer", editable: false});
+      {% for vartrace in trace.values %}
+      j = {{forloop.counter}} - 1;
+      metadata.push({ name: "{{vartrace.alias}}", label: "{{vartrace.name}}", datatype: "string", editable: false});
+      {% endfor %}
+
+      data = [];
+      for (var i = 0; i < response.cex.length; i++) {
+        var thisvalues = {};
+        thisvalues.step = i + 1;
+        {% for vartrace in trace.values %}
+        //j = {{forloop.counter}} - 1;
+	j = 0;
+	for (var k = 0; k < response.cex.values.length; k++) {
+		if (response.cex.values[k].name == '{{vartrace.name}}') {
+			j = k;
+		}
+	}
+        thisvalues.{{vartrace.alias}} = response.cex.values[j].values[i];
+        {% endfor %}
+        data.push({id: i, values: thisvalues});  
+       }
+  
+      editableGrid.load({"metadata": metadata, "data": data});
+      editableGrid.initializeGrid();
+      editableGrid.renderGrid("tablecontent3", "testgrid");
+
+      $("pre.code3").snippet("cpp",{style:"navy",box:response.cex.firstLine.toString(),boxColor:"red",boxFill:"black",menu:false});
+      $('#slider2').slider("option", "max", response.cex.length);
+      $('#slider2').slider("value", 1);
+      $( "#step2" ).val( $( "#slider2" ).slider( "value" ) );
+
+      $("#tablecontent3").find('tr').eq(1).css("background-color", "#FFFF00");
+ 
+    }
+
+
+    // Feedback about submitted invariant
     function send_invariant_callback(response){
-      oldStep2 = 1;
-      $('#suggest_invariant_button').button('reset');
-      switch(response.code) {
+	oldStep2 = 1;
+	$('#suggest_invariant_button').button('reset');
+	{% for invariant in program.invariant_set.all %}
+	$('#result_invariant_button{{forloop.counter}}').popover('destroy');
+	{% endfor %}
+
+	switch(response.code) {
 	case 0: code = "Maybe Invariant";
 		content = "Not sure if " + "<b>" + response.invariant + "</b>" + " holds in all executions. We got a counter-example.";
 		content += '<br><center><a href="#cexModal" role="button" class="btn btn-warning btn-small" data-toggle="modal">Counter-Example</a></center>'
@@ -567,6 +718,11 @@
     }
 
     // Submit invariant to the server
+    function get_invariant_cex(content,line,counter){
+      Dajaxice.proveit.programs.getInvariantCex(get_invariant_cex_callback,{'program_id':{{program.id}},'invariant':content,'line':line,'invariant_id':counter});
+    }
+
+    // Submit invariant to the server
     function send_invariant(){
       $('#suggest_invariant_button').popover('destroy');
       author = "{{ request.user.username }}";
@@ -575,6 +731,7 @@
       $('#suggest_invariant_button').button('loading');
       Dajaxice.proveit.programs.suggestInvariant(send_invariant_callback,{'program_id':{{program.id}},'author':author,'invariant':invariant,'line':line});
     }
+
     // Submit loop invariant to the server
     function send_loop_invariant(){
       $('#suggest_loop_invariant_button').popover('destroy');
@@ -1084,7 +1241,7 @@
 	    {% for invariant in program.invariant_set.all %}
             <tr>
                 {% if invariant.status == 0 %}
-	          <td> <button class="btn btn-mini btn-warning" type="button">Unknown</button> </td>
+	          <td> <button class="btn btn-mini btn-warning" type="button" id="result_invariant_button{{forloop.counter}}" onclick="get_invariant_cex('{{invariant.content}}',{{invariant.line}},{{forloop.counter}});" data-toggle="popover" data-placement="left">Unknown</button> </td>
                 {% elif invariant.status == 1 %}
 	          <td> <button class="btn btn-mini btn-success" type="button">Correct</button> </td>
                 {% elif invariant.status == 2 %}
