@@ -21,8 +21,86 @@ class Z3ProgramFactory(object):
 			return count_up_down_safe(description)
 		elif description == 'dillig_example':
 			return dillig(description)
+		elif description == 'sum01':
+			return sum01_safe(description)
 		else:
 			raise CrowdproverException("Errorcode 2: unknown program description")
+
+
+class sum01_safe(Z3Program):
+	def __init__(self,description):
+		self.description = description
+
+	def programInfo(self):
+		info = {}
+
+		inputs = {}
+		inputs['n'] = 'integer'
+
+		states = {}
+		states['i'] = 'integer'
+		states['sn'] = 'integer'
+
+		loops = {}
+		loops[1] = (5,8)
+
+		info['states'] = states
+		info['inputs'] = inputs
+		info['loops'] = loops
+		info['codelines'] = (2,10)
+		info['loopids'] = (1,1)
+
+		return info
+
+	def programFormula(self):
+		formula = BoolVal(True)
+		i = {}
+		sn = {}
+		n = Int('n')
+
+		for cnt in range(2,10):
+			i[cnt] = Int('i' + '_proveit_' + str(cnt))
+			sn[cnt] = Int('sn' + '_proveit_' + str(cnt))
+
+		formula = And(formula, i[3] == i[3])
+		formula = And(formula, sn[3] == IntVal(0))
+		formula = And(formula, i[4] == IntVal(1))
+		formula = And(formula, sn[4] == sn[3])
+		formula = And(formula, i[9] == i[8])
+		formula = And(formula, sn[9] == sn[8])
+
+		return formula
+
+	def programAsserts(self):
+		formula = "sn == n*2 | sn == 0"
+		return [(9,formula)]
+
+	def loopFormula(self, loopId):
+		if loopId == 1:
+			formula = BoolVal(True)
+			n = Int('n')
+			i_pre = Int('i_proveit_pre')
+			sn_pre = Int('sn_proveit_pre')
+			i_post = Int('i_proveit_post')
+			sn_post = Int('sn_proveit_post')
+			formula = And(formula, i_pre <= n)
+			formula = And(formula, i_post == i_pre + 1)
+			formula = And(formula, sn_post == sn_pre + 2)
+			return formula
+		else:
+			raise CrowdproverException("Errorcode 3: unknown loop id")
+
+	def loopCondition(self, loopId):
+		if loopId == 1:
+			n = Int('n')
+			i = Int('i')
+			sn = Int('sn')
+			return (i <= n)
+		else:
+			raise CrowdproverException("Errorcode 3: unknown loop id")
+
+
+
 
 class dillig(Z3Program):
 	def __init__(self,description):
@@ -275,6 +353,8 @@ class SymbolTable:
 			self.symtab = { "A"  : ("arr","math.sin","int",30) ,"f"  : ("fun","math.sin","int",1),"g" : ("fun","math.sin","bool",2),"x" : ("int","operator.mul"),"y" : ("int","operator.truediv"),"n" : ("int","operator.truediv")}
 		elif description == 'dillig_example':
 			self.symtab = {"n" : ("int","operator.truediv"), "i" : ("int","operator.truediv"), "j" : ("int","operator.truediv"), "z" : ("int","operator.truediv"), "x" : ("int","operator.truediv"), "y" : ("int","operator.truediv"), "w" : ("int","operator.truediv")}
+		if description == 'sum01':
+			self.symtab = { "A"  : ("arr","math.sin","int",30) ,"f"  : ("fun","math.sin","int",1),"g" : ("fun","math.sin","bool",2),"i" : ("int","operator.mul"),"sn" : ("int","operator.truediv"),"n" : ("int","operator.truediv")}
 		else:
 			raise CrowdproverException("Errorcode 2: unknown program description")
 
