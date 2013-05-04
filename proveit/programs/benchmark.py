@@ -353,7 +353,7 @@ class SymbolTable:
 			self.symtab = { "A"  : ("arr","math.sin","int",30) ,"f"  : ("fun","math.sin","int",1),"g" : ("fun","math.sin","bool",2),"x" : ("int","operator.mul"),"y" : ("int","operator.truediv"),"n" : ("int","operator.truediv")}
 		elif description == 'dillig_example':
 			self.symtab = {"n" : ("int","operator.truediv"), "i" : ("int","operator.truediv"), "j" : ("int","operator.truediv"), "z" : ("int","operator.truediv"), "x" : ("int","operator.truediv"), "y" : ("int","operator.truediv"), "w" : ("int","operator.truediv")}
-		if description == 'sum01':
+		elif description == 'sum01':
 			self.symtab = { "A"  : ("arr","math.sin","int",30) ,"f"  : ("fun","math.sin","int",1),"g" : ("fun","math.sin","bool",2),"i" : ("int","operator.mul"),"sn" : ("int","operator.truediv"),"n" : ("int","operator.truediv")}
 		else:
 			raise CrowdproverException("Errorcode 2: unknown program description")
