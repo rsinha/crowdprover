@@ -123,6 +123,32 @@
 
     input.invalid { background: red; color: #FDFDFD; }
 
+  .carousel-control {
+  position: absolute;
+  top: 40%;
+  left: -75px;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  font-size: 60px;
+  font-weight: 100;
+  line-height: 30px;
+  color: #ffffff;
+  text-align: center;
+  background: #222222;
+  border: 3px solid #ffffff;
+  -webkit-border-radius: 23px;
+     -moz-border-radius: 23px;
+          border-radius: 23px;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+  }
+
+  .carousel-control.right {
+  right: -75px;
+  left: auto;
+  }
+
     </style>
 
     <script type="text/javascript">
@@ -896,6 +922,18 @@
     }
 
     $(document).ready(function(){
+        //FIXME
+	{% for loop in info.loops.keys %}
+	{% if forloop.counter == 1%}
+        $("pre.loopcode1").snippet("cpp",{style:"navy",box:({{info.loops.1.0}}).toString(),boxColor:"red",boxFill:"black",menu:false});
+	{% elif forloop.counter == 2%}
+        $("pre.loopcode2").snippet("cpp",{style:"navy",box:({{info.loops.2.0}}).toString(),boxColor:"red",boxFill:"black",menu:false});
+	{% elif forloop.counter == 3%}
+        $("pre.loopcode3").snippet("cpp",{style:"navy",box:({{info.loops.3.0}}).toString(),boxColor:"red",boxFill:"black",menu:false});
+	{% endif %}
+	{% endfor %} 
+
+        $('.carousel').carousel({interval: false});
         $("pre.code1").snippet("cpp",{style:"navy",boxColor:"red",boxFill:"black",menu:false});
         $("pre.code2").snippet("cpp",{style:"navy",box:({{trace.firstLine}}).toString(),boxColor:"red",boxFill:"black",menu:false});
         $("pre.code3").snippet("cpp",{style:"navy",boxColor:"red",boxFill:"black",menu:false});
@@ -1272,65 +1310,94 @@
              You can use the trace visualizer to help understand this program's behaviour.
              You can also view what others have suggested.</p>
       </div>
-      <section>
+      </section>
 
 
       <!-- Example row of columns -->
       <section id="section_program">
-      <div class="row-fluid">
-        <div class="span5">
-          <pre class="code1">{{code}}</pre>
-       </div>
-        <div class="span6" align="right">
-          <h5>Suggest an invariant for a specific line</h5>
-          <div align="right"> 
-            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-	           <form action="javascript:void(0);" method="post" id="Invariant_Form" class="form-horizontal">
-	           {% csrf_token %}
-                   <div class="control-group">
-                       <label class="control-label" for="Invariant_Form_inv">Invariant</label>
-                       <div class="controls">
-                         <input type="text" id="Invariant_Form_inv" placeholder="Predicate..." name="content">
-                       </div>
+              <div id="myCarousel" class="carousel slide">
+                <ol class="carousel-indicators">
+                  <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+		  {% for loop in info.loops.keys %}
+                  <li data-target="#myCarousel" data-slide-to="{{forloop.counter}}"></li>
+		  {% endfor %}
+                </ol>
+                <div class="carousel-inner">
+                  <div class="item active">
+		    Can you hypothesize invariants for this program? An invariant at a line must hold each time execution reaches that line.
+                    <div class="span12"><br/><br/></div>
+                    <div class="row-fluid">
+                    <div class="span6">
+                      <pre class="code1">{{code}}</pre>
                    </div>
-                   <div class="control-group">
-                       <label class="control-label" for="Invariant_Form_line">Line</label>
-                       <div class="controls">
-                         <input type="number" id="Invariant_Form_line" name="line" min="{{info.codelines.0}}" max="{{info.codelines.1}}">
-                       </div>
-                   </div>
-                   <!--label>Invariant</label>
-                   <input type="text" name="content" placeholder="Formula...">
-                   <label>Line number</label>
-	           <input type="number" name="line"></div-->
-	           <div><input type="submit" onclick="send_invariant();" id="suggest_invariant_button" value="Suggest Invariant" class="btn btn-primary" data-toggle="popover" data-placement="right" data-loading-text="Proving..."></div>
-                   </fieldset>
-	           </form>
-          </div>
-          <br>
-          <h5>Suggest a loop invariant for a specific loop</h5>
-          <div align="right"> 
-            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-	           <form action="javascript:void(0);" method="post" id="LoopInvariant_Form" class="form-horizontal">
-	           {% csrf_token %}
-                   <div class="control-group">
-                       <label class="control-label" for="Invariant_Form_inv">Invariant</label>
-                       <div class="controls">
-                         <input type="text" id="Invariant_Form_inv" placeholder="Predicate..." name="content">
-                       </div>
-                   </div>
-                   <div class="control-group">
-                       <label class="control-label" for="Invariant_Form_line">Loop</label>
-                       <div class="controls">
-                         <input type="number" id="Invariant_Form_loop" name="loopid" min="{{info.loopids.0}}" max="{{info.loopids.1}}">
-                       </div>
-                   </div>
-	           <div><input type="submit" onclick="send_loop_invariant();" id="suggest_loop_invariant_button" value="Suggest Loop Invariant" class="btn btn-primary" data-toggle="popover" data-placement="right" data-loading-text="Proving..."></div>
-	           </form>
-          </div>
-        </div>
-      </div>
-      </section>
+                    <div class="span6" align="right">
+                      <h5>Suggest an invariant for a specific line</h5>
+                      <div align="right"> 
+                        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+                         <form action="javascript:void(0);" method="post" id="Invariant_Form" class="form-horizontal">
+                         {% csrf_token %}
+                               <div class="control-group">
+                                   <label class="control-label" for="Invariant_Form_inv">Invariant</label>
+                                   <div class="controls">
+                                     <input type="text" id="Invariant_Form_inv" placeholder="Predicate..." name="content">
+                                   </div>
+                               </div>
+                               <div class="control-group">
+                                   <label class="control-label" for="Invariant_Form_line">Line</label>
+                                   <div class="controls">
+                                     <input type="number" id="Invariant_Form_line" name="line" min="{{info.codelines.0}}" max="{{info.codelines.1}}">
+                                   </div>
+                               </div>
+                               <!--label>Invariant</label>
+                               <input type="text" name="content" placeholder="Formula...">
+                               <label>Line number</label>
+                         <input type="number" name="line"></div-->
+                         <div><input type="submit" onclick="send_invariant();" id="suggest_invariant_button" value="Suggest Invariant" class="btn btn-primary" data-toggle="popover" data-placement="right" data-loading-text="Proving..."></div>
+                               </fieldset>
+                         </form>
+                      </div>
+                      <br>
+                      <h5>Suggest a loop invariant for a specific loop</h5>
+                      <div align="right"> 
+                        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+                         <form action="javascript:void(0);" method="post" id="LoopInvariant_Form" class="form-horizontal">
+                         {% csrf_token %}
+                               <div class="control-group">
+                                   <label class="control-label" for="Invariant_Form_inv">Invariant</label>
+                                   <div class="controls">
+                                     <input type="text" id="Invariant_Form_inv" placeholder="Predicate..." name="content">
+                                   </div>
+                               </div>
+                               <div class="control-group">
+                                   <label class="control-label" for="Invariant_Form_line">Loop</label>
+                                   <div class="controls">
+                                     <input type="number" id="Invariant_Form_loop" name="loopid" min="{{info.loopids.0}}" max="{{info.loopids.1}}">
+                                   </div>
+                               </div>
+                         <div><input type="submit" onclick="send_loop_invariant();" id="suggest_loop_invariant_button" value="Suggest Loop Invariant" class="btn btn-primary" data-toggle="popover" data-placement="right" data-loading-text="Proving..."></div>
+                         </form>
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+
+		{% for loop in info.loops.keys %}
+                  <div class="item">
+		    Here are several snapshots of program state at the marked line. Can you find a relation that holds for all snapshots?
+                    <div class="span12"><br/><br/></div>
+                    <div class="row-fluid">
+                      <div class="span6"><pre class="loopcode{{forloop.counter}}">{{code}}</pre></div>
+                      <div class="span6" align="right"></div>
+                    </div>
+                  </div>
+		{% endfor %} 
+
+                </div>
+                <a class="left carousel-control" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+                <a class="right carousel-control" href="#myCarousel" data-slide="next">&rsaquo;</a>
+              </div>
+
+     </section>
 
 
       <!-- Next
