@@ -886,6 +886,38 @@
  
     }
 
+
+    {% for loop in info.loops.keys %}
+    function get_three_traces_callback{{forloop.counter}}(response){
+      trace = response;
+      editableGrid = new EditableGrid("blah", {pageSize: 10, maxBars: 10});
+ 
+      var metadata = [];
+      //metadata.push({ name: "step", label: "Step #", datatype: "integer", editable: false});
+      {% for vartrace in trace.values %}
+      j = {{forloop.counter}} - 1;
+      metadata.push({ name: "{{vartrace.alias}}", label: "{{vartrace.name}}", datatype: "string", editable: false});
+      {% endfor %}
+
+      var data = [];
+      for (var i = 0; i < trace.length; i++) {
+        var thisvalues = {};
+        //thisvalues.step = i + 1;
+        {% for vartrace in trace.values %}
+        j = {{forloop.counter}} - 1;
+        thisvalues.{{vartrace.alias}} = trace.values[j].values[i];
+        {% endfor %}
+        data.push({id: i, values: thisvalues});  
+       }
+      
+      editableGrid.load({"metadata": metadata, "data": data});
+      //editableGrid.initializeGrid();
+      editableGrid.renderGrid("loopcode_tablecontent{{forloop.counter}}", "testgrid");
+    }
+    {% endfor %}
+
+
+
     function compute_trace() {
         Dajaxice.proveit.programs.computeTrace(compute_trace_callback, {'program_id':{{program.id}}, 'inputs':[{%for input in trace.inputs %} $('#input{{forloop.counter}}').html() {% endfor %}]});
         $('#compute_trace_button').button('loading');
@@ -899,6 +931,12 @@
     // Submit invariant to the server
     function get_loopinvariant_cex(content,loopid,counter){
       Dajaxice.proveit.programs.getLoopInvariantCex(get_loopinvariant_cex_callback,{'program_id':{{program.id}},'invariant':content,'loopid':loopid,'invariant_id':counter});
+    }
+
+    function get_three_traces() {
+    {% for loop in info.loops.keys %}
+      Dajaxice.proveit.programs.getThreeTraces(get_three_traces_callback{{forloop.counter}},{'program_id':{{program.id}},'loop_id':{{forloop.counter}}});
+    {% endfor %}
     }
 
     // Submit invariant to the server
@@ -933,6 +971,7 @@
 	{% endif %}
 	{% endfor %} 
 
+	get_three_traces();
         $('.carousel').carousel({interval: false});
         $("pre.code1").snippet("cpp",{style:"navy",boxColor:"red",boxFill:"black",menu:false});
         $("pre.code2").snippet("cpp",{style:"navy",box:({{trace.firstLine}}).toString(),boxColor:"red",boxFill:"black",menu:false});
@@ -1387,7 +1426,27 @@
                     <div class="span12"><br/><br/></div>
                     <div class="row-fluid">
                       <div class="span6"><pre class="loopcode{{forloop.counter}}">{{code}}</pre></div>
-                      <div class="span6" align="right"></div>
+                      <div class="span6" align="right">
+			<div id="loopcode_table{{forloop.counter}}"></div>
+			<div id="loopcode_tablecontent{{forloop.counter}}"></div>
+		      <br><br>
+                      <h5>Enter a formula that holds for all rows.</h5>
+                      <div align="right"> 
+                        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+                         <form action="javascript:void(0);" method="post" id="Invariant_Form" class="form-horizontal">
+                         {% csrf_token %}
+                               <div class="control-group">
+                                   <label class="control-label" for="Invariant_Form_inv">Invariant</label>
+                                   <div class="controls">
+                                     <input type="text" id="Invariant_Form_inv" placeholder="Predicate..." name="content">
+                                   </div>
+                               </div>
+                         <div><input type="submit" onclick="dummy();" id="suggest_invariant_button" value="Suggest Invariant" class="btn btn-primary" data-toggle="popover" data-placement="right" data-loading-text="Proving..."></div>
+                               </fieldset>
+                         </form>
+                      </div>
+ 
+		      </div>
                     </div>
                   </div>
 		{% endfor %} 

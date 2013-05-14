@@ -15,6 +15,11 @@ def computeTrace(request, program_id, inputs):
 	trace = proveit.programs.proveutils.computeTrace(proveit.programs.proveutils.absoluteMeta(program.source),proveit.programs.proveutils.absoluteBinary(program.binary), inputs)
 	return simplejson.dumps(trace)
 
+@dajaxice_register(method='GET')
+def getThreeTraces(request, program_id, loop_id):
+	program = Program.objects.get(pk=program_id)
+	trace = proveit.programs.proveutils.computeTrace(proveit.programs.proveutils.absoluteMeta(program.source),proveit.programs.proveutils.absoluteBinary(program.binary), [3])
+	return simplejson.dumps(trace)
 
 @dajaxice_register(method='POST')
 def getInvariantCex(request, program_id, invariant, line,invariant_id):
