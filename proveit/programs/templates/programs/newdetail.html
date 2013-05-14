@@ -750,6 +750,30 @@
  
     }
 
+    {% for loop in info.loops.keys %}
+    function send_three_traces_loop_invariant_callback{{forloop.counter}}(response){
+      $('#suggest_three_traces_button{{forloop.counter}}').button('reset');
+      switch(response.code) {
+	case 0: code = "Maybe Loop Invariant";
+		content = "Not sure if " + "<b>" + response.invariant + "</b>" + " holds in all executions. We got a counter-example.";
+		break;
+	case 1: code = "Correct Loop Invariant";
+		content = "<b>" + response.invariant + "</b>" + " holds for all executions.";
+		break;
+	case 2: code = "Incorrect Loop Invariant";
+		content = "<b>" + response.invariant + "</b>" + " never holds for any execution.";
+		break;
+	case 3: code = "Parse Error";
+		content = "We had trouble parsing " + "<b>" + response.invariant + "</b>";
+		break;
+	case 4: code = "Duplicate Loop Invariant";
+		content = response.author + " already submitted an equivalent invariant " + "<b>" + response.invariant + "</b>";
+		break;
+      }
+      $('#suggest_three_traces_button{{forloop.counter}}').popover({html:true, animation: true, content: content, title: code});
+      $('#suggest_three_traces_button{{forloop.counter}}').popover('show');
+    }	
+    {% endfor %}
 
     // Feedback about submitted loop invariant
     function send_loop_invariant_callback(response){
@@ -958,6 +982,16 @@
       $('#suggest_loop_invariant_button').button('loading');
       Dajaxice.proveit.programs.suggestLoopInvariant(send_loop_invariant_callback,{'program_id':{{program.id}},'author':author,'invariant':invariant,'loop_id':loop_id});
     }
+
+    {% for loop in info.loops.keys %}
+    function send_three_traces_loop_invariant{{forloop.counter}}(){
+      author = "{{ request.user.username }}";
+      invariant = $("#ThreeTraces_LoopInvariant_Form{{forloop.counter}} :input[name=content]").val();
+      loop_id = {{forloop.counter}};
+      $('#suggest_three_traces_button{{forloop.counter}}').button('loading');
+      Dajaxice.proveit.programs.suggestLoopInvariant(send_three_traces_loop_invariant_callback{{forloop.counter}},{'program_id':{{program.id}},'author':author,'invariant':invariant,'loop_id':loop_id});
+    }
+    {% endfor %}
 
     $(document).ready(function(){
         //FIXME
@@ -1433,15 +1467,15 @@
                       <h5>Enter a formula that holds for all rows.</h5>
                       <div align="right"> 
                         {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-                         <form action="javascript:void(0);" method="post" id="Invariant_Form" class="form-horizontal">
+                         <form action="javascript:void(0);" method="post" id="ThreeTraces_LoopInvariant_Form{{forloop.counter}}" class="form-horizontal">
                          {% csrf_token %}
                                <div class="control-group">
-                                   <label class="control-label" for="Invariant_Form_inv">Invariant</label>
+                                   <label class="control-label" for="ThreeTraces_Form_inv{{forloop.counter}}">Invariant</label>
                                    <div class="controls">
-                                     <input type="text" id="Invariant_Form_inv" placeholder="Predicate..." name="content">
+                                     <input type="text" id="ThreeTraces_LoopInvariant_Form{{forloop.counter}}" placeholder="Predicate..." name="content">
                                    </div>
                                </div>
-                         <div><input type="submit" onclick="dummy();" id="suggest_invariant_button" value="Suggest Invariant" class="btn btn-primary" data-toggle="popover" data-placement="right" data-loading-text="Proving..."></div>
+                         <div><input type="submit" onclick="send_three_traces_loop_invariant{{forloop.counter}}();" id="suggest_three_traces_button{{forloop.counter}}" value="Suggest Invariant" class="btn btn-primary" data-toggle="popover" data-placement="right" data-loading-text="Proving..."></div>
                                </fieldset>
                          </form>
                       </div>
