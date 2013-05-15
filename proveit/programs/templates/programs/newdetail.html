@@ -324,6 +324,9 @@
 	{% for invariant in program.invariant_set.all %}
 	$('#result_invariant_button{{forloop.counter}}').popover('destroy');
 	{% endfor %}
+	{% for invariant in program.loopinvariant_set.all %}
+	$('#result_loopinvariant_button{{forloop.counter}}').popover('destroy');
+	{% endfor %}
 
 	switch(response.code) {
 	case 0: code = "Maybe Invariant";
@@ -608,6 +611,9 @@
     function get_loopinvariant_cex_callback(response){
 	oldStep3 = 1;
 	$('#suggest_loop_invariant_button').button('reset');
+	{% for invariant in program.invariant_set.all %}
+	$('#result_invariant_button{{forloop.counter}}').popover('destroy');
+	{% endfor %}
 	{% for invariant in program.loopinvariant_set.all %}
 	$('#result_loopinvariant_button{{forloop.counter}}').popover('destroy');
 	{% endfor %}
